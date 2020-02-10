@@ -15,13 +15,17 @@ function open_db() {
   return $conn;
 }
 
-if(array_key_exists("l", $_GET) && $_GET["l"] == "en") {
-  $en = true;
+$curr = basename($_SERVER["SCRIPT_FILENAME"], ".php");
+if($curr == "error")
+  $en = (strpos($_SERVER["REDIRECT_QUERY_STRING"], "l=en") !== false);
+else
+  $en = array_key_exists("l", $_GET) && $_GET["l"] == "en";
+
+if($en) {
   $prilang = "en";
   $seclang = "cz";
   $langquery = "?l=en";
 } else {
-  $en = false;
   $prilang = "cz";
   $seclang = "en";
   $langquery = "";
@@ -33,10 +37,8 @@ $stranky = array(
   "theses" => $en ? "Theses" : "Školení",
   "pub" => $en ? "Publications" : "Publikace",
   "personal" => $en ? "Personal" : "Osobní"
-  /*<a>Ukázky</a>*/
 );
 
-$curr = basename($_SERVER["SCRIPT_FILENAME"], ".php");
 if(!array_key_exists($curr, $stranky) && $curr != "error")
   $curr = key($stranky);
 $filename = $curr . ($en ? "-en" : "") . ".inc.php";
@@ -88,16 +90,14 @@ if(file_exists($filename)) {
 }
 ?>
         </div>
-<?php
-/*
         <div class="lang">
+<?php
 print_indent(5, "<a href=\"?l=$seclang\">");
 print_indent(6, "<img class=\"active\" src=\"$prilang.svg\">");
 print_indent(6, "<img class=\"inactive\" src=\"$seclang.svg\">");
 print_indent(5, "</a>");
-        </div>
-*/
 ?>
+        </div>
       </div>
     </div>
   </body>
