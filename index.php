@@ -79,23 +79,23 @@ if(!file_exists($filename)) {
   }
 }
 ?>
-      <div class="lastmod">
+        <div class="lastmod">
 <?php
 if(file_exists($filename)) {
   $lastmod = $en ? "Last modified" : "Poslední úprava";
   $lastmod .= ": " . date("j.n.Y G:i", filemtime($filename));
-  print_indent(4, $lastmod);
+  print_indent(5, $lastmod);
 }
 ?>
-      </div>
+        </div>
 <?php
 /*
-      <div class="lang">
-print_indent(4, "<a href=\"?l=$seclang\">");
-print_indent(5, "<img class=\"active\" src=\"$prilang.svg\">");
-print_indent(5, "<img class=\"inactive\" src=\"$seclang.svg\">");
-print_indent(4, "</a>");
-      </div>
+        <div class="lang">
+print_indent(5, "<a href=\"?l=$seclang\">");
+print_indent(6, "<img class=\"active\" src=\"$prilang.svg\">");
+print_indent(6, "<img class=\"inactive\" src=\"$seclang.svg\">");
+print_indent(5, "</a>");
+        </div>
 */
 ?>
       </div>
