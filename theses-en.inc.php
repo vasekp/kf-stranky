@@ -1,1 +1,1 @@
-not-translated.inc.php
+theses.inc.php
