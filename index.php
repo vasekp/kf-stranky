@@ -67,8 +67,15 @@ foreach($stranky as $name => $text)
       <div class="main">
 <?php
 if(!file_exists($filename)) {
-  $error = $en ? "This page does not exist." : "Tato stránka neexistuje.";
-  print_indent(4, "<div class=\"error\">$error</div>");
+  print_indent(4, "<div class=\"error\">");
+  print_indent(5, $en ? "This page does not exist." : "Tato stránka neexistuje.");
+  print_indent(5, "<br/>");
+  $report = $en ? "Please report this error on " : "Prosím nahlašte chybu na ";
+  $report .= "<a href=\"https://github.com/vasekp/kf-stranky/issues\" target=\"_blank\">";
+  $report .= $en ? "GitHub" : "GitHubu";
+  $report .= "</a>.";
+  print_indent(5, $report);
+  print_indent(4, "</div>");
 } else {
   $db = open_db();
   if(!$db) {
