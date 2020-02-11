@@ -101,12 +101,14 @@ if(file_exists($filename)) {
 ?>
         </div>
         <div class="lang">
-<?php
-print_indent(5, "<a href=\"?l=$seclang\">");
-print_indent(6, "<img class=\"active\" src=\"$prilang.svg\">");
-print_indent(6, "<img class=\"inactive\" src=\"$seclang.svg\">");
-print_indent(5, "</a>");
-?>
+          <p class="hide"></p>
+          <span class="hide">Switch language:</span>
+          <a href="?l=<?php echo $seclang; ?>">
+            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="30" height="20" viewBox="-0.25 -0.25 12.5 8.5">
+              <use href="flags.svg#<?php echo $prilang; ?>" id="<?php echo $prilang; ?>" class="primary"/>
+              <use href="flags.svg#<?php echo $seclang; ?>" id="<?php echo $seclang; ?>" class="secondary"/>
+            </svg>
+          </a>
         </div>
       </div>
     </div>

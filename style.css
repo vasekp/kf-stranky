@@ -111,24 +111,21 @@ body {
   top: 0.3em;
 }
 
-.lang img {
-  position: absolute;
-  right: 0;
-  top: 0;
+.lang svg {
   width: 1.5em;
   height: 1em;
-  transition: opacity 0.5s;
 }
 
-.lang img.active {
+.lang svg .primary {
   opacity: 0.3;
 }
 
-.lang img.inactive {
+.lang svg .secondary {
   opacity: 0;
+  transition: opacity 0.5s;
 }
 
-.lang img.inactive:hover {
+.lang svg .secondary:hover {
   opacity: 1;
 }
 
