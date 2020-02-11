@@ -12,12 +12,17 @@ filterEvent = function(event) {
 
 applyFilter = function(id) {
   Array.from(document.getElementsByClassName('filter')).forEach(function(element) {
-    element.style.display = element.classList.contains("f-" + id) ? "list-item" : "none";
+    show = element.classList.contains("f-" + id);
+    if(show)
+      element.classList.remove('hide');
+    else
+      element.classList.add('hide');
   });
 };
 
 window.addEventListener('DOMContentLoaded', function(event) {
-  Array.from(document.getElementById('filter').getElementsByTagName('a')).forEach(function(child) {
+  document.getElementById('pub-filter').classList.remove('hide');
+  Array.from(document.getElementById('pub-filter').getElementsByTagName('a')).forEach(function(child) {
     child.addEventListener('click', filterEvent);
   });
   filterClicked(document.getElementById('selected'));
