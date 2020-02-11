@@ -104,9 +104,9 @@ if(file_exists($filename)) {
           <p class="hide"></p>
           <span class="hide">Switch language:</span>
           <a href="?l=<?php echo $seclang; ?>">
-            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="30" height="20" viewBox="-0.25 -0.25 12.5 8.5">
-              <use href="flags.svg#<?php echo $prilang; ?>" id="<?php echo $prilang; ?>" class="primary"/>
-              <use href="flags.svg#<?php echo $seclang; ?>" id="<?php echo $seclang; ?>" class="secondary"/>
+            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="30" height="20">
+              <image href="<?php echo $prilang; ?>.svg" x="0" y="0" width="100%" height="100%" class="primary"/>
+              <image href="<?php echo $seclang; ?>.svg" x="0" y="0" width="100%" height="100%" class="secondary"/>
             </svg>
           </a>
         </div>
