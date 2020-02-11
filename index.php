@@ -62,8 +62,11 @@ if(file_exists($curr . ".js"))
     <div class="body">
       <div class="navbar">
 <?php
-foreach($stranky as $name => $text)
+foreach($stranky as $name => $text) {
+  print_indent(4, "<span class=\"hide\">[</span>");
   print_indent(4, "<a href=\"$name.php$langquery\"" . ($name==$curr ? " class=\"emph\"" : "") . ">$text</a>");
+  print_indent(4, "<span class=\"hide\">]</span>");
+}
 ?>
       </div>
       <div class="main">
