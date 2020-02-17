@@ -94,6 +94,7 @@ if(!file_exists($filename)) {
         <div class="lastmod">
 <?php
 if(file_exists($filename)) {
+  date_default_timezone_set("Europe/Prague");
   $lastmod = $en ? "Last modified" : "Poslední úprava";
   $lastmod .= ": " . date("j.n.Y G:i", filemtime($filename));
   print_indent(5, $lastmod);
