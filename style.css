@@ -212,6 +212,7 @@ main a:hover {
 
 .button a:hover {
   background: #b3daff;
+  color: white;
 }
 
 p {
