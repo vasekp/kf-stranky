@@ -45,7 +45,7 @@ $filename = $curr . ($en ? "-en" : "") . ".inc.php";
 /**********/
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="cs">
   <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width"/>
@@ -59,17 +59,17 @@ if(file_exists($curr . ".js"))
     </title>
   </head>
   <body>
-    <div class="body">
-      <div class="navbar">
+    <nav>
 <?php
 foreach($stranky as $name => $text) {
-  print_indent(4, "<span class=\"hide\">[</span>");
-  print_indent(4, "<a href=\"$name.php$langquery\"" . ($name==$curr ? " class=\"emph\"" : "") . ">$text</a>");
-  print_indent(4, "<span class=\"hide\">]</span>");
+  print_indent(3, "<span class=\"hide\">[</span>");
+  print_indent(3, "<a href=\"$name.php$langquery\"" . ($name==$curr ? " class=\"emph\"" : "") . ">$text</a>");
+  print_indent(3, "<span class=\"hide\">]</span>");
 }
 ?>
-      </div>
-      <div class="main">
+    </nav>
+    <div class="main">
+      <main>
 <?php
 if(!file_exists($filename)) {
   print_indent(4, "<div class=\"error\">");
@@ -91,6 +91,8 @@ if(!file_exists($filename)) {
   }
 }
 ?>
+      </main>
+      <footer>
         <div class="lastmod">
 <?php
 if(file_exists($filename)) {
@@ -111,7 +113,7 @@ if(file_exists($filename)) {
             </svg>
           </a>
         </div>
-      </div>
+      </footer>
     </div>
   </body>
 </html>
