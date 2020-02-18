@@ -51,6 +51,8 @@ $filename = $curr . ($en ? "-en" : "") . ".inc.php";
     <meta name="viewport" content="width=device-width"/>
     <link rel="stylesheet" type="text/css" href="style.css"/>
 <?php
+if(file_exists($curr . ".css"))
+  print_indent(2, "<link rel=\"stylesheet\" type=\"text/css\" href=\"$curr.css\"/>");
 if(file_exists($curr . ".js"))
   print_indent(2, "<script type=\"text/javascript\" src=\"$curr.js\"></script>");
 ?>

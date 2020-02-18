@@ -1,0 +1,8 @@
+.photo {
+  float: left;
+  padding: .5em;
+  border: 1px solid #888;
+  border-radius: .25em;
+  margin-right: 1em;
+  width: 8em;
+}
