@@ -9,3 +9,7 @@
         target="_blank">Lineární operátory v kvantové fyzice</a></i> (Karolinum, Praha, 1993).
         <p></p>
         Cvičení (vedoucí <a href="https://physics.fjfi.cvut.cz/cb-profile/jexmicha" target="_blank">RNDr. Ing. Michal Jex, Ph.D.</a>, stránky cvičení <a href="https://physics.fjfi.cvut.cz/studium/predmety/292-02kfa" target="_blank">zde</a>) budou v <b>pátky</b> od <b>9:30</b> v místnosti <b>B11</b>.
+<div class="buttons">
+  <a class="button" href="">Poznámky k přednáškám</a>
+  <a class="button" href="">Stránky cvičení</a>
+</div>

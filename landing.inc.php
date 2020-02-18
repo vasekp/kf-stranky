@@ -10,7 +10,9 @@
           <li>Kvantová optika</li>
           <li>Měření a informace v kvantové mechanice</li>
         </ul>
-        <div class="button"><a href="classes.php">Výuka FJFI</a></div>
+        <div class="buttons">
+          <a class="button" href="classes.php">Výuka FJFI</a>
+        </div>
 
         <h2>Kontakt</h2>
         <ul>
