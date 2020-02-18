@@ -1,0 +1,18 @@
+@import "switch.css";
+@import "button.css";
+
+#header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#date {
+  width: 6em;
+  text-align: center;
+}
+
+.litref {
+  font-size: 90%;
+  color: #888;
+}
