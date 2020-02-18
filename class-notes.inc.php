@@ -22,7 +22,7 @@ if(!$date_sql) {
   return;
 }
 $date_php = strtotime($date_sql);
-setlocale(LC_ALL, "");
+setlocale(LC_ALL, "cs_CZ.utf8");
 
 $sql = "select min(id) from class_notes where class_ID = $cid and " .
   "date < \"$date_sql\" group by date order by date desc";
