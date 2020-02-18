@@ -95,13 +95,17 @@ nav .emph {
   position: relative;
 }
 
+main {
+  position: relative;
+}
+
 main>:first-child {
   margin-top: 0;
 }
 
 a {
   text-decoration: none;
-  cursor: pointer;
+  outline: 0;
 }
 
 .lastmod {
@@ -183,36 +187,16 @@ b, .emph {
   font-size: 90%;
 }
 
+.larger {
+  font-size: 110%;
+}
+
 main a {
   color: #008;
 }
 
 main a:hover {
   color: #44c;
-}
-
-.buttons {
-  display: block;
-  margin: 1em 0;
-}
-
-a.button {
-  font-weight: 600;
-  font-size: 1.3em;
-  display: inline-block;
-  padding: .7em 1em;
-  border-radius: 1em;
-  border: 1px solid #aaa;
-  background: #9cf;
-  margin-left: 1em;
-  color: white;
-  vertical-align: middle;
-  text-decoration: none;
-}
-
-a.button:hover {
-  background: #b3daff;
-  color: white;
 }
 
 p {

@@ -1,0 +1,23 @@
+.buttons {
+  display: block;
+  margin: 1em 0;
+}
+
+a.button {
+  font-weight: 600;
+  font-size: 1.3em;
+  display: inline-block;
+  padding: .7em 1em;
+  border-radius: 1em;
+  border: 1px solid #aaa;
+  background: #9cf;
+  margin-left: 1em;
+  color: white;
+  vertical-align: middle;
+  text-decoration: none;
+}
+
+a.button:hover {
+  background: #b3daff;
+  color: white;
+}
