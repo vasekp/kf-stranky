@@ -11,7 +11,7 @@
         Cvičení (vedoucí <a href="https://physics.fjfi.cvut.cz/cb-profile/jexmicha" target="_blank">RNDr. Ing. Michal Jex, Ph.D.</a>) budou v <b>pátky</b> od <b>9:30</b> v místnosti <b>B11</b>.
 
         <h2>Aktuality</h2>
-        <b>Upozornění studentům:</b> předmět 01KF není nadále součástí <a href="http://geraldine.fjfi.cvut.cz/bk/index.php?type=P&file=NMS_MF_1.doc&lang=cz" target="_blank">studijních plánů</a>, správný kód je 02KFA.
+        <b>Upozornění studentům:</b> předmět 01KF není nadále součástí <a href="http://geraldine.fjfi.cvut.cz/bk/index.php?type=P&amp;file=NMS_MF_1.doc&amp;lang=cz" target="_blank">studijních plánů</a>, správný kód je 02KFA.
         V KOS nedošlo ke zrušení starého kódu vlivem administrativní chyby.
         Zkontrolujte prosím svůj zápis a případně kontaktujte Studijní oddělení ohledně možnosti opravy.
 

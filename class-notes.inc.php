@@ -45,14 +45,14 @@ else
 print_indent(4, "<h1>Poznámky k přednáškám 02KFA</h1>");
 print_indent(4, "<div class=\"switch larger\">");
 if($id_prev)
-  $href = " href=\"?notes&id=$id_prev\"";
+  $href = " href=\"?notes&amp;id=$id_prev\"";
 else
   $href = "";
 $text = "<a id=\"prev\"$href>«</a>";
 print_indent(5, $text);
 print_indent(5, "<span id=\"date\">" . strftime("%a ", $date_php) . date("j. n. Y", $date_php) . "</span>");
 if($id_next)
-  $href = " href=\"?notes&id=$id_next\"";
+  $href = " href=\"?notes&amp;id=$id_next\"";
 else
   $href = "";
 $text = "<a id=\"next\"$href>»</a>";
