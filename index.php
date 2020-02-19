@@ -49,10 +49,10 @@ $filename = $curr . ($en ? '-en' : '') . '.inc.php';
   <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width"/>
-    <link rel="stylesheet" type="text/css" href="style.css"/>
+    <link rel="stylesheet" type="text/css" href="css/style.css"/>
 <?php
-if(file_exists($curr . '.css'))
-  print_indent(2, '<link rel="stylesheet" type="text/css" href="' . $curr . '.css"/>');
+if(file_exists('css/' . $curr . '.css'))
+  print_indent(2, '<link rel="stylesheet" type="text/css" href="css/' . $curr . '.css"/>');
 if(file_exists($curr . '.js'))
   print_indent(2, '<script type="text/javascript" src="' . $curr . '.js"></script>');
 ?>
@@ -110,8 +110,8 @@ if(file_exists($filename)) {
           <a href="?l=<?php echo $seclang; ?>">
             <span class="hide">Switch language:</span>
             <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="30" height="20">
-              <image href="<?php echo $prilang; ?>.svg" x="0" y="0" width="100%" height="100%" class="primary"/>
-              <image href="<?php echo $seclang; ?>.svg" x="0" y="0" width="100%" height="100%" class="secondary"/>
+              <image href="images/<?php echo $prilang; ?>.svg" x="0" y="0" width="100%" height="100%" class="primary"/>
+              <image href="images/<?php echo $seclang; ?>.svg" x="0" y="0" width="100%" height="100%" class="secondary"/>
             </svg>
           </a>
         </div>
