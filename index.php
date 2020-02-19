@@ -70,7 +70,7 @@ foreach($stranky as $name => $text) {
 }
 ?>
     </nav>
-    <div class="main">
+    <div id="main">
       <main>
 <?php
 if(!file_exists($filename)) {
@@ -95,7 +95,7 @@ if(!file_exists($filename)) {
 ?>
       </main>
       <footer>
-        <div class="lastmod">
+        <div id="lastmod">
 <?php
 if(file_exists($filename)) {
   date_default_timezone_set("Europe/Prague");
@@ -105,7 +105,7 @@ if(file_exists($filename)) {
 }
 ?>
         </div>
-        <div class="lang">
+        <div id="lang">
           <p class="hide"></p>
           <a href="?l=<?php echo $seclang; ?>">
             <span class="hide">Switch language:</span>
