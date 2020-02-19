@@ -10,7 +10,9 @@
           <li>Quantum optics</li>
           <li>Measurement and information in quantum mechanics</li>
         </ul>
-        <div class="button"><a href="classes.php?l=en">FNSPE students</a></div>
+        <div class="buttons">
+          <a class="button" href="classes.php?l=en">FNSPE students</a>
+        </div>
 
         <h2>Contact</h2>
         <ul>
