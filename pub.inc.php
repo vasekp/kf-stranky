@@ -1,10 +1,11 @@
-<?php include "pub-header-$prilang.inc.php" ?>
-        <ol>
 <?php
+include "pub-header-$prilang.inc.php";
+
 $sql = 'select * from publications order by id desc';
 $result = $db->query($sql);
 $counter = 0;
 
+print_indent(4, '<ol>');
 while($row = $result->fetch_assoc()) {
   $filters = array('f-all');
   if($counter++ < 5)
@@ -30,5 +31,5 @@ while($row = $result->fetch_assoc()) {
         . 'arXiv:' . $row['arxiv'] . ' [' . $row['arxiv2'] . ']</a>';
   print_indent(5, '<li class="filter ' . join(' ', $filters) . '">' . $output. '</li>');
 }
+print_indent(4, '</ol>');
 ?>
-        </ol>
