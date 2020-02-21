@@ -13,4 +13,19 @@ function open_db() {
   $conn->set_charset('utf8');
   return $conn;
 }
+
+function print_indent($offset, $text) {
+  echo str_repeat('  ', $offset);
+  echo $text;
+  echo "\n";
+}
+
+function query($script, $array = array()) {
+  global $en;
+  if($en && !array_key_exists('l', $array))
+    $array['l'] = 'en';
+  $q = http_build_query($array, '', '&amp;');
+  $ret = $script . ($q ? '?' . $q : '');
+  return $ret ? $ret : '#';
+}
 ?>

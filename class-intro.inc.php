@@ -16,7 +16,7 @@
         Zkontrolujte prosím svůj zápis a případně kontaktujte Studijní oddělení ohledně možnosti opravy.
 
         <div class="buttons">
-          <a class="button" href="?notes">Zápis z hodin</a>
+          <a class="button" href="<?php echo query('', array('s' => 'notes')); ?>">Zápis z hodin</a>
           <a class="button" href="https://physics.fjfi.cvut.cz/studium/predmety/292-02kfa" target="_blank">Stránky cvičení</a>
         </div>
 <?php

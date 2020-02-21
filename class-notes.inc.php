@@ -11,14 +11,20 @@ $admin = (array_key_exists('admin', $_GET) && $_GET['admin'] == $secrets['adminp
 
 print_indent(4, '<h1>Poznámky k přednáškám 02KFA</h1>');
 print_indent(4, '<div class="switch larger">');
-$text = '<a id="prev"'
-  . ($r->date_prev ? ' href="?notes&amp;date=' . $r->date_prev . '" data-date="' . $r->date_prev . '"' : '')
-  . '>«</a>';
+$text = '<a id="prev"';
+if($r->date_prev) {
+  $text .= ' href="' . query('', array('s' => 'notes', 'date' => $r->date_prev)) . '"';
+  $text .= ' data-date="' . $r->date_prev . '"';
+}
+$text .= '>«</a>';
 print_indent(5, $text);
 print_indent(5, '<span id="date" data-date="' . $r->date . '">' . $r->date_text . '</span>');
-$text = '<a id="next"'
-  . ($r->date_next ? ' href="?notes&amp;date=' . $r->date_next . '" data-date="' . $r->date_next . '"' : '')
-  . '>»</a>';
+$text = '<a id="next"';
+if($r->date_next) {
+  $text .= ' href="' . query('', array('s' => 'notes', 'date' => $r->date_next)) . '"';
+  $text .= ' data-date="' . $r->date_next . '"';
+}
+$text .= '>»</a>';
 print_indent(5, $text);
 print_indent(4, '</div>');
 
