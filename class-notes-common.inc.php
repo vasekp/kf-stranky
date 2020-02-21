@@ -1,6 +1,9 @@
 <?php
 $cid = 1;
 
+setlocale(LC_ALL, 'cs_CZ.utf8');
+date_default_timezone_set('Europe/Prague');
+
 function date_valid($date_req) {
   return preg_match('/^\d{4}-\d{1,2}-\d{1,2}$/', $date_req);
 }
@@ -38,9 +41,18 @@ function get_records($date_req, $newest_if_empty) {
     return null;
   $ret->date = $date;
 
-  setlocale(LC_ALL, 'cs_CZ.utf8');
   $date_php = strtotime($date);
   $ret->date_text = strftime('%a ', $date_php) . date('j. n. Y', $date_php);
+
+  $sql = "select max(timestamp) from class_notes where class_ID = $cid";
+  if($date_req)
+    $sql .= " and date = '$date'";
+  $result = $db->query($sql);
+  if($result->num_rows > 0) {
+    $ret->mod_time = $result->fetch_row()[0];
+    $ret->mod_text = date('j.n.Y G:i', strtotime($ret->mod_time));
+  } else
+    $ret->last_mod = null;
 
   $sql = "select max(date) from class_notes where class_ID = $cid and date < '$date'";
   $result = $db->query($sql);

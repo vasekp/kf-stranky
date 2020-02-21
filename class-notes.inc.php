@@ -32,4 +32,9 @@ print_indent(4, '</ul>');
 
 if($admin)
   print_indent(4, '<input type="hidden" id="admin" value="' . $_GET['admin'] . '"/>');
+
+if($r->mod_time)
+  $modtime = strtotime($r->mod_time);
+else
+  $modtime = filemtime(__FILE__);
 ?>

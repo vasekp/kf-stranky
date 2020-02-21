@@ -19,3 +19,6 @@
           <a class="button" href="?notes">Zápis z hodin</a>
           <a class="button" href="https://physics.fjfi.cvut.cz/studium/predmety/292-02kfa" target="_blank">Stránky cvičení</a>
         </div>
+<?php
+$modtime = filemtime(__FILE__);
+?>

@@ -60,4 +60,9 @@ while($row = $result->fetch_assoc()) {
   print_indent(5, $output);
 }
 print_indent(4, '</ul>');
+
+$sql = 'select max(timestamp) from theses';
+$result = $db->query($sql);
+if($result->num_rows > 0)
+  $modtime = strtotime($result->fetch_row()[0]);
 ?>

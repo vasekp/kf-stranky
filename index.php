@@ -1,6 +1,8 @@
 <?php
 include 'db.inc.php';
 
+date_default_timezone_set('Europe/Prague');
+
 function print_indent($offset, $text) {
   echo str_repeat('  ', $offset);
   echo $text;
@@ -90,9 +92,8 @@ if(!file_exists($filename)) {
         <div id="lastmod">
 <?php
 if(file_exists($filename)) {
-  date_default_timezone_set('Europe/Prague');
   $lastmod = $en ? 'Last modified' : 'Poslední úprava';
-  $lastmod .= ': ' . date('j.n.Y G:i', filemtime($filename));
+  $lastmod .= ': ' . date('j.n.Y G:i', isset($modtime) ? $modtime : filemtime($filename));
   print_indent(5, $lastmod);
 }
 ?>

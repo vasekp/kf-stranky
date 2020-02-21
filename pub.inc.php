@@ -32,4 +32,9 @@ while($row = $result->fetch_assoc()) {
   print_indent(5, '<li class="filter ' . join(' ', $filters) . '">' . $output. '</li>');
 }
 print_indent(4, '</ol>');
+
+$sql = 'select max(timestamp) from publications';
+$result = $db->query($sql);
+if($result->num_rows > 0)
+  $modtime = strtotime($result->fetch_row()[0]);
 ?>
