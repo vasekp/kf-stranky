@@ -23,7 +23,7 @@
 
         <h2>Links</h2>
         <ul>
-          <li><a href="https://github.com/vasekp" target="_blank">GitHub</a></li>
           <li><a href="https://orcid.org/0000-0002-6415-598X" target="_blank">ORCiD</a></li>
+          <li><a href="https://github.com/vasekp" target="_blank">GitHub</a></li>
           <li><a href="https://physics.fjfi.cvut.cz/en/" target="_blank">Department of Physics</a></li>
         </ul>
