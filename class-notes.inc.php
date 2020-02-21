@@ -3,14 +3,16 @@ $cid = 1;
 $admin = 1;
 
 $date_sql = null;
-if(key_exists("id", $_GET)) {
-  $id = $_GET["id"];
-  $sql = "select date from class_notes where class_ID = $cid and id = $id";
-  $result = $db->query($sql);
-  if($result->num_rows > 0)
-    $date_sql = $result->fetch_row()[0];
+if(key_exists('date', $_GET)) {
+  $date_get = $_GET['date'];
+  if(preg_match('/^\d{4}-\d{2}-\d{2}$/', $date_get)) {
+    $sql = "select date from class_notes where class_ID = $cid and date = '$date_get' limit 1";
+    $result = $db->query($sql);
+    if($result->num_rows > 0)
+      $date_sql = $date_get;
+  }
 }
-/* Fall back to newest if CID/ID not found */
+/* Fall back to newest if date invalid or not found */
 if(!$date_sql) {
   $sql = "select max(date) from class_notes where class_ID = $cid";
   $result = $db->query($sql);
@@ -25,31 +27,29 @@ if(!$date_sql) {
 $date_php = strtotime($date_sql);
 setlocale(LC_ALL, 'cs_CZ.utf8');
 
-$sql = "select min(id) from class_notes where class_ID = $cid and " .
-  "date < '$date_sql' group by date order by date desc";
+$sql = "select max(date) from class_notes where class_ID = $cid and date < '$date_sql'";
 $result = $db->query($sql);
 if($result->num_rows > 0)
-  $id_prev = $result->fetch_row()[0];
+  $date_prev = $result->fetch_row()[0];
 else
-  $id_prev = null;
+  $date_prev = null;
 
-$sql = "select min(id) from class_notes where class_ID = $cid and " .
-  "date > '$date_sql' group by date order by date";
+$sql = "select min(date) from class_notes where class_ID = $cid and date > '$date_sql'";
 $result = $db->query($sql);
 if($result->num_rows > 0)
-  $id_next = $result->fetch_row()[0];
+  $date_next = $result->fetch_row()[0];
 else
-  $id_next = null;
+  $date_next = null;
 
 /*****/
 
 print_indent(4, '<h1>Poznámky k přednáškám 02KFA</h1>');
 print_indent(4, '<div class="switch larger">');
-$text = '<a id="prev"' . ($id_prev ? ' href="?notes&amp;id=' . $id_prev . '">' : '>') . '«</a>';
+$text = '<a id="prev"' . ($date_prev ? ' href="?notes&amp;date=' . $date_prev . '">' : '>') . '«</a>';
 print_indent(5, $text);
 print_indent(5, '<span id="date" data-date="' . $date_sql . '">' .
   strftime('%a ', $date_php) . date('j. n. Y', $date_php) . '</span>');
-$text = '<a id="next"' . ($id_next ? ' href="?notes&amp;id=' . $id_next . '">' : '>') . '»</a>';
+$text = '<a id="next"' . ($date_next ? ' href="?notes&amp;date=' . $date_next . '">' : '>') . '»</a>';
 print_indent(5, $text);
 print_indent(4, '</div>');
 
