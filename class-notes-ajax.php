@@ -1,5 +1,5 @@
 <?php
-include 'db.inc.php';
+include 'shared.inc.php';
 include 'class-notes-common.inc.php';
 
 if($_SERVER['REQUEST_METHOD'] != 'POST' || !array_key_exists('type', $_POST)) {

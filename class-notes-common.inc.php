@@ -1,9 +1,6 @@
 <?php
 $cid = 1;
 
-setlocale(LC_ALL, 'cs_CZ.utf8');
-date_default_timezone_set('Europe/Prague');
-
 function date_valid($date_req) {
   return preg_match('/^\d{4}-\d{1,2}-\d{1,2}$/', $date_req);
 }

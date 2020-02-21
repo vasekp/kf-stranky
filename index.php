@@ -1,7 +1,5 @@
 <?php
-include 'db.inc.php';
-
-date_default_timezone_set('Europe/Prague');
+include 'shared.inc.php';
 
 function print_indent($offset, $text) {
   echo str_repeat('  ', $offset);
