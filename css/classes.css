@@ -37,3 +37,7 @@
 .edit:not([data-id]):not([contentEditable=true]) {
   opacity: .5;
 }
+
+li.warn {
+  display: list-item;
+}

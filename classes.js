@@ -6,6 +6,7 @@ function sendRequest(elm, type, id, text) {
   data.append('id', id);
   data.append('date', document.getElementById('date').getAttribute('data-date'));
   data.append('text', text);
+  data.append('pass', admin.value);
   xhr.responseType = 'json';
   xhr.onload = function() {
     if(xhr.status !== 200) {
@@ -35,13 +36,13 @@ function get_records_async(date_sql) {
     elm.setAttribute('data-date', r.date);
     elm = document.getElementById('prev');
     if(r.date_prev) {
-      elm.setAttribute('href', '?notes&date=' + r.date_prev);
+      elm.setAttribute('href', '#');
       elm.setAttribute('data-date', r.date_prev);
     } else
       elm.removeAttribute('href');
     elm = document.getElementById('next');
     if(r.date_next) {
-      elm.setAttribute('href', '?notes&date=' + r.date_next);
+      elm.setAttribute('href', '#');
       elm.setAttribute('data-date', r.date_next);
     } else
       elm.removeAttribute('href');
@@ -49,7 +50,8 @@ function get_records_async(date_sql) {
     r.records.forEach(function(row) {
       createRecord(row.id, row.text);
     });
-    appendEmpty();
+    if(admin)
+      appendEmpty();
   }
   xhr.timeout = 100;
   xhr.send(data);
@@ -62,7 +64,7 @@ function clearList() {
 
 function appendEmpty() {
   let clone = empty.cloneNode(true);
-  addEvents(clone);
+  addEventsItem(clone);
   list.appendChild(clone);
   return clone;
 }
@@ -102,7 +104,7 @@ function newDateEntered() {
 }
 
 function datePick(date) {
-  date.contentEditable = 'false';
+  document.getElementById('date').contentEditable = 'false';
   get_records_async(date);
 }
 
@@ -168,7 +170,7 @@ function itemInput(e) {
   if(elm.classList.contains('last') && !!elm.innerText.trim()) {
     elm.classList.remove('last');
     let clone = empty.cloneNode(true);
-    addEvents(clone);
+    addEventsItem(clone);
     list.appendChild(clone);
   }
 }
@@ -189,7 +191,7 @@ function arrowClick(e) {
   e.preventDefault();
 }
 
-function addEvents(elm) {
+function addEventsItem(elm) {
   elm.classList.add('edit');
   elm.addEventListener('click', itemClick);
   elm.addEventListener('blur', itemBlur);
@@ -197,15 +199,24 @@ function addEvents(elm) {
   elm.addEventListener('keydown', itemKeyDown);
 }
 
-let list, empty;
+function addEventsArrow(elm) {
+  if(elm.hasAttribute('href'))
+    elm.href = '#';
+  elm.addEventListener('click', arrowClick);
+}
+
+let admin, list, empty;
 
 window.addEventListener('DOMContentLoaded', function(event) {
+  admin = document.getElementById('admin');
   list = document.getElementById('list');
-  Array.from(list.getElementsByTagName('li')).forEach(addEvents);
-  empty = list.lastElementChild.cloneNode(true);
-  document.getElementById('date').addEventListener('keydown', dateKeyDown);
-  document.getElementById('date').addEventListener('blur', newDateEntered);
-  document.getElementById('date').addEventListener('click', newDatePrepare);
-  document.getElementById('prev').addEventListener('click', arrowClick);
-  document.getElementById('next').addEventListener('click', arrowClick);
+  if(admin) { // existence check only, no point in validating the password on client side
+    Array.from(list.getElementsByTagName('li')).forEach(addEventsItem);
+    empty = list.lastElementChild.cloneNode(true);
+    document.getElementById('date').addEventListener('keydown', dateKeyDown);
+    document.getElementById('date').addEventListener('blur', newDateEntered);
+    document.getElementById('date').addEventListener('click', newDatePrepare);
+  }
+  addEventsArrow(document.getElementById('prev'));
+  addEventsArrow(document.getElementById('next'));
 });

@@ -1,13 +1,13 @@
 <?php
-$admin = 1;
-
 include 'class-notes-common.inc.php';
 
-$r = get_records($_GET['date'], true);
+$r = get_records(array_key_exists('date', $_GET) ? $_GET['date'] : '', true);
 if(!$r) {
   include 'class-intro.inc.php';
   return;
 }
+
+$admin = (array_key_exists('admin', $_GET) && $_GET['admin'] == $secrets['adminpw']);
 
 print_indent(4, '<h1>Poznámky k přednáškám 02KFA</h1>');
 print_indent(4, '<div class="switch larger">');
@@ -29,4 +29,7 @@ foreach($r->records as $row) {
 if($admin)
   print_indent(5, '<li class="last"></li>');
 print_indent(4, '</ul>');
+
+if($admin)
+  print_indent(4, '<input type="hidden" id="admin" value="' . $_GET['admin'] . '"/>');
 ?>

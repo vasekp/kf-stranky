@@ -1,7 +1,9 @@
 <?php
+include 'secret.inc.php';
+
 function open_db() {
-  include 'secret.inc.php';
-  $conn = new mysqli($servername, $username, $password, $dbname);
+  global $secrets;
+  $conn = new mysqli('kmlinux.fjfi.cvut.cz', 'potocvac', $secrets['dbpw'], 'potocvac');
 
   if($conn->connect_error)
     return null;
