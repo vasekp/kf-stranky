@@ -52,6 +52,7 @@ function get_records_async(date_sql) {
     });
     if(admin)
       appendEmpty();
+    document.getElementById('modtime').innerText = r.mod_text;
   }
   xhr.timeout = 100;
   xhr.send(data);

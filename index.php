@@ -90,9 +90,11 @@ if(!file_exists($filename)) {
         <div id="lastmod">
 <?php
 if(file_exists($filename)) {
-  $lastmod = $en ? 'Last modified' : 'Poslední úprava';
-  $lastmod .= ': ' . date('j.n.Y G:i', isset($modtime) ? $modtime : filemtime($filename));
-  print_indent(5, $lastmod);
+  $text = $en ? 'Last modified: ' : 'Poslední úprava: ';
+  $text .= '<span id="modtime">';
+  $text .= date('j.n.Y G:i', isset($modtime) ? $modtime : filemtime($filename));
+  $text .= '</span>';
+  print_indent(5, $text);
 }
 ?>
         </div>
