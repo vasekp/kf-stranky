@@ -56,7 +56,22 @@ function toBraces(elm) {
 }
 
 function fromBraces(elm) {
-  elm.innerHTML = elm.innerHTML.replace(/{([^}]*)}/, '<span class="litref">$1</span>');
+  let text = elm.innerText.trim();
+  let re = /{([^}]*)}/;
+  let match;
+  while(elm.firstChild)
+    elm.removeChild(elm.firstChild);
+  while(match = re.exec(text)) {
+    if(match.index > 0)
+      elm.appendChild(document.createTextNode(text.substr(0, match.index)));
+    let span = document.createElement('span');
+    span.classList.add('litref');
+    span.innerText = match[1];
+    elm.appendChild(span);
+    text = text.substr(match.index + match[0].length);
+  }
+  if(text)
+    elm.appendChild(document.createTextNode(text));
 }
 
 function itemClick(e) {

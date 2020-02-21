@@ -57,7 +57,8 @@ print_indent(4, '<ul id="list">');
 $sql = "select id, text from class_notes where class_ID = $cid and date = '$date_sql'";
 $result = $db->query($sql);
 while($row = $result->fetch_assoc()) {
-  $text = preg_replace('/{([^}]*)}/', '<span class="litref">$1</span>', $row['text']);
+  $text = htmlspecialchars($row['text']);
+  $text = preg_replace('/{([^}]*)}/', '<span class="litref">$1</span>', $text);
   print_indent(5, '<li data-id="' . $row['id'] . '">' . $text . '</li>');
 }
 if($admin)
