@@ -19,11 +19,69 @@ function sendRequest(elm, type, id, text) {
   xhr.send(data);
 }
 
-function newDatePrepare() {
+function get_records_async(date_sql) {
+  let xhr = new XMLHttpRequest();
+  xhr.open('POST', 'class-notes-ajax.php', true);
+  let data = new FormData();
+  data.append('type', 'get');
+  data.append('date', date_sql);
+  xhr.responseType = 'json';
+  xhr.onload = function() {
+    if(xhr.status !== 200)
+      return;
+    let r = xhr.response;
+    let elm = document.getElementById('date');
+    elm.innerText = r.date_text;
+    elm.setAttribute('data-date', r.date);
+    elm = document.getElementById('prev');
+    if(r.date_prev) {
+      elm.setAttribute('href', '?notes&date=' + r.date_prev);
+      elm.setAttribute('data-date', r.date_prev);
+    } else
+      elm.removeAttribute('href');
+    elm = document.getElementById('next');
+    if(r.date_next) {
+      elm.setAttribute('href', '?notes&date=' + r.date_next);
+      elm.setAttribute('data-date', r.date_next);
+    } else
+      elm.removeAttribute('href');
+    clearList();
+    r.records.forEach(function(row) {
+      createRecord(row.id, row.text);
+    });
+    appendEmpty();
+  }
+  xhr.timeout = 100;
+  xhr.send(data);
+}
+
+function clearList() {
   while(list.firstChild)
     list.removeChild(list.firstChild);
+}
+
+function appendEmpty() {
+  let clone = empty.cloneNode(true);
+  addEvents(clone);
+  list.appendChild(clone);
+  return clone;
+}
+
+function createRecord(id, text) {
+  elm = document.createElement('li');
+  elm.setAttribute('data-id', id);
+  elm.innerText = text;
+  fromBraces(elm);
+  list.appendChild(elm);
+}
+
+function newDatePrepare() {
+  clearList();
   let date = document.getElementById('date');
-  date.innerText = '';
+  let re = /\d{1,2}\. ?\d{1,2}\. ?\d{4}/;
+  let match;
+  if(match = re.exec(date.innerText))
+    date.innerText = match[0];
   date.removeAttribute('data-date');
   date.contentEditable = 'true';
   date.focus();
@@ -34,13 +92,18 @@ function newDateEntered() {
   let array;
   let date = document.getElementById('date');
   if(array = re.exec(date.innerText.trim())) {
-    date.setAttribute('data-date', array[3] + '-' + array[2] + '-' + array[1]);
+    let date_sql = array[3] + '-' + array[2] + '-' + array[1];
+    date.setAttribute('data-date', date_sql);
     date.contentEditable = 'false';
-    let clone = empty.cloneNode(true);
-    addEvents(clone);
-    list.appendChild(clone);
+    get_records_async(date_sql);
+    let clone = appendEmpty();
     clone.click();
   }
+}
+
+function datePick(date) {
+  date.contentEditable = 'false';
+  get_records_async(date);
 }
 
 function dateKeyDown(e) {
@@ -121,6 +184,11 @@ function itemKeyDown(e) {
   }
 }
 
+function arrowClick(e) {
+  datePick(e.currentTarget.getAttribute('data-date'));
+  e.preventDefault();
+}
+
 function addEvents(elm) {
   elm.classList.add('edit');
   elm.addEventListener('click', itemClick);
@@ -130,7 +198,6 @@ function addEvents(elm) {
 }
 
 let list, empty;
-let newId = 3;
 
 window.addEventListener('DOMContentLoaded', function(event) {
   list = document.getElementById('list');
@@ -139,4 +206,6 @@ window.addEventListener('DOMContentLoaded', function(event) {
   document.getElementById('date').addEventListener('keydown', dateKeyDown);
   document.getElementById('date').addEventListener('blur', newDateEntered);
   document.getElementById('date').addEventListener('click', newDatePrepare);
+  document.getElementById('prev').addEventListener('click', arrowClick);
+  document.getElementById('next').addEventListener('click', arrowClick);
 });
