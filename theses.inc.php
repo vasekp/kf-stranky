@@ -1,8 +1,8 @@
 <?php
 $types = array(
-  'BP' => ($en ? 'Bachelor's thesis' : 'bakalářská práce'),
+  'BP' => ($en ? 'Bachelor\'s thesis' : 'bakalářská práce'),
   'VU' => ($en ? 'Research project' : 'výzkumný úkol'),
-  'DP' => ($en ? 'Master's thesis' : 'diplomová práce'),
+  'DP' => ($en ? 'Master\'s thesis' : 'diplomová práce'),
   'PhD' => ($en ? 'Doctoral thesis' : 'disertační práce')
 );
 
