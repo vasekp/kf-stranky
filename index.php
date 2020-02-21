@@ -1,18 +1,10 @@
 <?php
+include 'db.inc.php';
+
 function print_indent($offset, $text) {
   echo str_repeat('  ', $offset);
   echo $text;
   echo "\n";
-}
-
-function open_db() {
-  include 'secret.inc.php';
-  $conn = new mysqli($servername, $username, $password, $dbname);
-
-  if($conn->connect_error)
-    return null;
-  $conn->set_charset('utf8');
-  return $conn;
 }
 
 $curr = basename($_SERVER['SCRIPT_FILENAME'], '.php');

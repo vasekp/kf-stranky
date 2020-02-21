@@ -1,5 +1,6 @@
 <?php
 $cid = 1;
+$admin = 1;
 
 $date_sql = null;
 if(key_exists("id", $_GET)) {
@@ -46,17 +47,20 @@ print_indent(4, '<h1>Poznámky k přednáškám 02KFA</h1>');
 print_indent(4, '<div class="switch larger">');
 $text = '<a id="prev"' . ($id_prev ? ' href="?notes&amp;id=' . $id_prev . '">' : '>') . '«</a>';
 print_indent(5, $text);
-print_indent(5, '<span id="date">' . strftime('%a ', $date_php) . date('j. n. Y', $date_php) . '</span>');
+print_indent(5, '<span id="date" data-date="' . $date_sql . '">' .
+  strftime('%a ', $date_php) . date('j. n. Y', $date_php) . '</span>');
 $text = '<a id="next"' . ($id_next ? ' href="?notes&amp;id=' . $id_next . '">' : '>') . '»</a>';
 print_indent(5, $text);
 print_indent(4, '</div>');
 
-print_indent(4, '<ul>');
-$sql = "select text from class_notes where class_ID = $cid and date = '$date_sql'";
+print_indent(4, '<ul id="list">');
+$sql = "select id, text from class_notes where class_ID = $cid and date = '$date_sql'";
 $result = $db->query($sql);
 while($row = $result->fetch_assoc()) {
   $text = preg_replace('/{([^}]*)}/', '<span class="litref">$1</span>', $row['text']);
-  print_indent(5, '<li>' . $text . '</li>');
+  print_indent(5, '<li data-id="' . $row['id'] . '">' . $text . '</li>');
 }
+if($admin)
+  print_indent(5, '<li class="last"></li>');
 print_indent(4, '</ul>');
 ?>
