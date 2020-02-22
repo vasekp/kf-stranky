@@ -16,7 +16,7 @@ function sendRequest(elm, type, id, text) {
     if(type === 'insert')
       elm.setAttribute('data-id', xhr.response.id);
     elm.classList.remove('changed');
-  }
+  };
   xhr.send(data);
 }
 
@@ -53,7 +53,7 @@ function get_records_async(date_sql) {
     if(admin)
       appendEmpty();
     document.getElementById('modtime').innerText = r.mod_text;
-  }
+  };
   xhr.timeout = 100;
   xhr.send(data);
 }
