@@ -1,21 +1,32 @@
 .switch {
   display: table;
-  border-radius: 1em;
-  border: 1px solid #888;
-  background-image: linear-gradient(#eee, #999);
   margin: .5em auto;
+  border-spacing: 0;
+}
+
+.switch.inline {
+  display: inline-table;
+  margin: inherit;
 }
 
 .switch a, .switch span {
   display: table-cell;
   color: black;
   padding: .2em .5em;
-  border-right: 1px solid #888;
-  vertical-align: middle;
+  border: 1px solid #888;
+  border-right: none;
+}
+
+.switch a[href] {
+  background-image: linear-gradient(#eee, #999);
 }
 
 .switch a.selected {
   background-image: linear-gradient(#999, #eee);
+}
+
+.switch span, .switch a:not([href]) {
+  background: #ddd;
 }
 
 .switch a:first-of-type {
@@ -26,7 +37,7 @@
 .switch a:last-of-type {
   border-radius: 0 1em 1em 0;
   padding-right: .6em;
-  border-right: none;
+  border-right: 1px solid #888;
 }
 
 .switch a:hover {
@@ -37,8 +48,4 @@
   .switch a:hover {
     background: #eee;
   }
-}
-
-.switch span, .switch a:not([href]) {
-  background: #ddd;
 }
