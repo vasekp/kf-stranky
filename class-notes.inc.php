@@ -7,8 +7,6 @@ if(!$r) {
   return;
 }
 
-$admin = (array_key_exists('admin', $_GET) && $_GET['admin'] == $secrets['adminpw']);
-
 print_indent(4, '<h1>Poznámky k přednáškám 02KFA</h1>');
 print_indent(4, '<div class="switch larger">');
 $text = '<a id="prev"';

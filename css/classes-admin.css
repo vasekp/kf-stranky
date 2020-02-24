@@ -1,0 +1,28 @@
+#date {
+  outline: 0;
+}
+
+#date[contentEditable=true] {
+  outline: 2px inset;
+}
+
+.edit {
+  outline: 0;
+}
+
+.edit[contentEditable=true] {
+  outline: 2px inset;
+}
+
+.edit.changed[contentEditable=false] {
+  opacity: .5;
+}
+
+.edit:not([data-id]):not([contentEditable=true]) {
+  opacity: .5;
+}
+
+li.warn {
+  display: list-item;
+}
+

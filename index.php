@@ -10,6 +10,8 @@ if($curr == 'error') {
   $addr_prefix = '';
 }
 
+$admin = (array_key_exists('admin', $_GET) && $_GET['admin'] == $secrets['adminpw']);
+
 if($en) {
   $prilang = 'en';
   $seclang = 'cz';
@@ -40,8 +42,12 @@ $filename = $curr . ($en ? '-en' : '') . '.inc.php';
 <?php
 if(file_exists('css/' . $curr . '.css'))
   print_indent(2, '<link rel="stylesheet" type="text/css" href="' . $addr_prefix . 'css/' . $curr . '.css"/>');
+if($admin && file_exists('css/' . $curr . '-admin.css'))
+  print_indent(2, '<link rel="stylesheet" type="text/css" href="' . $addr_prefix . 'css/' . $curr . '-admin.css"/>');
 if(file_exists($curr . '.js'))
   print_indent(2, '<script type="text/javascript" src="' . $addr_prefix . $curr . '.js"></script>');
+if($admin && file_exists($curr . '-admin.js'))
+  print_indent(2, '<script type="text/javascript" src="' . $addr_prefix . $curr . '-admin.js"></script>');
 ?>
     <title>
       Václav Potoček

@@ -10,34 +10,9 @@
 #date {
   width: 6em;
   text-align: center;
-  outline: 0;
-}
-
-#date[contentEditable=true] {
-  outline: 2px inset;
 }
 
 .litref {
   font-size: 90%;
   color: #888;
-}
-
-.edit {
-  outline: 0;
-}
-
-.edit[contentEditable=true] {
-  outline: 2px inset;
-}
-
-.edit.changed[contentEditable=false] {
-  opacity: .5;
-}
-
-.edit:not([data-id]):not([contentEditable=true]) {
-  opacity: .5;
-}
-
-li.warn {
-  display: list-item;
 }
