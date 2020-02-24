@@ -1,29 +1,22 @@
-filterClicked = function(element) {
-  Array.from(element.parentNode.getElementsByTagName('a')).forEach(function(child) {
-    child.classList.remove('selected');
-  });
-  element.classList.add('selected');
-  applyFilter(element.id);
-}
-
-filterEvent = function(event) {
-  filterClicked(event.currentTarget);
-}
-
-applyFilter = function(id) {
-  Array.from(document.getElementsByClassName('filter')).forEach(function(element) {
-    show = element.classList.contains("f-" + id);
+function applyFilter(element) {
+  Array.from(document.getElementsByClassName('filter')).forEach(function(e) {
+    show = e.classList.contains("f-" + element.id);
     if(show)
-      element.classList.remove('hide');
+      e.classList.remove('hide');
     else
-      element.classList.add('hide');
+      e.classList.add('hide');
   });
 };
 
-window.addEventListener('DOMContentLoaded', function(event) {
+function scriptReady() {
   document.getElementById('pub-filter').classList.remove('hide');
-  Array.from(document.getElementById('pub-filter').getElementsByTagName('a')).forEach(function(child) {
-    child.addEventListener('click', filterEvent);
-  });
-  filterClicked(document.getElementById('selected'));
+  makeSwitch('pub-filter', applyFilter, 0);
+}
+
+window.addEventListener('DOMContentLoaded', function(event) {
+  let script = document.createElement('script');
+  script.src = 'switch.js';
+  script.onreadystatechange = scriptReady;
+  script.onload = scriptReady;
+  document.head.appendChild(script);
 });

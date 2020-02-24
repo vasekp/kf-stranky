@@ -3,7 +3,7 @@
   border-radius: 1em;
   border: 1px solid #888;
   background-image: linear-gradient(#eee, #999);
-  margin: 0 auto;
+  margin: .5em auto;
 }
 
 .switch a, .switch span {

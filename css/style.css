@@ -221,6 +221,10 @@ ul li::before {
   width: 1em;
 }
 
+ol {
+  margin: .5em 0;
+}
+
 ol li {
   padding: 0.3em;
 }
