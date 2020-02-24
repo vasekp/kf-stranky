@@ -38,7 +38,7 @@ $filename = $curr . ($en ? '-en' : '') . '.inc.php';
   <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width"/>
-    <link rel="stylesheet" type="text/css" href="<?php print $addr_prefix; ?>css/style.css"/>
+    <link rel="stylesheet" type="text/css" href="<?php print $addr_prefix; ?>css/main.css"/>
 <?php
 if(file_exists('css/' . $curr . '.css'))
   print_indent(2, '<link rel="stylesheet" type="text/css" href="' . $addr_prefix . 'css/' . $curr . '.css"/>');
