@@ -3,7 +3,7 @@ include 'shared.inc.php';
 
 $curr = basename($_SERVER['SCRIPT_FILENAME'], '.php');
 if($curr == 'error') {
-  $en = (strpos($_SERVER['REDIRECT_QUERY_STRING'], 'l=en') !== false);
+  $en = array_key_exists('REDIRECT_QUERY_STRING', $_SERVER) && (strpos($_SERVER['REDIRECT_QUERY_STRING'], 'l=en') !== false);
   $addr_prefix = dirname($_SERVER['PHP_SELF']) . '/';
 } else {
   $en = array_key_exists('l', $_GET) && $_GET['l'] == 'en';
