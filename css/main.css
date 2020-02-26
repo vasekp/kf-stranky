@@ -103,6 +103,14 @@ main>:first-child {
   margin-top: 0;
 }
 
+main>:first-child {
+  margin-top: 0;
+}
+
+main>:last-child {
+  margin-bottom: 0;
+}
+
 a {
   text-decoration: none;
   outline: 0;

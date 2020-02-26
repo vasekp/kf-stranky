@@ -80,6 +80,8 @@ function arrowClick(e) {
 }
 
 function addEventsArrow(elm) {
+  if(!elm)
+    return;
   if(elm.hasAttribute('href'))
     elm.href = '#';
   elm.addEventListener('click', arrowClick);
