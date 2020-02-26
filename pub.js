@@ -8,15 +8,7 @@ function applyFilter(element) {
   });
 };
 
-function scriptReady() {
+window.addEventListener('DOMContentLoaded', function(event) {
   document.getElementById('pub-filter').classList.remove('hide');
   makeSwitch('pub-filter', applyFilter, 0);
-}
-
-window.addEventListener('DOMContentLoaded', function(event) {
-  let script = document.createElement('script');
-  script.src = 'switch.js';
-  script.onreadystatechange = scriptReady;
-  script.onload = scriptReady;
-  document.head.appendChild(script);
 });

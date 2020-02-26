@@ -30,7 +30,16 @@ $stranky = array(
 
 if(!array_key_exists($curr, $stranky) && $curr != 'error')
   $curr = key($stranky);
+$title = $stranky[$curr];
 $filename = $curr . ($en ? '-en' : '') . '.inc.php';
+
+$scripts = array();
+$css = array();
+if(file_exists($filename)) {
+  $early = 1;
+  include $filename;
+  $early = 0;
+}
 /**********/
 ?>
 <!DOCTYPE html>
@@ -40,17 +49,13 @@ $filename = $curr . ($en ? '-en' : '') . '.inc.php';
     <meta name="viewport" content="width=device-width"/>
     <link rel="stylesheet" type="text/css" href="<?php print $addr_prefix; ?>css/main.css"/>
 <?php
-if(file_exists('css/' . $curr . '.css'))
-  print_indent(2, '<link rel="stylesheet" type="text/css" href="' . $addr_prefix . 'css/' . $curr . '.css"/>');
-if($admin && file_exists('css/' . $curr . '-admin.css'))
-  print_indent(2, '<link rel="stylesheet" type="text/css" href="' . $addr_prefix . 'css/' . $curr . '-admin.css"/>');
-if(file_exists($curr . '.js'))
-  print_indent(2, '<script type="text/javascript" src="' . $addr_prefix . $curr . '.js"></script>');
-if($admin && file_exists($curr . '-admin.js'))
-  print_indent(2, '<script type="text/javascript" src="' . $addr_prefix . $curr . '-admin.js"></script>');
+foreach($css as $url)
+  print_indent(2, '<link rel="stylesheet" type="text/css" href="' . $url . '"/>');
+foreach($scripts as $url)
+  print_indent(2, '<script type="text/javascript" src="' . $url . '"></script>');
 ?>
     <title>
-      Václav Potoček
+      Václav Potoček<?php if($title) echo ' - ' . $title; echo "\n"; ?>
     </title>
   </head>
   <body>

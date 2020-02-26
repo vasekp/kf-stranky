@@ -1,4 +1,7 @@
 <?php
+if($early)
+  return;
+
 $types = array(
   'BP' => ($en ? 'Bachelor\'s thesis' : 'bakalářská práce'),
   'VU' => ($en ? 'Research project' : 'výzkumný úkol'),

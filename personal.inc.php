@@ -1,3 +1,4 @@
+<?php if($early) return; ?>
         <h1>O mně</h1>
         Absolvent FJFI ČVUT v Praze, Matematická fyzika / Matematické inženýrství:
         <ul>

@@ -1,4 +1,11 @@
 <?php
+if($early) {
+  array_push($css, 'css/switch.css');
+  array_push($scripts, 'switch.js');
+  array_push($scripts, 'pub.js');
+  return;
+}
+
 include "pub-header-$prilang.inc.php";
 
 $sql = 'select * from publications order by id desc';

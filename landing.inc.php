@@ -1,3 +1,10 @@
+<?php
+if($early) {
+  array_push($css, 'css/landing.css');
+  array_push($scripts, 'landing.js');
+  return;
+}
+?>
         <h1>
           <span class="smaller">Ing.</span>
           Václav Potoček,
