@@ -30,7 +30,8 @@ $stranky = array(
 
 if(!array_key_exists($curr, $stranky) && $curr != 'error')
   $curr = key($stranky);
-$title = $stranky[$curr];
+if($curr != 'error')
+  $title = $stranky[$curr];
 $filename = $curr . ($en ? '-en' : '') . '.inc.php';
 
 $scripts = array();

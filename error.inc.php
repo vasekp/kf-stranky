@@ -1,3 +1,4 @@
+<?php if($early) return; ?>
         <span class="warn">
           Požadovaná stránka nebyla nalezena. Vyberte si prosím z menu výše.
           <br/>
