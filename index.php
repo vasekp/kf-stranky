@@ -23,6 +23,7 @@ if($en) {
 $stranky = array(
   'landing' => $en ? 'Intro' : 'Úvod',
   'classes' => $en ? 'Classes' : 'Výuka',
+  'demos' => $en ? 'Demonstrations' : 'Pomůcky',
   'theses' => $en ? 'Theses' : 'Školení',
   'pub' => $en ? 'Publications' : 'Publikace',
   'personal' => $en ? 'Personal' : 'Osobní'
@@ -30,8 +31,7 @@ $stranky = array(
 
 if(!array_key_exists($curr, $stranky) && $curr != 'error')
   $curr = key($stranky);
-if($curr != 'error')
-  $title = $stranky[$curr];
+$title = $curr != 'error' ? $title = $stranky[$curr] : '';
 $filename = $curr . ($en ? '-en' : '') . '.inc.php';
 
 $scripts = array();

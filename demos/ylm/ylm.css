@@ -1,0 +1,19 @@
+#canvas {
+  width: 35em;
+  height: 35em;
+  border: inset 2px;
+  display: block;
+  margin: 0 auto;
+}
+
+#random {
+  display: table;
+  margin: .5em auto;
+  align: center;
+}
+
+table, th, td {
+  border: 0;
+  padding: 0;
+  border-spacing: .5em;
+}
