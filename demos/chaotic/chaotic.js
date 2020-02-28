@@ -3,6 +3,7 @@ const c2 = 1; // tau a^2 g
 
 let svg1, svg2, state1, state2, graph;
 
+// ***** Hamiltonian *****
 function h(a, b, pa, pb) {
   let s2 = Math.sin(a - b)/2;
   let z = 1 - Math.pow(s2, 2);
@@ -24,23 +25,24 @@ function State(a, b, pa, pb) {
   this.evolve = function(dt) {
     let a = this.alpha, b = this.beta, pa = this.pa, pb = this.pb;
     const eps = 0.001;
-    let da = (h(a, b, pa+eps, pb) - h(a, b, pa, pb))/eps * dt;
-    let db = (h(a, b, pa, pb+eps) - h(a, b, pa, pb))/eps * dt;
-    let dpa = -(h(a+eps, b, pa, pb) - h(a, b, pa, pb))/eps * dt;
-    let dpb = -(h(a, b+eps, pa, pb) - h(a, b, pa, pb))/eps * dt;
+    // Direct numerical solution of Hamiltonian equations
+    // We use first-order Runge-Kutta (midpoint method) and symmetric differences to improve accuracy
+    let da = (h(a, b, pa+eps, pb) - h(a, b, pa-eps, pb))/2/eps * dt;
+    let db = (h(a, b, pa, pb+eps) - h(a, b, pa, pb-eps))/2/eps * dt;
+    let dpa = -(h(a+eps, b, pa, pb) - h(a-eps, b, pa, pb))/2/eps * dt;
+    let dpb = -(h(a, b+eps, pa, pb) - h(a, b-eps, pa, pb))/2/eps * dt;
     a += da/2;
     b += db/2;
     pa += dpa/2;
     pb += dpb/2;
-    da = (h(a, b, pa+eps, pb) - h(a, b, pa, pb))/eps * dt;
-    db = (h(a, b, pa, pb+eps) - h(a, b, pa, pb))/eps * dt;
-    dpa = -(h(a+eps, b, pa, pb) - h(a, b, pa, pb))/eps * dt;
-    dpb = -(h(a, b+eps, pa, pb) - h(a, b, pa, pb))/eps * dt;
+    da = (h(a, b, pa+eps, pb) - h(a, b, pa-eps, pb))/2/eps * dt;
+    db = (h(a, b, pa, pb+eps) - h(a, b, pa, pb-eps))/2/eps * dt;
+    dpa = -(h(a+eps, b, pa, pb) - h(a-eps, b, pa, pb))/2/eps * dt;
+    dpb = -(h(a, b+eps, pa, pb) - h(a, b-eps, pa, pb))/2/eps * dt;
     this.alpha += da;
     this.beta += db;
     this.pa += dpa;
     this.pb += dpb;
-    //console.log(this.energy());
   }
 }
 
