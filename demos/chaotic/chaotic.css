@@ -1,0 +1,7 @@
+#svg {
+  width: 25em;
+  height: 25em;
+  border: inset 2px;
+  display: block;
+  margin: 0 auto;
+}
