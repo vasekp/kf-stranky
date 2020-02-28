@@ -251,7 +251,7 @@ function draw(time) {
   gl.disableVertexAttribArray(progs.bkg.aPos);
 
   if(iface.lastTime) {
-    if(!iface.buttonDown)
+    if(!iface.rotating)
       iface.angle += (time - iface.lastTime) * iface.speed;
     else
       iface.speed = (iface.angle - iface.lastAngle) / (time - iface.lastTime);
@@ -645,30 +645,60 @@ function setFamily(elm) {
 
 /***** Interaction & initialization *****/
 
-function mouseDown(e) {
-  iface.buttonDown = true;
-  iface.lastX = e.offsetX;
-  iface.lastY = e.offsetY;
-  e.currentTarget.setPointerCapture(e.pointerID);
+function rotStart(x, y) {
+  iface.lastX = x;
+  iface.lastY = y;
 }
 
-function mouseMove(e) {
-  if(!iface.buttonDown)
-    return;
+function rotMove(x, y) {
   let viewport = gl.getParameter(gl.VIEWPORT);
-  iface.tilt += (e.offsetY - iface.lastY) / viewport[3] * 4;
+  iface.tilt += (y - iface.lastY) / viewport[3] * 4;
   if(iface.tilt > Math.PI / 2)
     iface.tilt = Math.PI / 2;
   else if(iface.tilt < -Math.PI / 2)
     iface.tilt = -Math.PI / 2;
-  iface.angle += (e.offsetX - iface.lastX) / viewport[2] * 4;
-  iface.lastX = e.offsetX;
-  iface.lastY = e.offsetY;
+  iface.angle += (x - iface.lastX) / viewport[2] * 4;
+  iface.lastX = x;
+  iface.lastY = y;
+}
+
+function mouseDown(e) {
+  iface.rotating = true;
+  rotStart(e.offsetX, e.offsetY);
+  e.currentTarget.setPointerCapture(e.pointerID);
+}
+
+function mouseMove(e) {
+  if(iface.rotating)
+    rotMove(e.offsetX, e.offsetY);
 }
 
 function mouseUp(e) {
-  iface.buttonDown = false;
+  iface.rotating = false;
   e.currentTarget.releasePointerCapture(e.pointerID);
+}
+
+function touchDown(e) {
+  if(iface.rotating)
+    return;
+  iface.rotating = true;
+  iface.touchID = e.touches[0].identifier;
+  rotStart(e.touches[0].screenX, e.touches[0].screenY);
+  e.preventDefault();
+}
+
+function touchMove(e) {
+  if(!iface.rotating)
+    return;
+  for(let i = 0; i < e.touches.length; i++)
+    if(e.touches[i].identifier == iface.touchID)
+      rotMove(e.touches[i].screenX, e.touches[i].screenY);
+}
+
+function touchUp(e) {
+  if(!iface.rotating)
+    return;
+  iface.rotating = Array.from(e.touches, function(t) { return t.identifier; }).includes(iface.touchID);
 }
 
 window.addEventListener('DOMContentLoaded', function() {
@@ -700,7 +730,7 @@ window.addEventListener('DOMContentLoaded', function() {
   loadFiles(fileList, start);
 
   iface = {
-    buttonDown: false,
+    rotating: false,
     tilt: 0.2,
     angle: 0,
     speed: .001
@@ -708,6 +738,11 @@ window.addEventListener('DOMContentLoaded', function() {
   canvas.addEventListener('mousedown', mouseDown);
   canvas.addEventListener('mousemove', mouseMove);
   canvas.addEventListener('mouseup', mouseUp);
+
+  canvas.addEventListener('touchstart', touchDown);
+  canvas.addEventListener('touchmove', touchMove);
+  canvas.addEventListener('touchend', touchUp);
+  canvas.addEventListener('touchcancel', touchUp);
 
   document.getElementById('random').addEventListener('click', newFunc);
 });
