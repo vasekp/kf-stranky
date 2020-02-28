@@ -1,7 +1,17 @@
-#svg {
-  width: 25em;
-  height: 25em;
+.row {
+  text-align: center;
+}
+
+.pendulum {
+  width: 15em;
+  height: 15em;
   border: inset 2px;
-  display: block;
-  margin: 0 auto;
+  display: inline-block;
+}
+
+#graph {
+  width: 25em;
+  height: 10em;
+  border: inset 2px;
+  display: inline-block;
 }

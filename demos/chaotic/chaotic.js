@@ -1,6 +1,8 @@
 const c1 = 1; // 1/tau/a^3
 const c2 = 1; // tau a^2 g
 
+let svg1, svg2, state1, state2, graph;
+
 function h(a, b, pa, pb) {
   let s2 = Math.sin(a - b)/2;
   let z = 1 - Math.pow(s2, 2);
@@ -38,7 +40,7 @@ function State(a, b, pa, pb) {
     this.beta += db;
     this.pa += dpa;
     this.pb += dpb;
-    console.log(this.energy());
+    //console.log(this.energy());
   }
 }
 
@@ -46,16 +48,50 @@ function radToDeg(rad) {
   return rad * 180 / Math.PI;
 }
 
-function draw(svg, state) {
-  state.evolve(0.1);
+function displayState(svg, state) {
   svg.getElementById('alpha').setAttribute('transform', 'rotate(' + radToDeg(state.alpha) + ')');
   svg.getElementById('beta-alpha').setAttribute('transform', 'rotate(' + radToDeg(state.beta - state.alpha) + ')');
-  requestAnimationFrame(function() { draw(svg, state); });
+}
+
+function draw() {
+  var lastState = [state1.alpha, state1.beta, state2.alpha, state2.beta];
+  state1.evolve(0.1);
+  state2.evolve(0.1);
+  var newState = [state1.alpha, state1.beta, state2.alpha, state2.beta];
+  displayState(svg1, state1);
+  displayState(svg2, state2);
+  updateGraph(lastState, newState);
+  requestAnimationFrame(draw);
+}
+
+function updateGraph(s1, s2) {
+  let w = graph.width, h = graph.height;
+  let dw = Math.ceil(w / 200);
+  let lt = Math.ceil(h / 50);
+  const pi = Math.PI;
+  let ctx = graph.getContext('2d');
+  ctx.lineWidth = lt;
+  ctx.putImageData(ctx.getImageData(dw, 0, w-dw, h), 0, 0);
+  ctx.fillStyle = 'white';
+  ctx.fillRect(w-dw, 0, dw, h);
+  for(let i = 0; i < 4; i++) {
+    ctx.stokeStyle = '#f00';
+    ctx.beginPath();
+    ctx.moveTo(w - dw - lt, h*(1+Math.sin(s1[i]))/2);// (s1[i] + pi) % (2*pi) - pi);
+    ctx.lineTo(w - lt, h*(1+Math.sin(s2[i]))/2);//(s2[i] + pi) % (2*pi) - pi);
+    ctx.stroke();
+  }
 }
 
 window.addEventListener('DOMContentLoaded', function() {
-  let svg = document.getElementById('svg');
-  let state = new State(0, 0, 2.6, 0);
+  svg1 = document.getElementById('svg1');
+  svg2 = document.getElementById('svg2');
+  state1 = new State(0, 0, 2.6, 0);
+  state2 = new State(0.1, 0, 2.6, 0);
 
-  requestAnimationFrame(function() { draw(svg, state); });
+  graph = document.getElementById('graph');
+  graph.width = graph.clientWidth;
+  graph.height = graph.clientHeight;
+
+  requestAnimationFrame(draw);
 });
