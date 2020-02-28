@@ -70,15 +70,16 @@ function updateGraph(s1, s2) {
   let lt = Math.ceil(h / 50);
   const pi = Math.PI;
   let ctx = graph.getContext('2d');
+  const colors = ['#f00f', '#00ff', '#f008', '#00f8'];
   ctx.lineWidth = lt;
   ctx.putImageData(ctx.getImageData(dw, 0, w-dw, h), 0, 0);
-  ctx.fillStyle = 'white';
+  ctx.fillStyle = '#fff';
   ctx.fillRect(w-dw, 0, dw, h);
   for(let i = 0; i < 4; i++) {
-    ctx.stokeStyle = '#f00';
+    ctx.strokeStyle = colors[i];
     ctx.beginPath();
-    ctx.moveTo(w - dw - lt, h*(1+Math.sin(s1[i]))/2);// (s1[i] + pi) % (2*pi) - pi);
-    ctx.lineTo(w - lt, h*(1+Math.sin(s2[i]))/2);//(s2[i] + pi) % (2*pi) - pi);
+    ctx.moveTo(w - dw - lt, lt + (h-2*lt)*(1+Math.sin(s1[i]))/2);
+    ctx.lineTo(w - lt, lt + (h-2*lt)*(1+Math.sin(s2[i]))/2);
     ctx.stroke();
   }
 }
