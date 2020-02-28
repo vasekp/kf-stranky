@@ -1,4 +1,6 @@
 function get_records_async(date_sql) {
+  list.classList.add('loading');
+  swtch.classList.add('loading');
   let xhr = new XMLHttpRequest();
   xhr.open('POST', 'class-notes-ajax.php', true);
   let data = new FormData();
@@ -6,11 +8,20 @@ function get_records_async(date_sql) {
   data.append('date', date_sql);
   xhr.responseType = 'json';
   xhr.onload = function() {
-    if(xhr.status !== 200)
+    if(xhr.readyState != 4 || xhr.status !== 200)
       return;
     recordsArrived(xhr.response);
+    list.classList.remove('loading');
+    swtch.classList.remove('loading');
   };
-  xhr.timeout = 100;
+  xhr.ontimeout = function() {
+    let url = new URL(document.URL);
+    let sp = new URLSearchParams(url.search);
+    sp.set('date', date_sql);
+    url.search = sp;
+    window.location.replace(url);
+  }
+  xhr.timeout = 500;
   xhr.send(data);
 }
 
@@ -70,6 +81,8 @@ function fromBraces(elm) {
 }
 
 function datePick(date) {
+  if(!date)
+    return;
   document.getElementById('date').contentEditable = 'false';
   get_records_async(date);
 }
@@ -87,9 +100,10 @@ function addEventsArrow(elm) {
   elm.addEventListener('click', arrowClick);
 }
 
-let list, empty;
+let swtch, list, empty;
 
 window.addEventListener('DOMContentLoaded', function(event) {
+  swtch = document.getElementById('date-buttons');
   list = document.getElementById('list');
   addEventsArrow(document.getElementById('prev'));
   addEventsArrow(document.getElementById('next'));

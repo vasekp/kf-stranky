@@ -8,7 +8,7 @@ if(!$r) {
 }
 
 print_indent(4, '<h1>Poznámky k přednáškám 02KFA</h1>');
-print_indent(4, '<div class="switch larger">');
+print_indent(4, '<div class="switch larger" id="date-buttons">');
 $text = '<a id="prev"';
 if($r->date_prev) {
   $text .= ' href="' . query('', array('s' => 'notes', 'date' => $r->date_prev)) . '"';
