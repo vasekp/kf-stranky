@@ -663,9 +663,12 @@ function rotMove(x, y) {
 }
 
 function mouseDown(e) {
+  if(e.button != 0)
+    return;
   iface.rotating = true;
   rotStart(e.offsetX, e.offsetY);
   e.currentTarget.setPointerCapture(e.pointerID);
+  e.preventDefault();
 }
 
 function mouseMove(e) {
