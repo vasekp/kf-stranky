@@ -15,3 +15,8 @@
   border: inset 2px;
   display: inline-block;
 }
+
+.inline-img {
+  width: .8em;
+  height: .8em;
+}

@@ -1,7 +1,9 @@
 const c1 = 1; // 1/tau/a^3
 const c2 = 1; // tau a^2 g
 
-let svg1, svg2, state1, state2, graph;
+let svg1, svg2, graph;
+var state1, state2;
+var iface;
 
 // ***** Hamiltonian *****
 function h(a, b, pa, pb) {
@@ -63,7 +65,14 @@ function draw() {
   displayState(svg1, state1);
   displayState(svg2, state2);
   updateGraph(lastState, newState);
-  requestAnimationFrame(draw);
+
+  if(iface.playing)
+    requestAnimationFrame(draw);
+}
+
+function clearGraph() {
+  let ctx = graph.getContext('2d');
+  ctx.clearRect(0, 0, graph.width, graph.height);
 }
 
 function updateGraph(s1, s2) {
@@ -86,15 +95,84 @@ function updateGraph(s1, s2) {
   }
 }
 
+function addEventListeners(svg) {
+  svg.addEventListener('mousedown', mouseDown);
+  svg.addEventListener('mousemove', mouseMove);
+  svg.addEventListener('mouseup', mouseUp);
+}
+
+function mouseDown(e) {
+  if(e.button != 0)
+    return;
+  iface.rotating = true;
+  rotStart(e.offsetX, e.offsetY, e.currentTarget);
+  e.currentTarget.setPointerCapture(e.pointerID);
+  e.preventDefault();
+}
+
+function mouseMove(e) {
+  if(iface.rotating)
+    rotMove(e.offsetX, e.offsetY, e.currentTarget);
+}
+
+function mouseUp(e) {
+  iface.rotating = false;
+  e.currentTarget.releasePointerCapture(e.pointerID);
+}
+
+function rotStart(x, y, elm) {
+  iface.lastX = x;
+  iface.lastY = y;
+  document.getElementById('pause').click();
+}
+
+function rotMove(x, y, elm) {
+  let state = window[elm.getAttribute('data-state')];
+  state.alpha += -(y - iface.lastY) / 100;
+  state.beta += (x - iface.lastX) / 100;
+  displayState(elm, state);
+  iface.lastX = x;
+  iface.lastY = y;
+}
+
+function playControl(elm) {
+  if(elm.id == 'play')
+    play();
+  else
+    pause();
+}
+
+function play() {
+  if(!iface.playing) {
+    iface.playing = true;
+    clearGraph();
+    requestAnimationFrame(draw);
+  }
+}
+
+function pause() {
+  iface.playing = false;
+}
+
 window.addEventListener('DOMContentLoaded', function() {
   svg1 = document.getElementById('svg1');
   svg2 = document.getElementById('svg2');
   state1 = new State(0, 0, 2.6, 0);
   state2 = new State(0.1, 0, 2.6, 0);
 
+  iface = {
+    rotating: false,
+    playing: true
+  };
+
+  addEventListeners(svg1);
+  addEventListeners(svg2);
+
   graph = document.getElementById('graph');
   graph.width = graph.clientWidth;
   graph.height = graph.clientHeight;
+
+  makeSwitch('controls', playControl, 0);
 
   requestAnimationFrame(draw);
 });
