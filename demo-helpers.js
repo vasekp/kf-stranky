@@ -28,6 +28,13 @@ function loadFiles(func) {
 
 /***** Mouse and touch event listeners *****/
 
+function callBack(elm, ev, func) {
+  if(!func)
+    return;
+  var rect = elm.getBoundingClientRect();
+  func(elm, ev.clientX - rect.left, ev.clientY - rect.top, rect);
+}
+
 function mouseDown(e, callback) {
   if(e.button != 0)
     return;
@@ -35,27 +42,20 @@ function mouseDown(e, callback) {
   elm.setAttribute('data-rotating', 'true');
   e.currentTarget.setPointerCapture(e.pointerID);
   e.preventDefault();
-  if(callback)
-    callback(elm, e.offsetX, e.offsetY);
+  callBack(elm, e, callback);
 }
 
 function mouseMove(e, callback) {
   var elm = e.currentTarget;
-  if(pointerActive(elm) && callback)
-    callback(elm, e.offsetX, e.offsetY);
+  if(pointerActive(elm))
+    callBack(elm, e, callback);
 }
 
 function mouseUp(e, callback) {
   var elm = e.currentTarget;
   elm.removeAttribute('data-rotating');
   elm.releasePointerCapture(e.pointerID);
-  if(callback)
-    callback(elm, e.offsetX, e.offsetY);
-}
-
-function touchCB(elm, touch, func) {
-  var rect = elm.getBoundingClientRect();
-  func(elm, touch.clientX - rect.left, touch.clientY - rect.top);
+  callBack(elm, e, callback);
 }
 
 function touchDown(e, callback) {
@@ -65,19 +65,18 @@ function touchDown(e, callback) {
   elm.setAttribute('data-rotating', 'true');
   elm.setAttribute('data-touchID', e.touches[0].identifier);
   e.preventDefault();
-  if(callback)
-    touchCB(elm, e.touches[0], callback);
+  callBack(elm, e.touches[0], callback);
 }
 
 function touchMove(e, callback) {
   var elm = e.currentTarget;
-  if(!pointerActive(elm) || !elm.hasAttribute('data-touchID') || !callback)
+  if(!pointerActive(elm) || !elm.hasAttribute('data-touchID'))
     return;
   var pid = elm.getAttribute('data-touchID');
   var rect = elm.getBoundingClientRect();
   for(let i = 0; i < e.touches.length; i++)
     if(e.touches[i].identifier == pid)
-      touchCB(elm, e.touches[i], callback);
+      callBack(elm, e.touches[i], callback);
 }
 
 function touchUp(e, callback) {
@@ -87,11 +86,9 @@ function touchUp(e, callback) {
   var pid = elm.getAttribute('data-touchID');
   var stillThere = Array.from(e.touches, function(t) { return t.identifier; }).includes(pid);
   if(!stillThere) {
-    if(callback) {
-      for(let i = 0; i < e.touches.length; i++)
-        if(e.touches[i].identifier === elm.getAttribute(pid))
-          touchCB(elm, e.touches[i], callback);
-    }
+    for(let i = 0; i < e.touches.length; i++)
+      if(e.touches[i].identifier === elm.getAttribute(pid))
+        callBack(elm, e.touches[i], callback);
     elm.removeAttribute('data-rotating');
   }
 }

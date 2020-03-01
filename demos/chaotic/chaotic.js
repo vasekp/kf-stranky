@@ -94,19 +94,38 @@ function updateGraph(s1, s2) {
   }
 }
 
-function rotStart(elm, x, y) {
-  iface.lastX = x;
-  iface.lastY = y;
+function rotStart(elm, x, y, rect) {
+  var state = window[elm.getAttribute('data-state')];
+  var dx = x - rect.width / 2;
+  var dy = -(y - rect.height / 2);
+  var dot = dx * Math.cos(state.alpha) + dy * Math.sin(state.alpha);
+  iface.which = dot > 0 ? 'a' : 'b';
+  var pivot = elm.getElementById(dot > 0 ? 'pivot-red' : 'pivot-blue');
+  var r2 = pivot.getBoundingClientRect();
+  iface.pivot = {
+    x: r2.left - rect.left + r2.width / 2,
+    y: r2.top - rect.top + r2.height / 2
+  };
+  iface.rx = x - iface.pivot.x;
+  iface.ry = y - iface.pivot.y;
+  iface.rr = iface.rx * iface.rx + iface.ry * iface.ry;
   document.getElementById('pause').click();
 }
 
-function rotMove(elm, x, y) {
+function rotMove(elm, x, y, rect) {
   var state = window[elm.getAttribute('data-state')];
-  state.alpha += -(y - iface.lastY) / 100;
-  state.beta += (x - iface.lastX) / 100;
+  var dx = x - iface.pivot.x;
+  var dy = y - iface.pivot.y;
+  var cross = (dx * iface.ry - dy * iface.rx) / iface.rr;
+  if(iface.which === 'a') {
+    state.alpha += cross;
+    state.beta += cross;
+  } else
+    state.beta += cross;
+  iface.rx = x - iface.pivot.x;
+  iface.ry = y - iface.pivot.y;
+  iface.rr = iface.rx * iface.rx + iface.ry * iface.ry;
   displayState(elm, state);
-  iface.lastX = x;
-  iface.lastY = y;
 }
 
 function playControl(elm) {
