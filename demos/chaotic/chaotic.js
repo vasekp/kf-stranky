@@ -109,6 +109,8 @@ function rotStart(elm, x, y, rect) {
   iface.rx = x - iface.pivot.x;
   iface.ry = y - iface.pivot.y;
   iface.rr = iface.rx * iface.rx + iface.ry * iface.ry;
+  state1.pa = state1.pb = 0;
+  state2.pa = state2.pb = 0;
   document.getElementById('pause').click();
 }
 
