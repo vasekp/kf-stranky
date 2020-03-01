@@ -224,9 +224,6 @@ function start() {
   progs.arrow.colors[1] = new Float32Array([c1, c2, c1]);
   progs.arrow.colors[2] = new Float32Array([c2, c1, c1]);
 
-  let script = document.createElement('script');
-  script.text = progs.files['switch.js'];
-  document.head.appendChild(script);
   makeSwitch('model', setModel, 0);
   makeSwitch('family', setFamily, 0);
 
@@ -727,8 +724,7 @@ window.addEventListener('DOMContentLoaded', function() {
     'vx-sphere': 'demos/ylm/sphere.vert',
     'fr-sphere': 'demos/ylm/sphere.frag',
     'vx-arrow': 'demos/ylm/arrow.vert',
-    'fr-arrow': 'demos/ylm/arrow.frag',
-    'switch.js': 'switch.js'
+    'fr-arrow': 'demos/ylm/arrow.frag'
   };
   loadFiles(fileList, start);
 
