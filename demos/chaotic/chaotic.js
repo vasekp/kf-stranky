@@ -95,38 +95,13 @@ function updateGraph(s1, s2) {
   }
 }
 
-function addEventListeners(svg) {
-  svg.addEventListener('mousedown', mouseDown);
-  svg.addEventListener('mousemove', mouseMove);
-  svg.addEventListener('mouseup', mouseUp);
-}
-
-function mouseDown(e) {
-  if(e.button != 0)
-    return;
-  iface.rotating = true;
-  rotStart(e.offsetX, e.offsetY, e.currentTarget);
-  e.currentTarget.setPointerCapture(e.pointerID);
-  e.preventDefault();
-}
-
-function mouseMove(e) {
-  if(iface.rotating)
-    rotMove(e.offsetX, e.offsetY, e.currentTarget);
-}
-
-function mouseUp(e) {
-  iface.rotating = false;
-  e.currentTarget.releasePointerCapture(e.pointerID);
-}
-
-function rotStart(x, y, elm) {
+function rotStart(elm, x, y) {
   iface.lastX = x;
   iface.lastY = y;
   document.getElementById('pause').click();
 }
 
-function rotMove(x, y, elm) {
+function rotMove(elm, x, y) {
   let state = window[elm.getAttribute('data-state')];
   state.alpha += -(y - iface.lastY) / 100;
   state.beta += (x - iface.lastX) / 100;
@@ -154,29 +129,6 @@ function pause() {
   iface.playing = false;
 }
 
-function loadFiles(array, func) {
-  let files = {};
-  let loaded = 0, count = 0;
-  for(let name in array)
-    count++;
-  for(let name in array) {
-    let xhr = new XMLHttpRequest();
-    xhr.open('GET', array[name], true);
-    xhr.onload = function() {
-      if(xhr.status === 200) {
-        files[name] = xhr.responseText;
-        if(++loaded == count)
-          func(files);
-      } else {
-        alert(array[name] + ' not loaded!');
-        return;
-      }
-    };
-    xhr.responseType = 'text';
-    xhr.send();
-  }
-}
-
 function start(files) {
   let row = document.getElementById('c');
   let br = document.getElementById('graphBreak');
@@ -190,8 +142,12 @@ function start(files) {
   svg2.setAttribute('data-state', 'state2');
   row.insertBefore(svg2, br);
 
-  addEventListeners(svg1);
-  addEventListeners(svg2);
+  addPointerListeners(svg1, rotStart, rotMove);
+  addPointerListeners(svg2, rotStart, rotMove);
+
+  makeSwitch('controls', playControl, 0);
+
+  requestAnimationFrame(draw);
 }
 
 window.addEventListener('DOMContentLoaded', function() {
@@ -199,7 +155,6 @@ window.addEventListener('DOMContentLoaded', function() {
   state2 = new State(0.1, 0, 2.6, 0);
 
   iface = {
-    rotating: false,
     playing: true
   };
 
@@ -207,9 +162,5 @@ window.addEventListener('DOMContentLoaded', function() {
   graph.width = graph.clientWidth;
   graph.height = graph.clientHeight;
 
-  makeSwitch('controls', playControl, 0);
-
   loadFiles({'svg': 'demos/chaotic/pendulum.svg'}, start);
-
-  requestAnimationFrame(draw);
 });

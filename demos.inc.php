@@ -1,1 +1,4 @@
-<?php include "demos/chaotic/chaotic.inc.php"; ?>
+<?php
+$demo = 'chaotic';
+include "demos/$demo/$demo.inc.php";
+?>

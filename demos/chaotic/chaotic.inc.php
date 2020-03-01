@@ -3,6 +3,7 @@ if($early) {
   array_push($css, 'css/switch.css');
   array_push($css, 'demos/chaotic/chaotic.css');
   array_push($scripts, 'switch.js');
+  array_push($scripts, 'demos/helpers.js');
   array_push($scripts, 'demos/chaotic/chaotic.js');
   return;
 }

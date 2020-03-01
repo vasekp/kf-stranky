@@ -1,3 +1,4 @@
+let canvas;
 let gl;
 let progs;
 let iface;
@@ -31,40 +32,12 @@ function createProgram(vertexShader, fragmentShader) {
   }
 }
 
-function allLoaded(array) {
-  let success = true;
-  for(let name in array) {
-    if(!progs.files[name])
-      success = false;
-  }
-  return success;
-}
-
-function loadFiles(array, func) {
-  for(let name in array) {
-    let xhr = new XMLHttpRequest();
-    xhr.open('GET', array[name], true);
-    xhr.onload = function() {
-      if(xhr.status === 200) {
-        progs.files[name] = xhr.responseText;
-        if(allLoaded(array))
-          func();
-      } else {
-        alert(array[name] + ' not loaded!');
-        return;
-      }
-    };
-    xhr.responseType = 'text';
-    xhr.send();
-  }
-}
-
-function start() {
+function start(files) {
   let vs, fs;
 
   progs.bkg = {};
-  vs = createShader(gl.VERTEX_SHADER, progs.files['vx-bkg']);
-  fs = createShader(gl.FRAGMENT_SHADER, progs.files['fr-bkg']);
+  vs = createShader(gl.VERTEX_SHADER, files['vx-bkg']);
+  fs = createShader(gl.FRAGMENT_SHADER, files['fr-bkg']);
   progs.bkg.program = createProgram(vs, fs);
   progs.bkg.aPos = gl.getAttribLocation(progs.bkg.program, 'aPos');
 
@@ -79,8 +52,8 @@ function start() {
     1, -1]), gl.STATIC_DRAW);
 
   progs.sphere = {};
-  vs = createShader(gl.VERTEX_SHADER, progs.files['vx-sphere']);
-  fs = createShader(gl.FRAGMENT_SHADER, progs.files['fr-sphere']);
+  vs = createShader(gl.VERTEX_SHADER, files['vx-sphere']);
+  fs = createShader(gl.FRAGMENT_SHADER, files['fr-sphere']);
   progs.sphere.program = createProgram(vs, fs);
   progs.sphere.aPos = gl.getAttribLocation(progs.sphere.program, 'aPos');
   progs.sphere.uView = gl.getUniformLocation(progs.sphere.program, 'uQView');
@@ -127,8 +100,8 @@ function start() {
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
 
   progs.arrow = {};
-  vs = createShader(gl.VERTEX_SHADER, progs.files['vx-arrow']);
-  fs = createShader(gl.FRAGMENT_SHADER, progs.files['fr-arrow']);
+  vs = createShader(gl.VERTEX_SHADER, files['vx-arrow']);
+  fs = createShader(gl.FRAGMENT_SHADER, files['fr-arrow']);
   progs.arrow.program = createProgram(vs, fs);
   progs.arrow.aPos = gl.getAttribLocation(progs.arrow.program, 'aPos');
   progs.arrow.aNormal = gl.getAttribLocation(progs.arrow.program, 'aNormal');
@@ -248,7 +221,7 @@ function draw(time) {
   gl.disableVertexAttribArray(progs.bkg.aPos);
 
   if(iface.lastTime) {
-    if(!iface.rotating)
+    if(!pointerActive(canvas))
       iface.angle += (time - iface.lastTime) * iface.speed;
     else
       iface.speed = (iface.angle - iface.lastAngle) / (time - iface.lastTime);
@@ -642,12 +615,12 @@ function setFamily(elm) {
 
 /***** Interaction & initialization *****/
 
-function rotStart(x, y) {
+function rotStart(elm, x, y) {
   iface.lastX = x;
   iface.lastY = y;
 }
 
-function rotMove(x, y) {
+function rotMove(elm, x, y) {
   let viewport = gl.getParameter(gl.VIEWPORT);
   iface.tilt += (y - iface.lastY) / viewport[3] * 4;
   if(iface.tilt > Math.PI / 2)
@@ -659,50 +632,8 @@ function rotMove(x, y) {
   iface.lastY = y;
 }
 
-function mouseDown(e) {
-  if(e.button != 0)
-    return;
-  iface.rotating = true;
-  rotStart(e.offsetX, e.offsetY);
-  e.currentTarget.setPointerCapture(e.pointerID);
-  e.preventDefault();
-}
-
-function mouseMove(e) {
-  if(iface.rotating)
-    rotMove(e.offsetX, e.offsetY);
-}
-
-function mouseUp(e) {
-  iface.rotating = false;
-  e.currentTarget.releasePointerCapture(e.pointerID);
-}
-
-function touchDown(e) {
-  if(iface.rotating)
-    return;
-  iface.rotating = true;
-  iface.touchID = e.touches[0].identifier;
-  rotStart(e.touches[0].screenX, e.touches[0].screenY);
-  e.preventDefault();
-}
-
-function touchMove(e) {
-  if(!iface.rotating)
-    return;
-  for(let i = 0; i < e.touches.length; i++)
-    if(e.touches[i].identifier == iface.touchID)
-      rotMove(e.touches[i].screenX, e.touches[i].screenY);
-}
-
-function touchUp(e) {
-  if(!iface.rotating)
-    return;
-  iface.rotating = Array.from(e.touches, function(t) { return t.identifier; }).includes(iface.touchID);
-}
-
 window.addEventListener('DOMContentLoaded', function() {
-  let canvas = document.getElementById('canvas');
+  canvas = document.getElementById('canvas');
   canvas.width = canvas.clientWidth;
   canvas.height = canvas.clientHeight;
   gl = canvas.getContext('webgl');
@@ -729,19 +660,12 @@ window.addEventListener('DOMContentLoaded', function() {
   loadFiles(fileList, start);
 
   iface = {
-    rotating: false,
     tilt: 0.2,
     angle: 0,
     speed: .001
   };
-  canvas.addEventListener('mousedown', mouseDown);
-  canvas.addEventListener('mousemove', mouseMove);
-  canvas.addEventListener('mouseup', mouseUp);
 
-  canvas.addEventListener('touchstart', touchDown);
-  canvas.addEventListener('touchmove', touchMove);
-  canvas.addEventListener('touchend', touchUp);
-  canvas.addEventListener('touchcancel', touchUp);
+  addPointerListeners(canvas, rotStart, rotMove);
 
   document.getElementById('random').addEventListener('click', newFunc);
 });
