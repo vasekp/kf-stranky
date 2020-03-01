@@ -1,16 +1,15 @@
 const c1 = 1; // 1/tau/a^3
 const c2 = 1; // tau a^2 g
 
-let svg1, svg2, graph;
-var state1, state2;
+var svg1, svg2, graph, state1, state2;
 var iface;
 
 // ***** Hamiltonian *****
 function h(a, b, pa, pb) {
-  let s2 = Math.sin(a - b)/2;
-  let z = 1 - Math.pow(s2, 2);
-  let T = (pa*pa/3 + pb*pb*3 - 2*s2*pa*pb)/2/c1/z;
-  let U = -c2 * (Math.cos(a) + Math.cos(b))/2;
+  var s2 = Math.sin(a - b)/2;
+  var z = 1 - Math.pow(s2, 2);
+  var T = (pa*pa/3 + pb*pb*3 - 2*s2*pa*pb)/2/c1/z;
+  var U = -c2 * (Math.cos(a) + Math.cos(b))/2;
   return T+U;
 }
 
@@ -25,14 +24,14 @@ function State(a, b, pa, pb) {
   }
 
   this.evolve = function(dt) {
-    let a = this.alpha, b = this.beta, pa = this.pa, pb = this.pb;
+    var a = this.alpha, b = this.beta, pa = this.pa, pb = this.pb;
     const eps = 0.001;
     // Direct numerical solution of Hamiltonian equations
     // We use first-order Runge-Kutta (midpoint method) and symmetric differences to improve accuracy
-    let da = (h(a, b, pa+eps, pb) - h(a, b, pa-eps, pb))/2/eps * dt;
-    let db = (h(a, b, pa, pb+eps) - h(a, b, pa, pb-eps))/2/eps * dt;
-    let dpa = -(h(a+eps, b, pa, pb) - h(a-eps, b, pa, pb))/2/eps * dt;
-    let dpb = -(h(a, b+eps, pa, pb) - h(a, b-eps, pa, pb))/2/eps * dt;
+    var da = (h(a, b, pa+eps, pb) - h(a, b, pa-eps, pb))/2/eps * dt;
+    var db = (h(a, b, pa, pb+eps) - h(a, b, pa, pb-eps))/2/eps * dt;
+    var dpa = -(h(a+eps, b, pa, pb) - h(a-eps, b, pa, pb))/2/eps * dt;
+    var dpb = -(h(a, b+eps, pa, pb) - h(a, b-eps, pa, pb))/2/eps * dt;
     a += da/2;
     b += db/2;
     pa += dpa/2;
@@ -71,16 +70,16 @@ function draw() {
 }
 
 function clearGraph() {
-  let ctx = graph.getContext('2d');
+  var ctx = graph.getContext('2d');
   ctx.clearRect(0, 0, graph.width, graph.height);
 }
 
 function updateGraph(s1, s2) {
-  let w = graph.width, h = graph.height;
-  let dw = Math.ceil(w / 200);
-  let lt = Math.ceil(h / 50);
+  var w = graph.width, h = graph.height;
+  var dw = Math.ceil(w / 200);
+  var lt = Math.ceil(h / 50);
   const pi = Math.PI;
-  let ctx = graph.getContext('2d');
+  var ctx = graph.getContext('2d');
   const colors = ['#f00f', '#00ff', '#f008', '#00f8'];
   ctx.lineWidth = lt;
   ctx.putImageData(ctx.getImageData(dw, 0, w-dw, h), 0, 0);
@@ -102,7 +101,7 @@ function rotStart(elm, x, y) {
 }
 
 function rotMove(elm, x, y) {
-  let state = window[elm.getAttribute('data-state')];
+  var state = window[elm.getAttribute('data-state')];
   state.alpha += -(y - iface.lastY) / 100;
   state.beta += (x - iface.lastX) / 100;
   displayState(elm, state);
@@ -130,9 +129,9 @@ function pause() {
 }
 
 function start(files) {
-  let row = document.getElementById('c');
-  let br = document.getElementById('graphBreak');
-  let parser = new DOMParser();
+  var row = document.getElementById('c');
+  var br = document.getElementById('graphBreak');
+  var parser = new DOMParser();
   svg1 = parser.parseFromString(files['svg'], 'image/svg+xml').documentElement;
   svg1.id = 'svg1';
   svg1.setAttribute('data-state', 'state1');

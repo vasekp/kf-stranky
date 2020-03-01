@@ -1,14 +1,11 @@
-let canvas;
-let gl;
-let progs;
-let iface;
+var canvas, gl, progs, iface;
 const divX = 100, divY = 50;
 const divArrow = 10;
 const SIZE = 4;
 const numElements = SIZE * SIZE * SIZE * 2;
 
 function createShader(type, source) {
-  let shader = gl.createShader(type);
+  var shader = gl.createShader(type);
   gl.shaderSource(shader, source);
   gl.compileShader(shader);
   if(gl.getShaderParameter(shader, gl.COMPILE_STATUS))
@@ -20,7 +17,7 @@ function createShader(type, source) {
 }
 
 function createProgram(vertexShader, fragmentShader) {
-  let program = gl.createProgram();
+  var program = gl.createProgram();
   gl.attachShader(program, vertexShader);
   gl.attachShader(program, fragmentShader);
   gl.linkProgram(program);
@@ -33,7 +30,7 @@ function createProgram(vertexShader, fragmentShader) {
 }
 
 function start(files) {
-  let vs, fs;
+  var vs, fs;
 
   progs.bkg = {};
   vs = createShader(gl.VERTEX_SHADER, files['vx-bkg']);
@@ -60,9 +57,9 @@ function start(files) {
   progs.sphere.uPoly = gl.getUniformLocation(progs.sphere.program, 'uPoly');
   progs.sphere.uModel = gl.getUniformLocation(progs.sphere.program, 'uModel');
 
-  let strideX = 3;
-  let strideY = strideX * divX;
-  let points = new Float32Array(strideY * (divY + 1));
+  var strideX = 3;
+  var strideY = strideX * divX;
+  var points = new Float32Array(strideY * (divY + 1));
   for(let y = 0; y <= divY; y++) {
     let theta = Math.PI * y / divY + 0.001;
     for(let x = 0; x < divX; x++) {
@@ -77,13 +74,13 @@ function start(files) {
   gl.bindBuffer(gl.ARRAY_BUFFER, progs.sphere.bPos);
   gl.bufferData(gl.ARRAY_BUFFER, points, gl.STATIC_DRAW);
 
-  let index = function(x, y) {
+  var index = function(x, y) {
     return (x % divX) + y * divX;
   };
 
   strideX = 6;
   strideY = strideX * divX;
-  let indices = new Uint16Array(strideY * divY);
+  var indices = new Uint16Array(strideY * divY);
   for(let y = 0; y < divY; y++) {
     for(let x = 0; x < divX; x++) {
       let base = x * strideX + y * strideY;
@@ -110,7 +107,7 @@ function start(files) {
   progs.arrow.uColor = gl.getUniformLocation(progs.arrow.program, 'uColor');
 
   strideX = 3 * 3 * 2;
-  let attribs = new Float32Array(strideX * divArrow + 2 * 3 * 2);
+  var attribs = new Float32Array(strideX * divArrow + 2 * 3 * 2);
   const rIn = 0.025;
   const rOut = 0.05;
   const zStart = -1.6, zEnd = 1.6, zTip = 1.75;
@@ -265,9 +262,9 @@ function draw(time) {
 
 /***** Polynomials *****/
 
-let poly_ylm = [];
-let poly_ri = [];
-let poly_cart = [];
+var poly_ylm = [];
+var poly_ri = [];
+var poly_cart = [];
 
 function initPoly() {
   initPoly_ylm();
@@ -276,7 +273,7 @@ function initPoly() {
 }
 
 function initPoly_ylm() {
-  let poly, poly_m;
+  var poly, poly_m;
   function re(x, y, z) {
     return 2*(z + SIZE*(y + SIZE*x));
   };
@@ -312,7 +309,7 @@ function initPoly_ylm() {
   poly_ylm.push(poly_m);
   poly_m = [];
 
-  let cc = v5 / v2;
+  var cc = v5 / v2;
   poly = new Float32Array(numElements);
   poly[re(2, 0, 0)] = cc / 2;
   poly[im(1, 1, 0)] = -cc;
@@ -324,7 +321,7 @@ function initPoly_ylm() {
   poly[im(0, 1, 1)] = -cc;
   poly_m.push(poly);
 
-  let cc2 = v5 / v3 / 2;
+  var cc2 = v5 / v3 / 2;
   poly = new Float32Array(numElements);
   poly[re(2, 0, 0)] = -cc2;
   poly[re(0, 2, 0)] = -cc2;
@@ -428,7 +425,7 @@ function initPoly_ri() {
 }
 
 function initPoly_cart() {
-  let poly, poly_m;
+  var poly, poly_m;
   function re(x, y, z) {
     return 2*(z + SIZE*(y + SIZE*x));
   };
@@ -459,7 +456,7 @@ function initPoly_cart() {
   poly_cart.push(poly_m);
   poly_m = [];
 
-  let cc = v5 / v3 / 2;
+  var cc = v5 / v3 / 2;
   poly = new Float32Array(numElements);
   poly[re(2, 0, 0)] = 2*cc;
   poly[re(0, 2, 0)] = -cc;
@@ -561,17 +558,17 @@ function initPoly_cart() {
 
 function initPoly_random(l) {
   const cnt = 2*(2*l+1);
-  let amps = new Float32Array(cnt);
-  let sum2 = 0;
+  var amps = new Float32Array(cnt);
+  var sum2 = 0;
   for(let i = 0; i < cnt; i++) {
     amps[i] = 2*Math.random() - 1;
     sum2 += amps[i]*amps[i];
   }
-  let corr = 1/Math.sqrt(sum2);
+  var corr = 1/Math.sqrt(sum2);
   for(let i = 0; i < cnt; i++)
     amps[i] *= corr;
 
-  let poly = new Float32Array(numElements);
+  var poly = new Float32Array(numElements);
   for(let m = 0; m < 2*l+1; m++)
     for(let k = 0; k < numElements; k++) {
       poly[k] += amps[2*m] * poly_ylm[l][m][k];
@@ -621,7 +618,7 @@ function rotStart(elm, x, y) {
 }
 
 function rotMove(elm, x, y) {
-  let viewport = gl.getParameter(gl.VIEWPORT);
+  var viewport = gl.getParameter(gl.VIEWPORT);
   iface.tilt += (y - iface.lastY) / viewport[3] * 4;
   if(iface.tilt > Math.PI / 2)
     iface.tilt = Math.PI / 2;
@@ -649,7 +646,7 @@ window.addEventListener('DOMContentLoaded', function() {
   initPoly();
 
   progs = { files: {} };
-  let fileList = {
+  var fileList = {
     'vx-bkg': 'demos/ylm/background.vert',
     'fr-bkg': 'demos/ylm/background.frag',
     'vx-sphere': 'demos/ylm/sphere.vert',

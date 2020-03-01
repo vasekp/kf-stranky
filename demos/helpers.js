@@ -1,6 +1,6 @@
 function loadFiles(array, func) {
-  let files = {};
-  let loaded = 0, count = 0;
+  var files = {};
+  var loaded = 0, count = 0;
   for(let name in array)
     count++;
   for(let name in array) {
@@ -26,7 +26,7 @@ function loadFiles(array, func) {
 function mouseDown(e, callback) {
   if(e.button != 0)
     return;
-  let elm = e.currentTarget;
+  var elm = e.currentTarget;
   elm.setAttribute('data-rotating', 'true');
   e.currentTarget.setPointerCapture(e.pointerID);
   e.preventDefault();
@@ -35,13 +35,13 @@ function mouseDown(e, callback) {
 }
 
 function mouseMove(e, callback) {
-  let elm = e.currentTarget;
+  var elm = e.currentTarget;
   if(pointerActive(elm) && callback)
     callback(elm, e.offsetX, e.offsetY);
 }
 
 function mouseUp(e, callback) {
-  let elm = e.currentTarget;
+  var elm = e.currentTarget;
   elm.removeAttribute('data-rotating');
   elm.releasePointerCapture(e.pointerID);
   if(callback)
@@ -49,7 +49,7 @@ function mouseUp(e, callback) {
 }
 
 function touchDown(e, callback) {
-  let elm = e.currentTarget;
+  var elm = e.currentTarget;
   if(pointerActive(elm))
     return;
   elm.setAttribute('data-rotating', 'true');
@@ -60,21 +60,21 @@ function touchDown(e, callback) {
 }
 
 function touchMove(e, callback) {
-  let elm = e.currentTarget;
+  var elm = e.currentTarget;
   if(!pointerActive(elm) || !elm.hasAttribute('data-pointerID') || !callback)
     return;
-  let pid = elm.getAttribute('data-pointerID');
+  var pid = elm.getAttribute('data-pointerID');
   for(let i = 0; i < e.touches.length; i++)
     if(e.touches[i].identifier == pid)
       callback(e.touches[i].screenX, e.touches[i].screenY, elm);
 }
 
 function touchUp(e, callback) {
-  let elm = e.currentTarget;
+  var elm = e.currentTarget;
   if(!pointerActive(elm))
     return;
-  let pid = elm.getAttribute('data-pointerID');
-  let stillThere = Array.from(e.touches, function(t) { return t.identifier; }).includes(pid);
+  var pid = elm.getAttribute('data-pointerID');
+  var stillThere = Array.from(e.touches, function(t) { return t.identifier; }).includes(pid);
   if(!stillThere) {
     if(callback) {
       for(let i = 0; i < e.touches.length; i++)
