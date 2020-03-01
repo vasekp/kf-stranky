@@ -132,7 +132,7 @@ function start(files) {
   var row = document.getElementById('c');
   var br = document.getElementById('graphBreak');
   var parser = new DOMParser();
-  svg1 = parser.parseFromString(files['svg'], 'image/svg+xml').documentElement;
+  svg1 = parser.parseFromString(files['pendulum.svg'], 'image/svg+xml').documentElement;
   svg1.id = 'svg1';
   svg1.setAttribute('data-state', 'state1');
   row.insertBefore(svg1, br);
@@ -161,5 +161,5 @@ window.addEventListener('DOMContentLoaded', function() {
   graph.width = graph.clientWidth;
   graph.height = graph.clientHeight;
 
-  loadFiles({'svg': 'demos/chaotic/pendulum.svg'}, start);
+  loadFiles(start);
 });

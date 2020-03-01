@@ -36,6 +36,7 @@ $filename = $curr . ($en ? '-en' : '') . '.inc.php';
 
 $scripts = array();
 $css = array();
+$files = array();
 if(file_exists($filename)) {
   $early = 1;
   include $filename;
@@ -52,6 +53,8 @@ if(file_exists($filename)) {
 <?php
 foreach($css as $url)
   print_indent(2, '<link rel="stylesheet" type="text/css" href="' . $url . '"/>');
+foreach($files as $id => $url)
+  print_indent(2, '<link rel="preload" as="fetch" href="' . $url . '"/>');
 foreach($scripts as $url)
   print_indent(2, '<script type="text/javascript" src="' . $url . '"></script>');
 ?>

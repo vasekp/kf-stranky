@@ -1,4 +1,5 @@
 <?php
 $demo = 'chaotic';
-include "demos/$demo/$demo.inc.php";
+$demodir = 'demos/' . $demo;
+include "$demodir/$demo.inc.php";
 ?>

@@ -33,8 +33,8 @@ function start(files) {
   var vs, fs;
 
   progs.bkg = {};
-  vs = createShader(gl.VERTEX_SHADER, files['vx-bkg']);
-  fs = createShader(gl.FRAGMENT_SHADER, files['fr-bkg']);
+  vs = createShader(gl.VERTEX_SHADER, files['background.vert']);
+  fs = createShader(gl.FRAGMENT_SHADER, files['background.frag']);
   progs.bkg.program = createProgram(vs, fs);
   progs.bkg.aPos = gl.getAttribLocation(progs.bkg.program, 'aPos');
 
@@ -49,8 +49,8 @@ function start(files) {
     1, -1]), gl.STATIC_DRAW);
 
   progs.sphere = {};
-  vs = createShader(gl.VERTEX_SHADER, files['vx-sphere']);
-  fs = createShader(gl.FRAGMENT_SHADER, files['fr-sphere']);
+  vs = createShader(gl.VERTEX_SHADER, files['sphere.vert']);
+  fs = createShader(gl.FRAGMENT_SHADER, files['sphere.frag']);
   progs.sphere.program = createProgram(vs, fs);
   progs.sphere.aPos = gl.getAttribLocation(progs.sphere.program, 'aPos');
   progs.sphere.uView = gl.getUniformLocation(progs.sphere.program, 'uQView');
@@ -97,8 +97,8 @@ function start(files) {
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
 
   progs.arrow = {};
-  vs = createShader(gl.VERTEX_SHADER, files['vx-arrow']);
-  fs = createShader(gl.FRAGMENT_SHADER, files['fr-arrow']);
+  vs = createShader(gl.VERTEX_SHADER, files['arrow.vert']);
+  fs = createShader(gl.FRAGMENT_SHADER, files['arrow.frag']);
   progs.arrow.program = createProgram(vs, fs);
   progs.arrow.aPos = gl.getAttribLocation(progs.arrow.program, 'aPos');
   progs.arrow.aNormal = gl.getAttribLocation(progs.arrow.program, 'aNormal');
@@ -645,16 +645,8 @@ window.addEventListener('DOMContentLoaded', function() {
 
   initPoly();
 
-  progs = { files: {} };
-  var fileList = {
-    'vx-bkg': 'demos/ylm/background.vert',
-    'fr-bkg': 'demos/ylm/background.frag',
-    'vx-sphere': 'demos/ylm/sphere.vert',
-    'fr-sphere': 'demos/ylm/sphere.frag',
-    'vx-arrow': 'demos/ylm/arrow.vert',
-    'fr-arrow': 'demos/ylm/arrow.frag'
-  };
-  loadFiles(fileList, start);
+  progs = {};
+  loadFiles(start);
 
   iface = {
     tilt: 0.2,

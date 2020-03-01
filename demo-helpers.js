@@ -1,18 +1,23 @@
-function loadFiles(array, func) {
+function basename(url) {
+  return url.substring(url.lastIndexOf('/') + 1);
+}
+
+function loadFiles(func) {
   var files = {};
-  var loaded = 0, count = 0;
-  for(let name in array)
-    count++;
-  for(let name in array) {
+  var links = document.querySelectorAll('link[rel=preload]');
+  var loaded = 0;
+  for(let i = 0; i < links.length; i++) {
     let xhr = new XMLHttpRequest();
-    xhr.open('GET', array[name], true);
+    let url = links[i].href;
+    xhr.open('GET', url, true);
     xhr.onload = function() {
       if(xhr.status === 200) {
-        files[name] = xhr.responseText;
-        if(++loaded == count)
+        let id = links[i].id || basename(url);
+        files[id] = xhr.responseText;
+        if(++loaded == links.length)
           func(files);
       } else {
-        alert(array[name] + ' not loaded!');
+        alert(url + ' not loaded!');
         return;
       }
     };
