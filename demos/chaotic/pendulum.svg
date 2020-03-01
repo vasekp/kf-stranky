@@ -1,0 +1,28 @@
+<svg class="pendulum" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="-6 -6 12 12">
+  <defs>
+    <marker id="arrow-red" viewBox="0 0 2 2" refX="1" refY="1" orient="auto"
+        markerUnits="userSpaceOnUse" markerWidth=".5" markerHeight=".4">
+      <path d="M 0 0 L 2 1 L 0 2 z" class="fill red"/>
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 2 2" refX="1" refY="1" orient="auto"
+        markerUnits="userSpaceOnUse" markerWidth=".5" markerHeight=".4">
+      <path d="M 0 0 L 2 1 L 0 2 z" class="fill blue"/>
+    </marker>
+  </defs>
+  <g transform="scale(1 -1)" stroke="black" stroke-width="0.05" stroke-linejoin="round">
+    <g transform="translate(5 5)" fill="none">
+      <path d="M 0 .5 Q .2 0 0 -.5" class="stroke red" marker-end="url(#arrow-red)"/>
+      <path d="M 0 -.5 Q .2 0 0 .5" class="stroke red" marker-end="url(#arrow-red)"/>
+      <path d="M -.5 0 Q 0 -.2 .5 0" class="stroke blue" marker-end="url(#arrow-blue)"/>
+      <path d="M .5 0 Q 0 -.2 -.5 0" class="stroke blue" marker-end="url(#arrow-blue)"/>
+    </g>
+    <g id="alpha">
+      <path id="alpha" class="fill red" d="M -3.3 0.3 H 3.3 V -3.3 H 2.7 V -0.3 H -3.3 z"/>
+      <circle cx="0" cy="0" r="0.2" fill="#888"/>
+      <g transform="translate(-3 0)">
+        <path id="beta-alpha" class="fill blue" d="M -0.3 0.3 H 0.3 V -3.3 H -0.3 z"/>
+      </g>
+      <circle cx="-3" cy="0" r="0.2" fill="#888"/>
+    </g>
+  </g>
+</svg>

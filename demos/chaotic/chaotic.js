@@ -154,9 +154,47 @@ function pause() {
   iface.playing = false;
 }
 
+function loadFiles(array, func) {
+  let files = {};
+  let loaded = 0, count = 0;
+  for(let name in array)
+    count++;
+  for(let name in array) {
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', array[name], true);
+    xhr.onload = function() {
+      if(xhr.status === 200) {
+        files[name] = xhr.responseText;
+        if(++loaded == count)
+          func(files);
+      } else {
+        alert(array[name] + ' not loaded!');
+        return;
+      }
+    };
+    xhr.responseType = 'text';
+    xhr.send();
+  }
+}
+
+function start(files) {
+  let row = document.getElementById('c');
+  let br = document.getElementById('graphBreak');
+  let parser = new DOMParser();
+  svg1 = parser.parseFromString(files['svg'], 'image/svg+xml').documentElement;
+  svg1.id = 'svg1';
+  svg1.setAttribute('data-state', 'state1');
+  row.insertBefore(svg1, br);
+  svg2 = svg1.cloneNode(true);
+  svg2.id = 'svg2';
+  svg2.setAttribute('data-state', 'state2');
+  row.insertBefore(svg2, br);
+
+  addEventListeners(svg1);
+  addEventListeners(svg2);
+}
+
 window.addEventListener('DOMContentLoaded', function() {
-  svg1 = document.getElementById('svg1');
-  svg2 = document.getElementById('svg2');
   state1 = new State(0, 0, 2.6, 0);
   state2 = new State(0.1, 0, 2.6, 0);
 
@@ -165,14 +203,13 @@ window.addEventListener('DOMContentLoaded', function() {
     playing: true
   };
 
-  addEventListeners(svg1);
-  addEventListeners(svg2);
-
   graph = document.getElementById('graph');
   graph.width = graph.clientWidth;
   graph.height = graph.clientHeight;
 
   makeSwitch('controls', playControl, 0);
+
+  loadFiles({'svg': 'demos/chaotic/pendulum.svg'}, start);
 
   requestAnimationFrame(draw);
 });
