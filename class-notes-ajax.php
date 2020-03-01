@@ -8,6 +8,8 @@ if($_SERVER['REQUEST_METHOD'] != 'POST' || !array_key_exists('type', $_POST)) {
 }
 $type = $_POST['type'];
 
+header('Content-type: application/json');
+
 if($type == 'get') {
   $db = open_db();
   $date = array_key_exists('date', $_POST) ? $_POST['date'] : '';

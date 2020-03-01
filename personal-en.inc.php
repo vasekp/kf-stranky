@@ -1,3 +1,4 @@
+<?php if($early) return; ?>
         <h1>About me</h1>
         A <a href="https://www.fjfi.cvut.cz/en/" target="_blank">FNSPE, CTU</a> Prague graduate, Mathematical Physics / Mathematical Engineering:
         <ul>

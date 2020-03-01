@@ -1,9 +1,9 @@
-let admin;
+var admin, empty;
 
 function sendRequest(elm, type, id, text) {
-  let xhr = new XMLHttpRequest();
+  var xhr = new XMLHttpRequest();
   xhr.open('POST', 'class-notes-ajax.php', true);
-  let data = new FormData();
+  var data = new FormData();
   data.append('type', type);
   data.append('id', id);
   data.append('date', document.getElementById('date').getAttribute('data-date'));
@@ -22,14 +22,14 @@ function sendRequest(elm, type, id, text) {
   xhr.send(data);
 }
 
-let raSave = recordsArrived;
+var raSave = recordsArrived;
 recordsArrived = function(r) {
   raSave(r);
   appendEmpty();
 }
 
 function appendEmpty() {
-  let clone = empty.cloneNode(true);
+  var clone = empty.cloneNode(true);
   addEventsItem(clone);
   list.appendChild(clone);
   return clone;
@@ -37,9 +37,9 @@ function appendEmpty() {
 
 function newDatePrepare() {
   clearList();
-  let date = document.getElementById('date');
-  let re = /\d{1,2}\. ?\d{1,2}\. ?\d{4}/;
-  let match;
+  var date = document.getElementById('date');
+  var re = /\d{1,2}\. ?\d{1,2}\. ?\d{4}/;
+  var match;
   if(match = re.exec(date.innerText))
     date.innerText = match[0];
   date.removeAttribute('data-date');
@@ -48,15 +48,15 @@ function newDatePrepare() {
 }
 
 function newDateEntered() {
-  let re = /^(\d{1,2})\. ?(\d{1,2})\. ?(\d{4})$/;
-  let array;
-  let date = document.getElementById('date');
+  var re = /^(\d{1,2})\. ?(\d{1,2})\. ?(\d{4})$/;
+  var array;
+  var date = document.getElementById('date');
   if(array = re.exec(date.innerText.trim())) {
-    let date_sql = array[3] + '-' + array[2] + '-' + array[1];
+    var date_sql = array[3] + '-' + array[2] + '-' + array[1];
     date.setAttribute('data-date', date_sql);
     date.contentEditable = 'false';
     get_records_async(date_sql);
-    let clone = appendEmpty();
+    var clone = appendEmpty();
     clone.click();
   }
 }
@@ -69,15 +69,15 @@ function dateKeyDown(e) {
 }
 
 function itemClick(e) {
-  let elm = e.currentTarget;
+  var elm = e.currentTarget;
   toBraces(elm);
   elm.contentEditable = 'true';
   elm.focus();
 }
 
 function itemBlur(e) {
-  let elm = e.currentTarget;
-  let text = elm.innerText.trim();
+  var elm = e.currentTarget;
+  var text = elm.innerText.trim();
   elm.contentEditable = 'false';
   fromBraces(elm);
   if(!elm.classList.contains('last') && !text) {
@@ -94,11 +94,11 @@ function itemBlur(e) {
 }
 
 function itemInput(e) {
-  let elm = e.currentTarget;
+  var elm = e.currentTarget;
   elm.classList.add('changed');
   if(elm.classList.contains('last') && !!elm.innerText.trim()) {
     elm.classList.remove('last');
-    let clone = empty.cloneNode(true);
+    var clone = empty.cloneNode(true);
     addEventsItem(clone);
     list.appendChild(clone);
   }
@@ -106,7 +106,7 @@ function itemInput(e) {
 
 function itemKeyDown(e) {
   if(e.keyCode == 13 || e.keyCode == 38 || e.keyCode == 40) {
-    let next = (e.keyCode == 38
+    var next = (e.keyCode == 38
       ? e.currentTarget.previousElementSibling
       : e.currentTarget.nextElementSibling);
     if(next)
