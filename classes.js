@@ -1,9 +1,11 @@
+var swtch, list;
+
 function get_records_async(date_sql) {
   list.classList.add('loading');
   swtch.classList.add('loading');
-  let xhr = new XMLHttpRequest();
+  var xhr = new XMLHttpRequest();
   xhr.open('POST', 'class-notes-ajax.php', true);
-  let data = new FormData();
+  var data = new FormData();
   data.append('type', 'get');
   data.append('date', date_sql);
   xhr.responseType = 'json';
@@ -15,8 +17,8 @@ function get_records_async(date_sql) {
     swtch.classList.remove('loading');
   };
   xhr.ontimeout = function() {
-    let url = new URL(document.URL);
-    let sp = new URLSearchParams(url.search);
+    var url = new URL(document.URL);
+    var sp = new URLSearchParams(url.search);
     sp.set('date', date_sql);
     url.search = sp;
     window.location.replace(url);
@@ -26,7 +28,7 @@ function get_records_async(date_sql) {
 }
 
 function recordsArrived(r) {
-  let elm = document.getElementById('date');
+  var elm = document.getElementById('date');
   elm.innerText = r.date_text;
   elm.setAttribute('data-date', r.date);
   elm = document.getElementById('prev');
@@ -62,15 +64,15 @@ function createRecord(id, text) {
 }
 
 function fromBraces(elm) {
-  let text = elm.innerText.trim();
-  let re = /{([^}]*)}/;
-  let match;
+  var text = elm.innerText.trim();
+  var re = /{([^}]*)}/;
+  var match;
   while(elm.firstChild)
     elm.removeChild(elm.firstChild);
   while(match = re.exec(text)) {
     if(match.index > 0)
       elm.appendChild(document.createTextNode(text.substr(0, match.index)));
-    let span = document.createElement('span');
+    var span = document.createElement('span');
     span.classList.add('litref');
     span.innerText = match[1];
     elm.appendChild(span);
@@ -99,8 +101,6 @@ function addEventsArrow(elm) {
     elm.href = '#';
   elm.addEventListener('click', arrowClick);
 }
-
-let swtch, list, empty;
 
 window.addEventListener('DOMContentLoaded', function(event) {
   swtch = document.getElementById('date-buttons');
