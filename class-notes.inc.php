@@ -28,7 +28,12 @@ print_indent(4, '</div>');
 
 print_indent(4, '<ul id="list">');
 foreach($r->records as $row) {
-  print_indent(5, '<li data-id="' . $row['id'] . '">' . toHTML($row['text']) . '</li>');
+  if($admin)
+    print_indent(5, '<li data-id="' . $row['id'] . '" '
+      . 'data-text="' . $row['text'] . '">'
+      . toHTML($row['text']) . '</li>');
+  else
+    print_indent(5, '<li>' . toHTML($row['text']) . '</li>');
 }
 if($admin)
   print_indent(5, '<li class="last"></li>');

@@ -68,8 +68,10 @@ function get_records($date_req, $newest_if_empty) {
   $sql = "select id, text from class_notes where class_ID = $cid and date = '$date'";
   $result = $db->query($sql);
   $records = array();
-  while($row = $result->fetch_assoc())
+  while($row = $result->fetch_assoc()) {
+    $row['html'] = toHTML($row['text']);
     $records[] = $row;
+  }
   $ret->records = $records;
 
   return $ret;
@@ -78,6 +80,8 @@ function get_records($date_req, $newest_if_empty) {
 function toHTML($text) {
   $text = htmlspecialchars($text);
   $text = preg_replace('/{([^}]*)}/', '<span class="litref">$1</span>', $text);
+  $text = preg_replace('/_(.)/u', '<sub>$1</sub>', $text);
+  $text = preg_replace('/\^(.)/u', '<sup>$1</sup>', $text);
   return $text;
 }
 ?>

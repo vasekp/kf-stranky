@@ -236,3 +236,17 @@ ol {
 ol li {
   padding: 0.3em;
 }
+
+sub, sup {
+  font-size: 70%;
+  vertical-align: top;
+  position: relative;
+}
+
+sup {
+  top: -.3em;
+}
+
+sub {
+  top: .4em;
+}

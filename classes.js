@@ -45,7 +45,7 @@ function recordsArrived(r) {
     elm.removeAttribute('href');
   clearList();
   r.records.forEach(function(row) {
-    createRecord(row.id, row.text);
+    createRecord(row.id, row.text, row.html);
   });
   document.getElementById('modtime').innerText = r.mod_text;
 }
@@ -55,31 +55,10 @@ function clearList() {
     list.removeChild(list.firstChild);
 }
 
-function createRecord(id, text) {
+function createRecord(id, text, html) {
   elm = document.createElement('li');
-  elm.setAttribute('data-id', id);
-  elm.innerText = text;
-  fromBraces(elm);
+  elm.innerHTML = html;
   list.appendChild(elm);
-}
-
-function fromBraces(elm) {
-  var text = elm.innerText.trim();
-  var re = /{([^}]*)}/;
-  var match;
-  while(elm.firstChild)
-    elm.removeChild(elm.firstChild);
-  while(match = re.exec(text)) {
-    if(match.index > 0)
-      elm.appendChild(document.createTextNode(text.substr(0, match.index)));
-    var span = document.createElement('span');
-    span.classList.add('litref');
-    span.innerText = match[1];
-    elm.appendChild(span);
-    text = text.substr(match.index + match[0].length);
-  }
-  if(text)
-    elm.appendChild(document.createTextNode(text));
 }
 
 function datePick(date) {
