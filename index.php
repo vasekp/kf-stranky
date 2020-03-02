@@ -76,17 +76,9 @@ foreach($stranky as $name => $text) {
     <div id="main">
       <main>
 <?php
-if(!file_exists($filename)) {
-  print_indent(4, '<div class="error">');
-  print_indent(5, $en ? 'This page does not exist.' : 'Tato stránka neexistuje.');
-  print_indent(5, '<br/>');
-  $text = $en ? 'Please report this error on ' : 'Prosím nahlašte chybu na ';
-  $text .= '<a href="https://github.com/vasekp/kf-stranky/issues" target="_blank">';
-  $text .= $en ? 'GitHub' : 'GitHubu';
-  $text .= '</a>.';
-  print_indent(5, $text);
-  print_indent(4, '</div>');
-} else {
+if(!file_exists($filename))
+  include 'hard-error.inc.php';
+else {
   $db = open_db();
   if(!$db) {
     print_indent(4, '<div class="error">Nepodařilo se připojit k databázi. Stránky mimo provoz.</div>');
