@@ -13,25 +13,30 @@ else {
     include 'hard-error.inc.php';
     return;
   }
-
   $modtime = filemtime($demofn);
-  include $demofn;
 
-  if($early)
+  if($early) {
+    include $demofn;
     return;
+  }
 
-  $sql = "select details_$prilang as details from demos where name='$demo'";
+  $sql = "select title_$prilang as title, details_$prilang as details from demos where name='$demo'";
   $result = $db->query($sql);
   if($result->num_rows == 0) {
     include 'hard-error.inc.php';
     return;
   }
-  $row = $result->fetch_assoc();
+  $demorow = $result->fetch_assoc();
 
+  $demotitle = $demorow['title'];
+  include $demofn;
+
+  $text = $en ? 'See also' : 'Další';
+  print_indent(4, '<h2>' . $text . '</h2>');
   print_indent(4, '<ul>');
-  if($row['details']) {
+  if($demorow['details']) {
     $text = $en ? 'More details (PDF)' : 'Další informace (PDF)';
-    print_indent(5, '<li><a href="' . $row['details'] . '">' . $text . '</a></li>');
+    print_indent(5, '<li><a href="' . $demorow['details'] . '">' . $text . '</a></li>');
   }
   $text = $en ? "Source code" : "Zdrojový kód";
   print_indent(5, '<li><a href="https://github.com/vasekp/kf-stranky/tree/demos/demos/' . $demo . '" '

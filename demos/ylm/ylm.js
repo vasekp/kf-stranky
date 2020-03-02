@@ -595,8 +595,10 @@ function newFunc() {
       let m = ix - l*(l+1)*(l+2)/6;
       gl.uniform2fv(progs.sphere.uPoly, poly_cart[l][m]);
       break; }
-    default:
-      gl.uniform2fv(progs.sphere.uPoly, initPoly_random(3));
+    default: {
+      let l = Math.floor(SIZE * Math.random());
+      gl.uniform2fv(progs.sphere.uPoly, initPoly_random(l));
+    }
   }
 }
 
