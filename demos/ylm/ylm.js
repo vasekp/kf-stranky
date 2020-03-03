@@ -287,6 +287,8 @@ function initPoly_ylm() {
 
   poly = new Float32Array(numElements);
   poly[re(0, 0, 0)] = 1 / v3;
+  poly['f1'] = 'Y<sub>0,0</sub>(ϑ,ϕ)';
+  poly['f2'] = '1';
   poly_m.push(poly);
 
   poly_ylm.push(poly_m);
@@ -295,15 +297,21 @@ function initPoly_ylm() {
   poly = new Float32Array(numElements);
   poly[re(1, 0, 0)] = 1 / v2;
   poly[im(0, 1, 0)] = -1 / v2;
+  poly['f1'] = 'Y<sub>1,-1</sub>(ϑ,ϕ)';
+  poly['f2'] = 'x – iy';
   poly_m.push(poly);
 
   poly = new Float32Array(numElements);
   poly[re(0, 0, 1)] = 1;
+  poly['f1'] = 'Y<sub>1,0</sub>(ϑ,ϕ)';
+  poly['f2'] = 'z';
   poly_m.push(poly);
 
   poly = new Float32Array(numElements);
-  poly[re(1, 0, 0)] = 1 / v2;
-  poly[im(0, 1, 0)] = 1 / v2;
+  poly[re(1, 0, 0)] = -1 / v2;
+  poly[im(0, 1, 0)] = -1 / v2;
+  poly['f1'] = 'Y<sub>1,1</sub>(ϑ,ϕ)';
+  poly['f2'] = '–(x + iy)';
   poly_m.push(poly);
 
   poly_ylm.push(poly_m);
@@ -314,11 +322,15 @@ function initPoly_ylm() {
   poly[re(2, 0, 0)] = cc / 2;
   poly[im(1, 1, 0)] = -cc;
   poly[re(0, 2, 0)] = -cc / 2;
+  poly['f1'] = 'Y<sub>2,-2</sub>(ϑ,ϕ)';
+  poly['f2'] = '(x – iy)<sup>2</sup>';
   poly_m.push(poly);
 
   poly = new Float32Array(numElements);
   poly[re(1, 0, 1)] = cc;
   poly[im(0, 1, 1)] = -cc;
+  poly['f1'] = 'Y<sub>2,-1</sub>(ϑ,ϕ)';
+  poly['f2'] = '(x – iy) z';
   poly_m.push(poly);
 
   var cc2 = v5 / v3 / 2;
@@ -326,17 +338,23 @@ function initPoly_ylm() {
   poly[re(2, 0, 0)] = -cc2;
   poly[re(0, 2, 0)] = -cc2;
   poly[re(0, 0, 2)] = 2*cc2;
+  poly['f1'] = 'Y<sub>2,0</sub>(ϑ,ϕ)';
+  poly['f2'] = 'z<sup>2</sup> – 1/3';
   poly_m.push(poly);
 
   poly = new Float32Array(numElements);
-  poly[re(1, 0, 1)] = cc;
-  poly[im(0, 1, 1)] = cc;
+  poly[re(1, 0, 1)] = -cc;
+  poly[im(0, 1, 1)] = -cc;
+  poly['f1'] = 'Y<sub>2,1</sub>(ϑ,ϕ)';
+  poly['f2'] = '–(x + iy) z';
   poly_m.push(poly);
 
   poly = new Float32Array(numElements);
   poly[re(2, 0, 0)] = cc / 2;
   poly[im(1, 1, 0)] = cc;
   poly[re(0, 2, 0)] = -cc / 2;
+  poly['f1'] = 'Y<sub>2,2</sub>(ϑ,ϕ)';
+  poly['f2'] = '(x + iy)<sup>2</sup>';
   poly_m.push(poly);
 
   poly_ylm.push(poly_m);
@@ -348,6 +366,8 @@ function initPoly_ylm() {
   poly[im(2, 1, 0)] = -3*cc;
   poly[re(1, 2, 0)] = -3*cc;
   poly[im(0, 3, 0)] = cc;
+  poly['f1'] = 'Y<sub>3,-3</sub>(ϑ,ϕ)';
+  poly['f2'] = '(x – iy)<sup>3</sup>';
   poly_m.push(poly);
 
   cc = v5 * v7 / v2 / 2;
@@ -355,16 +375,20 @@ function initPoly_ylm() {
   poly[re(2, 0, 1)] = cc;
   poly[im(1, 1, 1)] = -2*cc;
   poly[re(0, 2, 1)] = -cc;
+  poly['f1'] = 'Y<sub>3,-2</sub>(ϑ,ϕ)';
+  poly['f2'] = '(x – iy)<sup>2</sup> z';
   poly_m.push(poly);
 
-  cc = -v7 / 4;
+  cc = v7 / 4;
   poly = new Float32Array(numElements);
-  poly[re(3, 0, 0)] = cc;
-  poly[im(2, 1, 0)] = -cc;
-  poly[re(1, 2, 0)] = cc;
-  poly[im(0, 3, 0)] = -cc;
-  poly[re(1, 0, 2)] = -4*cc;
-  poly[im(0, 1, 2)] = 4*cc;
+  poly[re(3, 0, 0)] = -cc;
+  poly[im(2, 1, 0)] = cc;
+  poly[re(1, 2, 0)] = -cc;
+  poly[im(0, 3, 0)] = cc;
+  poly[re(1, 0, 2)] = 4*cc;
+  poly[im(0, 1, 2)] = -4*cc;
+  poly['f1'] = 'Y<sub>3,-1</sub>(ϑ,ϕ)';
+  poly['f2'] = '(x – iy) (z<sup>2</sup> – 1/5)';
   poly_m.push(poly);
 
   cc = v7 / v3 / 2
@@ -372,9 +396,11 @@ function initPoly_ylm() {
   poly[re(0, 0, 3)] = 2*cc;
   poly[re(2, 0, 1)] = -3*cc;
   poly[re(0, 2, 1)] = -3*cc;
+  poly['f1'] = 'Y<sub>3,0</sub>(ϑ,ϕ)';
+  poly['f2'] = 'z (z<sup>2</sup> – 3/5)';
   poly_m.push(poly);
 
-  cc = -v7 / 4;
+  cc = v7 / 4;
   poly = new Float32Array(numElements);
   poly[re(3, 0, 0)] = cc;
   poly[im(2, 1, 0)] = cc;
@@ -382,6 +408,8 @@ function initPoly_ylm() {
   poly[im(0, 3, 0)] = cc;
   poly[re(1, 0, 2)] = -4*cc;
   poly[im(0, 1, 2)] = -4*cc;
+  poly['f1'] = 'Y<sub>3,1</sub>(ϑ,ϕ)';
+  poly['f2'] = '–(x + iy) (z<sup>2</sup> – 1/5)';
   poly_m.push(poly);
 
   cc = v5 * v7 / v2 / 2;
@@ -389,14 +417,18 @@ function initPoly_ylm() {
   poly[re(2, 0, 1)] = cc;
   poly[im(1, 1, 1)] = 2*cc;
   poly[re(0, 2, 1)] = -cc;
+  poly['f1'] = 'Y<sub>3,2</sub>(ϑ,ϕ)';
+  poly['f2'] = '(x + iy)<sup>2</sup> z';
   poly_m.push(poly);
 
   cc = v5 * v7 / v3 / 4;
   poly = new Float32Array(numElements);
-  poly[re(3, 0, 0)] = cc;
-  poly[im(2, 1, 0)] = 3*cc;
-  poly[re(1, 2, 0)] = -3*cc;
-  poly[im(0, 3, 0)] = -cc;
+  poly[re(3, 0, 0)] = -cc;
+  poly[im(2, 1, 0)] = -3*cc;
+  poly[re(1, 2, 0)] = 3*cc;
+  poly[im(0, 3, 0)] = cc;
+  poly['f1'] = 'Y<sub>3,3</sub>(ϑ,ϕ)';
+  poly['f2'] = '–(x + iy)<sup>3</sup>';
   poly_m.push(poly);
 
   poly_ylm.push(poly_m);
@@ -407,21 +439,44 @@ function initPoly_ri() {
   const v2 = Math.sqrt(2);
   for(let l = 0; l < SIZE; l++) {
     let poly_m = [];
-    for(let m = 0; m < l; m++) {
+    let pow = 1;
+    for(let m = 1; m <= l; m++) {
+      pow = -pow;
       let poly = new Float32Array(numElements);
       for(let i = 0; i < numElements; i++)
-        poly[i^1] = (poly_ylm[l][2*l-m][i] - poly_ylm[l][m][i]) / v2;
-      poly_m.push(poly);
+        poly[i^1] = (poly_ylm[l][l+m][i] - pow * poly_ylm[l][l-m][i]) / v2;
+      poly['f1'] = 'i (' + poly_ylm[l][l-m]['f1']
+        + (pow === 1 ? ' – ' : ' + ')
+        + poly_ylm[l][l+m]['f1'] + ')';
+      poly_m.unshift(poly);
     }
     poly_m.push(poly_ylm[l][l]);
-    for(let m = 0; m < l; m++) {
+    pow = 1;
+    for(let m = 1; m <= l; m++) {
       let poly = new Float32Array(numElements);
+      pow = -pow;
       for(let i = 0; i < numElements; i++)
-        poly[i^1] = (poly_ylm[l][l-1-m][i] - poly_ylm[l][l+1+m][i]) / v2;
+        poly[i] = (poly_ylm[l][l-m][i] + pow * poly_ylm[l][l+m][i]) / v2;
+      poly['f1'] = poly_ylm[l][l-m]['f1']
+        + (pow === 1 ? ' + ' : ' – ')
+        + poly_ylm[l][l+m]['f1'];
       poly_m.push(poly);
     }
     poly_ri.push(poly_m);
   }
+  // m = 0 cases already copied from poly_ylm
+  poly_ri[1][0]['f2'] = 'y';
+  poly_ri[1][2]['f2'] = 'x';
+  poly_ri[2][0]['f2'] = 'x y';
+  poly_ri[2][1]['f2'] = 'y z';
+  poly_ri[2][3]['f2'] = 'x z';
+  poly_ri[2][4]['f2'] = 'x<sup>2</sup> – y<sup>2</sup>';
+  poly_ri[3][0]['f2'] = 'y (3 x<sup>2</sup> – y<sup>2</sup>)';
+  poly_ri[3][1]['f2'] = 'x y z';
+  poly_ri[3][2]['f2'] = 'y (z<sup>2</sup> – 1/5)';
+  poly_ri[3][4]['f2'] = 'x (z<sup>2</sup> – 1/5)';
+  poly_ri[3][5]['f2'] = '(x<sup>2</sup> – y<sup>2</sup>) z';
+  poly_ri[3][6]['f2'] = 'x (x<sup>2</sup> – 3 y<sup>2</sup>)';
 }
 
 function initPoly_cart() {
@@ -436,6 +491,8 @@ function initPoly_cart() {
 
   poly = new Float32Array(numElements);
   poly[re(0, 0, 0)] = 1 / v3;
+  poly['f1'] = 'Y<sub>0,0</sub>(ϑ,ϕ)';
+  poly['f2'] = '1';
   poly_m.push(poly);
 
   poly_cart.push(poly_m);
@@ -443,14 +500,20 @@ function initPoly_cart() {
 
   poly = new Float32Array(numElements);
   poly[re(1, 0, 0)] = 1;
+  poly['f1'] = 'Y<sub>1,-1</sub>(ϑ,ϕ) – Y<sub>1,1</sub>(ϑ,ϕ)';
+  poly['f2'] = 'x';
   poly_m.push(poly);
 
   poly = new Float32Array(numElements);
   poly[re(0, 1, 0)] = 1;
+  poly['f1'] = 'i (Y<sub>1,-1</sub>(ϑ,ϕ) + Y<sub>1,1</sub>(ϑ,ϕ))';
+  poly['f2'] = 'y';
   poly_m.push(poly);
 
   poly = new Float32Array(numElements);
   poly[re(0, 0, 1)] = 1;
+  poly['f1'] = 'Y<sub>1,0</sub>(ϑ,ϕ)';
+  poly['f2'] = 'z';
   poly_m.push(poly);
 
   poly_cart.push(poly_m);
@@ -461,31 +524,43 @@ function initPoly_cart() {
   poly[re(2, 0, 0)] = 2*cc;
   poly[re(0, 2, 0)] = -cc;
   poly[re(0, 0, 2)] = -cc;
+  poly['f1'] = '√3 Y<sub>2,-2</sub>(ϑ,ϕ) – √2 Y<sub>2,0</sub>(ϑ,ϕ) + √3 Y<sub>2,2</sub>(ϑ,ϕ)';
+  poly['f2'] = 'x^2 – 1/3';
   poly_m.push(poly);
 
   poly = new Float32Array(numElements);
   poly[re(2, 0, 0)] = -cc;
   poly[re(0, 2, 0)] = 2*cc;
   poly[re(0, 0, 2)] = -cc;
+  poly['f1'] = '–(√3 Y<sub>2,-2</sub>(ϑ,ϕ) + √2 Y<sub>2,0</sub>(ϑ,ϕ) + √3 Y<sub>2,2</sub>(ϑ,ϕ))';
+  poly['f2'] = 'y^2 – 1/3';
   poly_m.push(poly);
 
   poly = new Float32Array(numElements);
   poly[re(2, 0, 0)] = -cc;
   poly[re(0, 2, 0)] = -cc;
   poly[re(0, 0, 2)] = 2*cc;
+  poly['f1'] = 'Y<sub>2,0</sub>(ϑ,ϕ)';
+  poly['f2'] = 'z^2 – 1/3';
   poly_m.push(poly);
 
   cc = v5;
   poly = new Float32Array(numElements);
   poly[re(1, 1, 0)] = cc;
+  poly['f1'] = 'i (Y<sub>2,-2</sub>(ϑ,ϕ) – Y<sub>2,2</sub>(ϑ,ϕ))';
+  poly['f2'] = 'x y';
   poly_m.push(poly);
 
   poly = new Float32Array(numElements);
   poly[re(1, 0, 1)] = cc;
+  poly['f1'] = 'Y<sub>2,-1</sub>(ϑ,ϕ) – Y<sub>2,1</sub>(ϑ,ϕ)';
+  poly['f2'] = 'x z';
   poly_m.push(poly);
 
   poly = new Float32Array(numElements);
   poly[re(0, 1, 1)] = cc;
+  poly['f1'] = 'i (Y<sub>2,-1</sub>(ϑ,ϕ) + Y<sub>2,1</sub>(ϑ,ϕ))';
+  poly['f2'] = 'y z';
   poly_m.push(poly);
 
   poly_cart.push(poly_m);
@@ -496,60 +571,80 @@ function initPoly_cart() {
   poly[re(3, 0, 0)] = 2*cc;
   poly[re(1, 2, 0)] = -3*cc;
   poly[re(1, 0, 2)] = -3*cc;
+  poly['f1'] = '√5 Y<sub>3,-3</sub>(ϑ,ϕ) – √3 Y<sub>3,-1</sub>(ϑ,ϕ) + √3 Y<sub>3,1</sub>(ϑ,ϕ) – √5 Y<sub>3,3</sub>(ϑ,ϕ)';
+  poly['f2'] = 'x (x^2 – 3/5)';
   poly_m.push(poly);
 
   poly = new Float32Array(numElements);
   poly[re(0, 3, 0)] = 2*cc;
   poly[re(2, 1, 0)] = -3*cc;
   poly[re(0, 1, 2)] = -3*cc;
+  poly['f1'] = '–i (√5 Y<sub>3,-3</sub>(ϑ,ϕ) + √3 Y<sub>3,-1</sub>(ϑ,ϕ) + √3 Y<sub>3,1</sub>(ϑ,ϕ) + √5 Y<sub>3,3</sub>(ϑ,ϕ))';
+  poly['f2'] = 'y (y^2 – 3/5)';
   poly_m.push(poly);
 
   poly = new Float32Array(numElements);
   poly[re(0, 0, 3)] = 2*cc;
   poly[re(2, 0, 1)] = -3*cc;
   poly[re(0, 2, 1)] = -3*cc;
+  poly['f1'] = 'Y<sub>3,0</sub>(ϑ,ϕ)';
+  poly['f2'] = 'z (z^2 – 3/5)';
   poly_m.push(poly);
 
   cc = v7 / v2 / 2;
   poly = new Float32Array(numElements);
-  poly[re(1, 0, 2)] = 4*cc;
-  poly[re(1, 2, 0)] = -cc;
-  poly[re(3, 0, 0)] = -cc;
-  poly_m.push(poly);
-
-  poly = new Float32Array(numElements);
   poly[re(1, 2, 0)] = 4*cc;
   poly[re(1, 0, 2)] = -cc;
   poly[re(3, 0, 0)] = -cc;
+  poly['f1'] = '–√15 Y<sub>3,-3</sub>(ϑ,ϕ) – Y<sub>3,-1</sub>(ϑ,ϕ) + Y<sub>3,1</sub>(ϑ,ϕ) + √15 Y<sub>3,3</sub>(ϑ,ϕ)';
+  poly['f2'] = 'x (y^2 – 1/5)';
+  poly_m.push(poly);
+
+  poly = new Float32Array(numElements);
+  poly[re(1, 0, 2)] = 4*cc;
+  poly[re(1, 2, 0)] = -cc;
+  poly[re(3, 0, 0)] = -cc;
+  poly['f1'] = 'Y<sub>3,-1</sub>(ϑ,ϕ) – Y<sub>3,1</sub>(ϑ,ϕ)';
+  poly['f2'] = 'x (z^2 – 1/5)';
   poly_m.push(poly);
 
   poly = new Float32Array(numElements);
   poly[re(2, 1, 0)] = 4*cc;
   poly[re(0, 1, 2)] = -cc;
   poly[re(0, 3, 0)] = -cc;
+  poly['f1'] = 'i (√15 Y<sub>3,-3</sub>(ϑ,ϕ) – Y<sub>3,-1</sub>(ϑ,ϕ) – Y<sub>3,1</sub>(ϑ,ϕ) + √15 Y<sub>3,3</sub>(ϑ,ϕ))';
+  poly['f2'] = 'y (x^2 – 1/5)';
   poly_m.push(poly);
 
   poly = new Float32Array(numElements);
   poly[re(0, 1, 2)] = 4*cc;
   poly[re(2, 1, 0)] = -cc;
   poly[re(0, 3, 0)] = -cc;
+  poly['f1'] = 'i (Y<sub>3,-1</sub>(ϑ,ϕ) + Y<sub>3,1</sub>(ϑ,ϕ))';
+  poly['f2'] = 'y (z^2 – 1/5)';
   poly_m.push(poly);
 
   poly = new Float32Array(numElements);
   poly[re(2, 0, 1)] = 4*cc;
   poly[re(0, 2, 1)] = -cc;
   poly[re(0, 0, 3)] = -cc;
+  poly['f1'] = '√5 Y<sub>3,-2</sub>(ϑ,ϕ) – √6 Y<sub>3,0</sub>(ϑ,ϕ) + √5 Y<sub>3,2</sub>(ϑ,ϕ)';
+  poly['f2'] = 'z (x^2 – 1/5)';
   poly_m.push(poly);
 
   poly = new Float32Array(numElements);
   poly[re(0, 2, 1)] = 4*cc;
   poly[re(2, 0, 1)] = -cc;
   poly[re(0, 0, 3)] = -cc;
+  poly['f1'] = '–(√5 Y<sub>3,-2</sub>(ϑ,ϕ) + √6 Y<sub>3,0</sub>(ϑ,ϕ) + √5 Y<sub>3,2</sub>(ϑ,ϕ))';
+  poly['f2'] = 'z (y^2 – 1/5)';
   poly_m.push(poly);
 
   cc = v5 * v7;
   poly = new Float32Array(numElements);
   poly[re(1, 1, 1)] = cc;
+  poly['f1'] = 'i (Y<sub>3,-2</sub>(ϑ,ϕ) – Y<sub>3,2</sub>(ϑ,ϕ))';
+  poly['f2'] = 'x y z';
   poly_m.push(poly);
 
   poly_cart.push(poly_m);
@@ -574,18 +669,27 @@ function initPoly_random(l) {
       poly[k] += amps[2*m] * poly_ylm[l][m][k];
       poly[k^1] += (k&1?-1:1) * amps[2*m+1] * poly_ylm[l][m][k];
     }
+
+  poly['f1'] = 'Σ<sub>m</sub> α<sub>' + l + ',m</sub> ' + 'Y<sub>' + l + ',m</sub>';
+  poly['f2'] = [
+    'const',
+    'linear(x, y, z)',
+    'quadratic(x, y, z)',
+    'cubic(x, y, z)'
+  ][l];
   return poly;
 }
 
 function newFunc() {
   gl.useProgram(progs.sphere.program);
+  var poly;
   switch(iface.family) {
     case 'ylm':
     case 'ri': {
       let ix = Math.floor(SIZE * SIZE * Math.random());
       let l = Math.floor(Math.sqrt(ix));
       let m = ix - l*l;
-      gl.uniform2fv(progs.sphere.uPoly, (iface.family == 'ylm' ? poly_ylm : poly_ri)[l][m]);
+      poly = (iface.family == 'ylm' ? poly_ylm : poly_ri)[l][m];
       break; }
     case 'cart': {
       let ix = Math.floor(20 * Math.random());
@@ -593,13 +697,16 @@ function newFunc() {
       // valid for l ≤ 5 (SIZE ≤ 6)
       let l = Math.floor(Math.pow(6*(ix+1), 1/3)-1);
       let m = ix - l*(l+1)*(l+2)/6;
-      gl.uniform2fv(progs.sphere.uPoly, poly_cart[l][m]);
+      poly = poly_cart[l][m];
       break; }
     default: {
       let l = Math.floor(SIZE * Math.random());
-      gl.uniform2fv(progs.sphere.uPoly, initPoly_random(l));
+      poly = initPoly_random(l);
     }
   }
+  gl.uniform2fv(progs.sphere.uPoly, poly);
+  document.getElementById('formula-ylm').innerHTML = poly['f1'];
+  document.getElementById('formula-cart').innerHTML = poly['f2'];
 }
 
 function setModel(elm) {

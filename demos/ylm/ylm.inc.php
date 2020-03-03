@@ -33,8 +33,10 @@ if($en) {
     'Complex-valued spherical harmonic functions Y<sub>l,m</sub> form the most commonly used orthonormal basis of L<sup>2</sup>(S<sub>2</sub>, d<sup>2</sup>Ω). They are also eigenfunctions of L<sub>z</sub>.',
     'Functions Y<sub>l,m</sub> a Y<sub>l,-m</sub> only differ in sign of their real or imaginary parts, so using their sums and differences we can find a real-valued ON basis.',
     'Each Y<sub>l,m</sub> is some simple polynomial in the components of the directional vector. We can alternatively find spherical functions in this form, without a preferred rotation axis. This forms an overcomplete set.',
-    'The last button generates a random superposition of various m but constant l.'
+    'The last button generates a random superposition of various m but constant l.',
+    'Attention: all normalization factors are left out from the functions above.'
   );
+  $functions = array('Spherical', 'Cartesian');
 } else {
   $desc = 'Různé fundamentální systémy prostoru funkcí definovaných na jednotkové sféře. '
     . 'Ekvivalentně je můžeme uvažovat jako funkce směru od počátku souřadnic. '
@@ -54,8 +56,10 @@ if($en) {
     'Komplexní sférické harmonické funkce Y<sub>l,m</sub> tvoří ortonormální bázi L<sup>2</sup>(S<sub>2</sub>, d<sup>2</sup>Ω) v nejznámějším tvaru. Jsou též vlastními funkcemi L<sub>z</sub>.',
     'Funkce Y<sub>l,m</sub> a Y<sub>l,-m</sub> se liší pouze znaménkem reálné nebo imaginární části, takže jejich součtem a rozdílem můžeme dosáhnout ON báze tvořené reálnými funkcemi.',
     'Každá Y<sub>l,m</sub> je jednoduchý polynom složek směrového vektoru. Sférické funkce můžeme alternativně hledat jako takové polynomy bez volby preferované rotační osy. Dostaneme ovšem neortogonální soubor.',
-    'Poslední tlačítko vygeneruje náhodnou kombinaci funkcí různého m, ale stejného l.'
+    'Poslední tlačítko vygeneruje náhodnou kombinaci funkcí různého m, ale stejného l.',
+    'Upozornění: všechny funkce jsou zobrazovány bez normalizačních konstant.'
   );
+  $functions = array('Sféricky', 'Kartézsky');
 }
 
 print <<<HTML
@@ -81,6 +85,14 @@ print <<<HTML
                 <a href="#" data-family="random">{$types['random']}</a>
               </div>
             </td>
+          </tr>
+          <tr>
+            <td>$functions[0]:</td>
+            <td id="formula-ylm"></td>
+          </tr>
+          <tr>
+            <td>$functions[1]:</td>
+            <td id="formula-cart"></td>
           </tr>
         </table>
         <button id="random" class="button">$new</button>
