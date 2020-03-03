@@ -1,9 +1,24 @@
-#canvas {
+#container {
+  position: relative;
+  display: block;
   width: 25em;
   height: 25em;
-  border: inset 2px;
-  display: block;
   margin: 0 auto;
+  border: inset 2px;
+}
+
+#canvas {
+  width: 100%;
+  height: 100%;
+}
+
+#functions {
+  position: absolute;
+  font-size: 90%;
+  left: .5em;
+  top: .5em;
+  color: white;
+  text-shadow: 0 0 .2ex black;
 }
 
 table, th, td {

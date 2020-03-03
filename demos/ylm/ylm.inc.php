@@ -94,17 +94,14 @@ print <<<HTML
           <a href="#" id="m+">m»</a>
           <a href="#" id="l+">l»</a>
         </div>
-        <table>
-          <tr>
-            <td>$functions[0]:</td>
-            <td id="formula-ylm"></td>
-          </tr>
-          <tr>
-            <td>$functions[1]:</td>
-            <td id="formula-cart"></td>
-          </tr>
-        </table>
-        <canvas id="canvas"></canvas>
+        <div id="container">
+          <canvas id="canvas"></canvas>
+          <div id="functions">
+            $functions[0]: <span id="formula-ylm"></span>
+            <br/>
+            $functions[1]: <span id="formula-cart"></span>
+          </div>
+        </div>
         <h2>$expl</h2>
 HTML;
 
