@@ -25,9 +25,9 @@ if($en) {
      'ylm' => 'Harmonic',
      'ri' => 'Y<sub>l,m</sub> ± Y<sub>l,-m</sub>',
      'cart' => 'Cartesian',
-     'random' => 'Random'
+     'random' => 'Generic'
   );
-  $new = 'New';
+  $new = 'Random';
   $expl = 'Explanation';
   $explItems = array(
     'Complex-valued spherical harmonic functions Y<sub>l,m</sub> form the most commonly used orthonormal basis of L<sup>2</sup>(S<sub>2</sub>, d<sup>2</sup>Ω). They are also eigenfunctions of L<sub>z</sub>.',
@@ -48,9 +48,9 @@ if($en) {
      'ylm' => 'Harmonická',
      'ri' => 'Y<sub>l,m</sub> ± Y<sub>l,-m</sub>',
      'cart' => 'Kartézská',
-     'random' => 'Náhodná'
+     'random' => 'Obecná'
   );
-  $new = 'Nová';
+  $new = 'Náhodná';
   $expl = 'Vysvětlivky';
   $explItems = array(
     'Komplexní sférické harmonické funkce Y<sub>l,m</sub> tvoří ortonormální bázi L<sup>2</sup>(S<sub>2</sub>, d<sup>2</sup>Ω) v nejznámějším tvaru. Jsou též vlastními funkcemi L<sub>z</sub>.',
@@ -67,15 +67,6 @@ print <<<HTML
         $desc
         <table>
           <tr>
-            <td>$proj:</td>
-            <td>
-              <div class="inline switch" id="model">
-                <a href="#" data-model="1">$models[0]</a>
-                <a href="#" data-model="2">$models[1]</a>
-              </div>
-            </td>
-          </tr>
-          <tr>
             <td>$type:</td>
             <td>
               <div class="inline switch" id="family">
@@ -87,6 +78,24 @@ print <<<HTML
             </td>
           </tr>
           <tr>
+            <td>$proj:</td>
+            <td>
+              <div class="inline switch" id="model">
+                <a href="#" data-model="1">$models[0]</a>
+                <a href="#" data-model="2">$models[1]</a>
+              </div>
+            </td>
+          </tr>
+        </table>
+        <div class="switch" id="controls">
+          <a href="#" id="l-">«l</a>
+          <a href="#" id="m-">«m</a>
+          <a href="#" id="random">$new</a>
+          <a href="#" id="m+">m»</a>
+          <a href="#" id="l+">l»</a>
+        </div>
+        <table>
+          <tr>
             <td>$functions[0]:</td>
             <td id="formula-ylm"></td>
           </tr>
@@ -95,7 +104,6 @@ print <<<HTML
             <td id="formula-cart"></td>
           </tr>
         </table>
-        <button id="random" class="button">$new</button>
         <canvas id="canvas"></canvas>
         <h2>$expl</h2>
 HTML;

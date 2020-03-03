@@ -680,33 +680,120 @@ function initPoly_random(l) {
   return poly;
 }
 
-function newFunc() {
+function newPoly(poly) {
   gl.useProgram(progs.sphere.program);
+  gl.uniform2fv(progs.sphere.uPoly, poly);
+  document.getElementById('formula-ylm').innerHTML = poly['f1'];
+  document.getElementById('formula-cart').innerHTML = poly['f2'];
+}
+
+function getPoly_random() {
   var poly;
   switch(iface.family) {
     case 'ylm':
     case 'ri': {
       let ix = Math.floor(SIZE * SIZE * Math.random());
-      let l = Math.floor(Math.sqrt(ix));
-      let m = ix - l*l;
-      poly = (iface.family == 'ylm' ? poly_ylm : poly_ri)[l][m];
-      break; }
+      let l = iface.l = Math.floor(Math.sqrt(ix));
+      let m = iface.m = ix - l*(l+1);
+      return (iface.family == 'ylm' ? poly_ylm : poly_ri)[l][l+m]; }
     case 'cart': {
       let ix = Math.floor(20 * Math.random());
       // This is an approximation of the appropriate cubic eq. solution
       // valid for l ≤ 5 (SIZE ≤ 6)
-      let l = Math.floor(Math.pow(6*(ix+1), 1/3)-1);
-      let m = ix - l*(l+1)*(l+2)/6;
-      poly = poly_cart[l][m];
-      break; }
+      let l = iface.l = Math.floor(Math.pow(6*(ix+1), 1/3)-1);
+      let m = iface.m = ix - l*(l+1)*(l+2)/6;
+      return poly_cart[l][m]; }
     default: {
-      let l = Math.floor(SIZE * Math.random());
-      poly = initPoly_random(l);
+      let l = iface.l = Math.floor(SIZE * Math.random());
+      return initPoly_random(l);
     }
   }
-  gl.uniform2fv(progs.sphere.uPoly, poly);
-  document.getElementById('formula-ylm').innerHTML = poly['f1'];
-  document.getElementById('formula-cart').innerHTML = poly['f2'];
+}
+
+function getPoly_delta(dl, dm) {
+  iface.l += dl;
+  iface.m += dm;
+  if(iface.l < 0)
+    iface.l = 0;
+  else if(iface.l >= SIZE)
+    iface.l = SIZE - 1;
+  var poly;
+  switch(iface.family) {
+    case 'ylm':
+    case 'ri': {
+      let l = iface.l;
+      if(iface.m > iface.l)
+        iface.m = iface.l;
+      else if(iface.m < -iface.l)
+        iface.m = -iface.l;
+      let m = iface.m;
+      return (iface.family == 'ylm' ? poly_ylm : poly_ri)[l][l+m]; }
+    case 'cart': {
+      let l = iface.l;
+      if(iface.m < 0)
+        iface.m = 0;
+      else if(iface.m >= (l+1)*(l+2)/2)
+        iface.m = (l+1)*(l+2)/2 - 1;
+      let m = iface.m;
+      return poly_cart[l][m]; }
+    default:
+      return initPoly_random(iface.l);
+  }
+}
+
+function disable(id) {
+  document.getElementById(id).classList.add('disabled');
+}
+
+function enable(id) {
+  document.getElementById(id).classList.remove('disabled');
+}
+
+function setEnabled(id, b) {
+  (b ? enable : disable)(id);
+}
+
+function updateControls() {
+  let l = iface.l, m = iface.m;
+  setEnabled('l-', l > 0);
+  setEnabled('l+', l < SIZE - 1);
+  switch(iface.family) {
+    case 'ylm':
+    case 'ri':
+      setEnabled('m-', m > -l);
+      setEnabled('m+', m < l);
+      break;
+    case 'cart':
+      setEnabled('m-', m > 0);
+      setEnabled('m+', m < (l+1)*(l+2)-1);
+      break;
+    default:
+      enable('m+');
+      enable('m-');
+  }
+}
+
+function newFunc(e) {
+  var poly;
+  switch(e ? e.currentTarget.id : 'random') {
+    case 'random':
+      poly = getPoly_random();
+      break;
+    case 'm+':
+      poly = getPoly_delta(0, 1);
+      break;
+    case 'm-':
+      poly = getPoly_delta(0, -1);
+      break;
+    case 'l+':
+      poly = getPoly_delta(1, 0);
+      break;
+    case 'l-':
+      poly = getPoly_delta(-1, 0);
+      break;
+  }
+  newPoly(poly);
+  updateControls();
 }
 
 function setModel(elm) {
@@ -764,6 +851,9 @@ window.addEventListener('DOMContentLoaded', function() {
   };
 
   addPointerListeners(canvas, rotStart, rotMove);
-
   document.getElementById('random').addEventListener('click', newFunc);
+  document.getElementById('l+').addEventListener('click', newFunc);
+  document.getElementById('l-').addEventListener('click', newFunc);
+  document.getElementById('m+').addEventListener('click', newFunc);
+  document.getElementById('m-').addEventListener('click', newFunc);
 });

@@ -6,12 +6,6 @@
   margin: 0 auto;
 }
 
-#random {
-  display: table;
-  margin: .5em auto;
-  align: center;
-}
-
 table, th, td {
   border: 0;
   padding: 0;
