@@ -773,12 +773,9 @@ function updateControls() {
   }
 }
 
-function newFunc(e) {
+function newFunc(type) {
   var poly;
-  switch(e ? e.currentTarget.id : 'random') {
-    case 'random':
-      poly = getPoly_random();
-      break;
+  switch(type) {
     case 'm+':
       poly = getPoly_delta(0, 1);
       break;
@@ -790,6 +787,9 @@ function newFunc(e) {
       break;
     case 'l-':
       poly = getPoly_delta(-1, 0);
+      break;
+    default:
+      poly = getPoly_random();
       break;
   }
   newPoly(poly);
@@ -850,10 +850,15 @@ window.addEventListener('DOMContentLoaded', function() {
     speed: .001
   };
 
+  let funcListener = function(e) {
+    newFunc(e.currentTarget.id);
+    e.preventDefault();
+  };
+
   addPointerListeners(canvas, rotStart, rotMove);
-  document.getElementById('random').addEventListener('click', newFunc);
-  document.getElementById('l+').addEventListener('click', newFunc);
-  document.getElementById('l-').addEventListener('click', newFunc);
-  document.getElementById('m+').addEventListener('click', newFunc);
-  document.getElementById('m-').addEventListener('click', newFunc);
+  document.getElementById('random').addEventListener('click', funcListener);
+  document.getElementById('l+').addEventListener('click', funcListener);
+  document.getElementById('l-').addEventListener('click', funcListener);
+  document.getElementById('m+').addEventListener('click', funcListener);
+  document.getElementById('m-').addEventListener('click', funcListener);
 });
