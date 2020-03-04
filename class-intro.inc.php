@@ -1,9 +1,11 @@
         <h1>Kvantová fyzika <span class="smaller">(02KFA)</span></h1>
-        Přednášky budou probíhat od 2.3.2020 v <b>pondělí</b> ve dvou dvouhodinových blocích
+        Přednášky budou probíhat v <b>pondělí</b> ve dvou dvouhodinových blocích
         <b>15:30 – 17:10</b> a <b>17:30 – 19:10</b> v místnosti <b>B10</b>.
         Čas přestávky se může dle aktuální potřeby mírně přizpůsobit.
         <p></p>
         Cvičení (vedoucí <a href="https://physics.fjfi.cvut.cz/cb-profile/jexmicha" target="_blank">RNDr. Ing. Michal Jex, Ph.D.</a>) budou od stejného týdne ve <b>čtvrtky</b> od <b>9:30</b> v místnosti <b>B11</b>.
+        <p></p>
+        Konzultační hodiny ideálně ve <b>středu</b> od <b>13:30</b> – komu se trvale nehodí, dle individuální domluvy.
         <p></p>
         Literatura k přednášce: J. Blank, P. Exner, M. Havlíček –
         <i><a href="https://www.databazeknih.cz/knihy/linearni-operatory-v-kvantove-fyzice-199159"
@@ -14,9 +16,7 @@
         V KOS nedošlo ke zrušení starého kódu vlivem administrativní chyby.
         Zkontrolujte prosím svůj zápis a případně kontaktujte Studijní oddělení ohledně možnosti opravy.
         <p></p>
-        <b>Změny rozvrhu:</b> S platností <b>již od pondělí 2.3.</b> platí nový rozvrh v záhlaví stránky.
-        Tento týden ještě platí dřívější rozvrh, ale se <b>změnou učebny v pátečním bloku</b>.
-        Tedy druhá přednáška bude ve čtvrtek 9:30 v B11 a cvičení v pátek od 9:30 <b>v posluchárně B114</b>.
+        <b>Změny rozvrhu:</b> S platností od pondělí 2.3. platí nový rozvrh v záhlaví stránky.
 
         <div class="buttons">
           <a class="button" href="<?php echo query('', array('s' => 'notes')); ?>">Zápis z hodin</a>
