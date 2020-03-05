@@ -1,3 +1,5 @@
+/***** AJAX helpers *****/
+
 function basename(url) {
   return url.substring(url.lastIndexOf('/') + 1);
 }
@@ -23,6 +25,33 @@ function loadFiles(func) {
     };
     xhr.responseType = 'text';
     xhr.send();
+  }
+}
+
+/***** OpenGL *****/
+
+function createShader(ctx, type, source) {
+  var shader = ctx.createShader(type);
+  ctx.shaderSource(shader, source);
+  ctx.compileShader(shader);
+  if(ctx.getShaderParameter(shader, ctx.COMPILE_STATUS))
+    return shader;
+  else {
+    console.log(ctx.getShaderInfoLog(shader));
+    ctx.deleteShader(shader);
+  }
+}
+
+function createProgram(ctx, vertexShader, fragmentShader) {
+  var program = ctx.createProgram();
+  ctx.attachShader(program, vertexShader);
+  ctx.attachShader(program, fragmentShader);
+  ctx.linkProgram(program);
+  if(ctx.getProgramParameter(program, ctx.LINK_STATUS))
+    return program;
+  else {
+    console.log(ctx.getProgramInfoLog(program));
+    ctx.deleteProgram(program);
   }
 }
 

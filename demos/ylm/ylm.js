@@ -4,38 +4,13 @@ const divArrow = 10;
 const SIZE = 4;
 const numElements = SIZE * SIZE * SIZE * 2;
 
-function createShader(type, source) {
-  var shader = gl.createShader(type);
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-  if(gl.getShaderParameter(shader, gl.COMPILE_STATUS))
-    return shader;
-  else {
-    console.log(gl.getShaderInfoLog(shader));
-    gl.deleteShader(shader);
-  }
-}
-
-function createProgram(vertexShader, fragmentShader) {
-  var program = gl.createProgram();
-  gl.attachShader(program, vertexShader);
-  gl.attachShader(program, fragmentShader);
-  gl.linkProgram(program);
-  if(gl.getProgramParameter(program, gl.LINK_STATUS))
-    return program;
-  else {
-    console.log(gl.getProgramInfoLog(program));
-    gl.deleteProgram(program);
-  }
-}
-
 function start(files) {
   var vs, fs;
 
   progs.bkg = {};
-  vs = createShader(gl.VERTEX_SHADER, files['background.vert']);
-  fs = createShader(gl.FRAGMENT_SHADER, files['background.frag']);
-  progs.bkg.program = createProgram(vs, fs);
+  vs = createShader(gl, gl.VERTEX_SHADER, files['background.vert']);
+  fs = createShader(gl, gl.FRAGMENT_SHADER, files['background.frag']);
+  progs.bkg.program = createProgram(gl, vs, fs);
   progs.bkg.aPos = gl.getAttribLocation(progs.bkg.program, 'aPos');
 
   progs.bkg.bPos = gl.createBuffer();
@@ -49,9 +24,9 @@ function start(files) {
     1, -1]), gl.STATIC_DRAW);
 
   progs.sphere = {};
-  vs = createShader(gl.VERTEX_SHADER, files['sphere.vert']);
-  fs = createShader(gl.FRAGMENT_SHADER, files['sphere.frag']);
-  progs.sphere.program = createProgram(vs, fs);
+  vs = createShader(gl, gl.VERTEX_SHADER, files['sphere.vert']);
+  fs = createShader(gl, gl.FRAGMENT_SHADER, files['sphere.frag']);
+  progs.sphere.program = createProgram(gl, vs, fs);
   progs.sphere.aPos = gl.getAttribLocation(progs.sphere.program, 'aPos');
   progs.sphere.uView = gl.getUniformLocation(progs.sphere.program, 'uQView');
   progs.sphere.uPoly = gl.getUniformLocation(progs.sphere.program, 'uPoly');
@@ -97,9 +72,9 @@ function start(files) {
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
 
   progs.arrow = {};
-  vs = createShader(gl.VERTEX_SHADER, files['arrow.vert']);
-  fs = createShader(gl.FRAGMENT_SHADER, files['arrow.frag']);
-  progs.arrow.program = createProgram(vs, fs);
+  vs = createShader(gl, gl.VERTEX_SHADER, files['arrow.vert']);
+  fs = createShader(gl, gl.FRAGMENT_SHADER, files['arrow.frag']);
+  progs.arrow.program = createProgram(gl, vs, fs);
   progs.arrow.aPos = gl.getAttribLocation(progs.arrow.program, 'aPos');
   progs.arrow.aNormal = gl.getAttribLocation(progs.arrow.program, 'aNormal');
   progs.arrow.uView = gl.getUniformLocation(progs.arrow.program, 'uQView');
