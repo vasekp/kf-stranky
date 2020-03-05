@@ -39,7 +39,7 @@ print <<<HTML
           <br id="graphBreak"/>
           <canvas id="graph"></canvas>
         </div>
-        <h2>$try</h2>
+        <h2>$try</h2>\n
 HTML;
 
 print_indent(4, '<ul>');

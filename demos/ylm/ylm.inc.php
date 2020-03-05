@@ -102,7 +102,7 @@ print <<<HTML
             $functions[1]: <span id="formula-cart"></span>
           </div>
         </div>
-        <h2>$expl</h2>
+        <h2>$expl</h2>\n
 HTML;
 
 print_indent(4, '<ul>');
