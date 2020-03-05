@@ -1,11 +1,18 @@
 <?php
-print_indent(4, '<div class="error">');
-print_indent(5, $en ? 'This page does not exist.' : 'Tato stránka neexistuje.');
-print_indent(5, '<br/>');
-$text = $en ? 'Please report this error on ' : 'Prosím nahlašte chybu na ';
-$text .= '<a href="https://github.com/vasekp/kf-stranky/issues" target="_blank">';
-$text .= $en ? 'GitHub' : 'GitHubu';
-$text .= '</a>.';
-print_indent(5, $text);
-print_indent(4, '</div>');
+if($early)
+  return;
+
+$url = 'https://github.com/vasekp/kf-stranky/issues';
+$dne = $en ? 'This page does not exist.' : 'Tato stránka neexistuje.';
+$rep = $en
+  ? 'Please report this error on <a href="' . $url . '" target="_blank">GitHub.</a>'
+  : 'Prosím nahlašte chybu na <a href="' . $url . '" target="_blank">GitHubu.</a>';
+
+print <<<HTML
+        <div class="error">
+          $dne
+          <br/>
+          $rep
+        </div>\n
+HTML;
 ?>
