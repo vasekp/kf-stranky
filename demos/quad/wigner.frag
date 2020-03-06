@@ -13,8 +13,9 @@ vec3 color(float f) {
 
 void main(void) {
   const vec2 shift = vec2(1.5, 0);
-  const mat2 scale = mat2(1.2, 1.3, -0.5, 1.4);
-  //float val = w_cat(vPos.x, vPos.y, uSepar);
-  float val = w_fock(vPos, scale, shift);
+  const mat2 scale = mat2(1.2, 1.3, -0.2, 1.4);
+  vec2 trf = scale * (vPos - shift);
+  float val = w_cat(trf, uSepar);
+  //float val = w_gauss(trf);
   gl_FragColor = vec4(color(val), 1.);
 }

@@ -1,47 +1,41 @@
 precision highp float;
 
+mat2 rot(float angle) {
+  float cc = cos(angle);
+  float ss = sin(angle);
+  return mat2(cc, ss, -ss, cc);
+}
+
+float faktor(mat2 mx) {
+  float det = mx[0][0]*mx[1][1] - mx[0][1]*mx[1][0];
+  return det/length(mx[1]);
+}
+
 float cosh(float x) {
   return (exp(x) + exp(-x))/2.;
 }
 
-
-float w_cat(float x, float y, float s) {
-  return exp(-(x*x + y*y)) * (exp(-s*s)*cosh(2.*x*s) + cos(2.*y*s))/2.;
+float w_cat(vec2 xy, float s) {
+  return exp(-dot(xy, xy)) * (exp(-s*s)*cosh(2.*xy.x*s) + cos(2.*xy.y*s))/2.;
 }
 
-
-float q_cat(float q, float angle, float s) {
-  float cc = cos(angle);
-  float ss = sin(angle);
-  return 1./(1.+exp(-s*s)) * exp(-(q*q + pow(s*cc, 2.))) * (cosh(2.*s*cc*q) + cos(2.*s*ss*q));
+float int_cat(float q, float s, mat2 mx) {
+  vec2 col = normalize(mx[1]);
+  return 1./(1.+exp(-s*s)) * exp(-q*q - pow(s*col[1], 2.)) * (cosh(2.*col[1]*s*q) + cos(2.*col[0]*s*q));
 }
 
-float w_gauss(vec2 xy, mat2 scale, vec2 shift) {
-  vec2 q = scale * (xy - shift);
-  return exp(-dot(q, q));
+float w_gauss(vec2 xy) {
+  return exp(-dot(xy, xy));
 }
 
-float q_gauss(float q, float angle, mat2 scale, vec2 shift) {
-  float cc = cos(angle);
-  float ss = sin(angle);
-  float det = scale[0][0]*scale[1][1] - scale[0][1]*scale[1][0];
-  mat2 rot = mat2(cc, ss, -ss, cc);
-  vec2 tv = vec2(1., -1.) * (scale * rot)[1].yx;
-  float q0 = (det * q - dot(tv, scale * shift)) / length(tv);
-  return exp(-q0*q0) / length(tv);
+float int_gauss(float q) {
+  return exp(-q*q);
 }
 
-float w_fock(vec2 xy, mat2 scale, vec2 shift) {
-  vec2 q = scale * (xy - shift);
-  return (2.*dot(q, q) - 1.) * exp(-dot(q, q));
+float w_fock(vec2 xy) {
+  return (2.*dot(xy, xy) - 1.) * exp(-dot(xy, xy));
 }
 
-float q_fock(float q, float angle, mat2 scale, vec2 shift) {
-  float cc = cos(angle);
-  float ss = sin(angle);
-  float det = scale[0][0]*scale[1][1] - scale[0][1]*scale[1][0];
-  mat2 rot = mat2(cc, ss, -ss, cc);
-  vec2 tv = vec2(1., -1.) * (scale * rot)[1].yx;
-  float q0 = (det * q - dot(tv, scale * shift)) / length(tv);
-  return 2.*q0*q0 * exp(-q0*q0) / length(tv);
+float int_fock(float q) {
+  return 2.*q*q * exp(-q*q);
 }
