@@ -7,11 +7,7 @@ const numElements = SIZE * SIZE * SIZE * 2;
 function start(files) {
   var vs, fs;
 
-  progs.bkg = {};
-  vs = createShader(gl, gl.VERTEX_SHADER, files['background.vert']);
-  fs = createShader(gl, gl.FRAGMENT_SHADER, files['background.frag']);
-  progs.bkg.program = createProgram(gl, vs, fs);
-  progs.bkg.aPos = gl.getAttribLocation(progs.bkg.program, 'aPos');
+  progs.bkg = createProgram(gl, files['background.vert'], files['background.frag']);
 
   progs.bkg.bPos = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, progs.bkg.bPos);
@@ -23,14 +19,7 @@ function start(files) {
     -1, 1,
     1, -1]), gl.STATIC_DRAW);
 
-  progs.sphere = {};
-  vs = createShader(gl, gl.VERTEX_SHADER, files['sphere.vert']);
-  fs = createShader(gl, gl.FRAGMENT_SHADER, files['sphere.frag']);
-  progs.sphere.program = createProgram(gl, vs, fs);
-  progs.sphere.aPos = gl.getAttribLocation(progs.sphere.program, 'aPos');
-  progs.sphere.uView = gl.getUniformLocation(progs.sphere.program, 'uQView');
-  progs.sphere.uPoly = gl.getUniformLocation(progs.sphere.program, 'uPoly');
-  progs.sphere.uModel = gl.getUniformLocation(progs.sphere.program, 'uModel');
+  progs.sphere = createProgram(gl, files['sphere.vert'], files['sphere.frag']);
 
   var strideX = 3;
   var strideY = strideX * divX;
@@ -71,15 +60,7 @@ function start(files) {
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, progs.sphere.bIx);
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
 
-  progs.arrow = {};
-  vs = createShader(gl, gl.VERTEX_SHADER, files['arrow.vert']);
-  fs = createShader(gl, gl.FRAGMENT_SHADER, files['arrow.frag']);
-  progs.arrow.program = createProgram(gl, vs, fs);
-  progs.arrow.aPos = gl.getAttribLocation(progs.arrow.program, 'aPos');
-  progs.arrow.aNormal = gl.getAttribLocation(progs.arrow.program, 'aNormal');
-  progs.arrow.uView = gl.getUniformLocation(progs.arrow.program, 'uQView');
-  progs.arrow.uModel = gl.getUniformLocation(progs.arrow.program, 'uQModel');
-  progs.arrow.uColor = gl.getUniformLocation(progs.arrow.program, 'uColor');
+  progs.arrow = createProgram(gl, files['arrow.vert'], files['arrow.frag']);
 
   strideX = 3 * 3 * 2;
   var attribs = new Float32Array(strideX * divArrow + 2 * 3 * 2);
@@ -212,7 +193,7 @@ function draw(time) {
   gl.bindBuffer(gl.ARRAY_BUFFER, progs.sphere.bPos);
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, progs.sphere.bIx);
   gl.vertexAttribPointer(progs.sphere.aPos, 3, gl.FLOAT, false, 0, 0);
-  gl.uniform4fv(progs.sphere.uView, qView);
+  gl.uniform4fv(progs.sphere.uQView, qView);
   gl.drawElements(gl.TRIANGLES, divX * divY * 6, gl.UNSIGNED_SHORT, 0);
   gl.disableVertexAttribArray(progs.sphere.aPos);
 
@@ -223,9 +204,9 @@ function draw(time) {
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, progs.arrow.bIx);
   gl.vertexAttribPointer(progs.arrow.aPos, 3, gl.FLOAT, false, 6*4, 0);
   gl.vertexAttribPointer(progs.arrow.aNormal, 3, gl.FLOAT, false, 6*4, 3*4);
-  gl.uniform4fv(progs.arrow.uView, qView);
+  gl.uniform4fv(progs.arrow.uQView, qView);
   for(let i = 0; i < 3; i++) {
-    gl.uniform4fv(progs.arrow.uModel, progs.arrow.quats[i]);
+    gl.uniform4fv(progs.arrow.uQModel, progs.arrow.quats[i]);
     gl.uniform3fv(progs.arrow.uColor, progs.arrow.colors[i]);
     gl.drawElements(gl.TRIANGLES, divArrow * 18, gl.UNSIGNED_SHORT, 0);
   }

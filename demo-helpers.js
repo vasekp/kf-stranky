@@ -30,7 +30,7 @@ function loadFiles(func) {
 
 /***** OpenGL *****/
 
-function createShader(ctx, type, source) {
+function createGLShader(ctx, type, source) {
   var shader = ctx.createShader(type);
   ctx.shaderSource(shader, source);
   ctx.compileShader(shader);
@@ -42,7 +42,7 @@ function createShader(ctx, type, source) {
   }
 }
 
-function createProgram(ctx, vertexShader, fragmentShader) {
+function createGLProgram(ctx, vertexShader, fragmentShader) {
   var program = ctx.createProgram();
   ctx.attachShader(program, vertexShader);
   ctx.attachShader(program, fragmentShader);
@@ -53,6 +53,31 @@ function createProgram(ctx, vertexShader, fragmentShader) {
     console.log(ctx.getProgramInfoLog(program));
     ctx.deleteProgram(program);
   }
+}
+
+function createProgram(ctx, vertSource, fragSource) {
+  var ret = {};
+  var vs = createGLShader(gl, gl.VERTEX_SHADER, vertSource);
+  var fs = createGLShader(gl, gl.FRAGMENT_SHADER, fragSource);
+  var program = createGLProgram(gl, vs, fs);
+  if(!program)
+    return null;
+  ret.program = program;
+  const numUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+  for(let i = 0; i < numUniforms; i++) {
+    let name = gl.getActiveUniform(program, i).name;
+    if(name.indexOf('[') > 0)
+      name = name.substring(0, name.indexOf('['));
+    const loc = gl.getUniformLocation(program, name);
+    ret[name] = loc;
+  }
+  const numAttribs = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES);
+  for(let i = 0; i < numAttribs; i++) {
+    const name = gl.getActiveAttrib(program, i).name;
+    const loc = gl.getAttribLocation(program, name);
+    ret[name] = loc;
+  }
+  return ret;
 }
 
 /***** Mouse and touch event listeners *****/
