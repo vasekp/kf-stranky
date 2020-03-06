@@ -11,6 +11,5 @@ if($early) {
 }?>
 
 <div id="container">
-  <canvas id="wigner"></canvas>
-  <canvas id="quad"></canvas>
+  <canvas id="canvas"></canvas>
 </div>

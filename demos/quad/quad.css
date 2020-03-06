@@ -5,15 +5,8 @@
   margin: 0 auto;
 }
 
-#wigner {
+#canvas {
   display: block;
   width: 25em;
-  height: 25em;
-  margin: 0;
-}
-
-#quad {
-  display: block;
-  width: 25em;
-  height: 15em;
+  height: 50em;
 }
