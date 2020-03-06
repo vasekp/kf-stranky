@@ -4,15 +4,10 @@ uniform float uSepar;
 varying float vQuad;
 varying float vAngle;
 
-float cosh(float x) {
-  return (exp(x) + exp(-x))/2.;
-}
-
 void main(void) {
-  float cc = cos(vAngle);
-  float ss = sin(vAngle);
-  float s = uSepar;
-  float val = 1./(1.+exp(-s*s)) * exp(-(vQuad*vQuad + pow(s*cc, 2.)))
-    * (cosh(2.*s*cc*vQuad) + cos(2.*s*ss*vQuad));
+  const vec2 shift = vec2(1.5, 0);
+  const mat2 scale = mat2(1.2, 1.3, -0.5, 1.4);
+  //float val = q_cat(vQuad, vAngle, uSepar);
+  float val = q_fock(vQuad, vAngle, scale, shift);
   gl_FragColor = vec4(vec3(1. - val), 1.);
 }

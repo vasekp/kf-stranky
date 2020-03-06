@@ -11,16 +11,10 @@ vec3 color(float f) {
     return vec3(1., e, e);
 }
 
-float cosh(float x) {
-  return (exp(x) + exp(-x))/2.;
-}
-
 void main(void) {
-  /*const vec2 shift = vec2(.5, 0);
-  const mat2 scale = mat2(6., 8., -2., 7.);
-  vec2 q = scale * (vPos - shift);
-  float val = 2.*(dot(q, q) - 1.) * exp(-dot(q, q));*/
-  float s = uSepar;
-  float val = exp(-(dot(vPos, vPos) + s*s)) * (cosh(2.*vPos.x*s) + exp(s*s)*cos(2.*vPos.y*s))/2.;
+  const vec2 shift = vec2(1.5, 0);
+  const mat2 scale = mat2(1.2, 1.3, -0.5, 1.4);
+  //float val = w_cat(vPos.x, vPos.y, uSepar);
+  float val = w_fock(vPos, scale, shift);
   gl_FragColor = vec4(color(val), 1.);
 }
