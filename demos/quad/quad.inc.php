@@ -7,6 +7,8 @@ if($early) {
   array_push($files, $demodir . '/wigner.frag');
   array_push($files, $demodir . '/quad.vert');
   array_push($files, $demodir . '/quad.frag');
+  array_push($files, $demodir . '/graph.vert');
+  array_push($files, $demodir . '/graph.frag');
   return;
 }?>
 
