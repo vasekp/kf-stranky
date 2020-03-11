@@ -8,10 +8,10 @@ if($early) {
   array_push($files, $demodir . '/functions.glsl');
   array_push($files, $demodir . '/wigner.vert');
   array_push($files, $demodir . '/wigner.frag');
-  array_push($files, $demodir . '/quad.vert');
-  array_push($files, $demodir . '/quad.frag');
   array_push($files, $demodir . '/graph.vert');
   array_push($files, $demodir . '/graph.frag');
+  array_push($files, $demodir . '/history.vert');
+  array_push($files, $demodir . '/history.frag');
   return;
 }
 

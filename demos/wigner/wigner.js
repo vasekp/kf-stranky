@@ -40,13 +40,13 @@ function draw(time) {
       gl.enable(gl.SCISSOR_TEST);
       gl.scissor(0, startY, gl.canvas.width, vpHeight - startY);
     }
-    gl.useProgram(progs.quad.program);
-    gl.enableVertexAttribArray(progs.quad.aPos);
-    gl.vertexAttribPointer(progs.quad.aPos, 2, gl.FLOAT, false, 0, 0);
-    gl.uniform1f(progs.quad.uAngle, angle);
-    gl.uniform1f(progs.quad.uSepar, catSepar);
+    gl.useProgram(progs.history.program);
+    gl.enableVertexAttribArray(progs.history.aPos);
+    gl.vertexAttribPointer(progs.history.aPos, 2, gl.FLOAT, false, 0, 0);
+    gl.uniform1f(progs.history.uAngle, angle);
+    gl.uniform1f(progs.history.uSepar, catSepar);
     gl.drawArrays(gl.TRIANGLES, 0, 6);
-    gl.disableVertexAttribArray(progs.quad.aPos);
+    gl.disableVertexAttribArray(progs.history.aPos);
     gl.disable(gl.SCISSOR_TEST);
   }
 
@@ -60,7 +60,7 @@ function start(files) {
   var vs, fs;
 
   progs.wigner = new Program(gl, files['wigner.vert'], files['functions.glsl'] + files['wigner.frag']);
-  progs.quad = new Program(gl, files['quad.vert'], files['functions.glsl'] + files['quad.frag']);
+  progs.history = new Program(gl, files['history.vert'], files['functions.glsl'] + files['history.frag']);
   progs.graph = new Program(gl, files['graph.vert'], files['functions.glsl'] + files['graph.frag']);
   progs.bufs = {};
 
@@ -121,7 +121,7 @@ function updateUniforms() {
   var scaleInv = new Float32Array([
     scale[3], -scale[1], -scale[2], scale[0]]);
 
-  ['wigner', 'quad', 'graph'].forEach(function(p) {
+  ['wigner', 'history', 'graph'].forEach(function(p) {
     gl.useProgram(progs[p].program);
     gl.uniformMatrix2fv(progs[p].uScaleInv, false, scaleInv);
     gl.uniform2fv(progs[p].uShift, shift);
