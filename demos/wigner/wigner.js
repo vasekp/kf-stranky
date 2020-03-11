@@ -1,10 +1,62 @@
 var gl;
-var iface, progs;
+var interaction, playing, progs;
 
 var angle, lastTime;
 var scale, shift, catSepar;
 const speed = 0.001;
 const angleRange = 4;
+
+window.addEventListener('DOMContentLoaded', function() {
+  var canvas = document.getElementById('canvas');
+  canvas.width = canvas.clientWidth;
+  canvas.height = canvas.clientHeight;
+  gl = canvas.getContext('webgl');
+
+  if(!gl) {
+    alert('WebGL not supported');
+    return;
+  }
+
+  if(gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.HIGH_FLOAT).precision <= 0) {
+    alert('High precision, required for this demo, not supported in this hardware');
+    return;
+  }
+
+  gl.clearColor(1, 1, 1, 1);
+  interaction = {};
+  angle = 0;
+
+  loadFiles(filesReady);
+});
+
+function filesReady(files) {
+  progs = {};
+
+  progs.wigner = new Program(gl, files['wigner.vert'], files['functions.glsl'] + files['wigner.frag']);
+  progs.history = new Program(gl, files['history.vert'], files['functions.glsl'] + files['history.frag']);
+  progs.graph = new Program(gl, files['functions.glsl'] + files['graph.vert'], files['functions.glsl'] + files['graph.frag']);
+  progs.bufs = {};
+
+  progs.bufs.full = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, progs.bufs.full);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+    -1, -1,
+    1, -1,
+    -1, 1,
+    1, 1,
+    -1, 1,
+    1, -1]), gl.STATIC_DRAW);
+
+  scale = new Float32Array([1.2, 0.7, -0.4, 0.6]);
+  shift = new Float32Array([0, 1]);
+  catSepar = 1.5;
+  updateUniforms();
+
+  makeSwitch('play-controls', playControl, 0);
+  makeSwitch('func', changeFuncType, 0);
+  document.getElementById('reset').addEventListener('click', reset);
+  addPointerListeners(document.getElementById('coords'), pStart, pMove);
+}
 
 function draw(time) {
   if(lastTime)
@@ -34,7 +86,7 @@ function draw(time) {
 
   var vpHeight = Math.floor(0.4 * gl.canvas.height);
   gl.viewport(0, 0, gl.canvas.width, vpHeight);
-  if(iface.playing) {
+  if(playing) {
     if(angle < angleRange) {
       var startY = Math.floor(vpHeight * (1 - angle/angleRange));
       gl.enable(gl.SCISSOR_TEST);
@@ -50,38 +102,10 @@ function draw(time) {
     gl.disable(gl.SCISSOR_TEST);
   }
 
-  if(iface.playing)
+  if(playing)
     requestAnimationFrame(draw);
   else
     lastTime = null;
-}
-
-function start(files) {
-  var vs, fs;
-
-  progs.wigner = new Program(gl, files['wigner.vert'], files['functions.glsl'] + files['wigner.frag']);
-  progs.history = new Program(gl, files['history.vert'], files['functions.glsl'] + files['history.frag']);
-  progs.graph = new Program(gl, files['functions.glsl'] + files['graph.vert'], files['functions.glsl'] + files['graph.frag']);
-  progs.bufs = {};
-
-  progs.bufs.full = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, progs.bufs.full);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-    -1, -1,
-    1, -1,
-    -1, 1,
-    1, 1,
-    -1, 1,
-    1, -1]), gl.STATIC_DRAW);
-
-  scale = new Float32Array([1.2, 0.7, -0.4, 0.6]);
-  shift = new Float32Array([0, 1]);
-  catSepar = 1.5;
-  updateUniforms();
-
-  makeSwitch('controls', playControl, 0);
-  makeSwitch('func', changeFuncType, 0);
-  document.getElementById('reset').addEventListener('click', reset);
 }
 
 function playControl(elm) {
@@ -93,14 +117,14 @@ function playControl(elm) {
 
 function play() {
   document.getElementById('shape-controls').classList.add('hidden');
-  if(!iface.playing) {
-    iface.playing = true;
+  if(!playing) {
+    playing = true;
     requestAnimationFrame(draw);
   }
 }
 
 function pause() {
-  iface.playing = false;
+  playing = false;
   const c = Math.cos(angle);
   const s = Math.sin(angle);
   scale = new Float32Array([
@@ -170,7 +194,7 @@ function updateControls() {
 }
 
 function pStart(elm, x, y, rect) {
-  if(iface.playing) {
+  if(playing) {
     document.getElementById('pause').click();
     return;
   }
@@ -181,36 +205,38 @@ function pStart(elm, x, y, rect) {
       shift[1] + mx*scale[1] + my*scale[3] - ty);
   }
   if(dist(tx, ty, 0, 0) < 0.2)
-    iface.moving = 'c';
+    interaction.moving = 'c';
   else if(dist(tx, ty, 1, 0) < 0.2)
-    iface.moving = 'ex';
+    interaction.moving = 'ex';
   else if(dist(tx, ty, 0, 1) < 0.2)
-    iface.moving = 'ey';
+    interaction.moving = 'ey';
   else if(dist(tx, ty, 1, 1) < 0.2)
-    iface.moving = 'cxy';
+    interaction.moving = 'cxy';
   else if(dist(tx, ty, catSepar, 0) < 0.2)
-    iface.moving = 's';
+    interaction.moving = 's';
   else
-    iface.moving = null;
-  iface.lastX = tx;
-  iface.lastY = ty;
+    interaction.moving = null;
+  interaction.lastX = tx;
+  interaction.lastY = ty;
 }
 
-function matAccept(mx) {
-  let h1 = Math.hypot(mx[0], mx[1]);
-  let h2 = Math.hypot(mx[2], mx[3]);
-  let sp = (mx[0]*mx[2] + mx[1]*mx[3])/h1/h2;
-  return h1 > 0.5 && h1 < 2 && h2 > 0.5 && h2 < 2 && sp > -1 && sp < 1;
-}
 
 function pMove(elm, x, y, rect) {
-  if(!iface.moving)
+  function matAccept(mx) {
+    let h1 = Math.hypot(mx[0], mx[1]);
+    let h2 = Math.hypot(mx[2], mx[3]);
+    let sp = (mx[0]*mx[2] + mx[1]*mx[3])/h1/h2;
+    return h1 > 0.5 && h1 < 2 && h2 > 0.5 && h2 < 2 && sp > -1 && sp < 1;
+  }
+
+  if(!interaction.moving)
     return;
+
   var tx = 5*(2*x/rect.width - 1);
   var ty = -5*(2*y/rect.height - 1);
-  if(iface.moving === 'c') {
-    shift[0] += tx - iface.lastX;
-    shift[1] += ty - iface.lastY;
+  if(interaction.moving === 'c') {
+    shift[0] += tx - interaction.lastX;
+    shift[1] += ty - interaction.lastY;
   } else {
     var dx = tx - shift[0];
     var dy = ty - shift[1];
@@ -219,7 +245,7 @@ function pMove(elm, x, y, rect) {
     var uv = [u[0]+v[0], u[1]+v[1]];
     var mx = v[1] * dx - v[0] * dy;
     var my = -u[1] * dx + u[0] * dy;
-    switch(iface.moving) {
+    switch(interaction.moving) {
       case 'ex': {
         let nmx = new Float32Array([mx*scale[0] + my*scale[2], mx*scale[1] + my*scale[3], scale[2]/mx, scale[3]/mx]);
         if(matAccept(nmx))
@@ -249,36 +275,9 @@ function pMove(elm, x, y, rect) {
         break; }
     }
   }
-  iface.lastX = tx;
-  iface.lastY = ty;
+  interaction.lastX = tx;
+  interaction.lastY = ty;
   updateUniforms();
   updateControls();
   requestAnimationFrame(draw);
 }
-
-window.addEventListener('DOMContentLoaded', function() {
-  var canvas = document.getElementById('canvas');
-  canvas.width = canvas.clientWidth;
-  canvas.height = canvas.clientHeight;
-  gl = canvas.getContext('webgl');
-
-  if(!gl) {
-    alert('WebGL not supported');
-    return;
-  }
-
-  if(gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.HIGH_FLOAT).precision <= 0) {
-    alert('High precision, required for this demo, not supported in this hardware');
-    return;
-  }
-
-  gl.clearColor(1, 1, 1, 1);
-  progs = {};
-  loadFiles(start);
-
-  iface = {};
-  angle = 0;
-
-  var coords = document.getElementById('coords');
-  addPointerListeners(coords, pStart, pMove);
-});

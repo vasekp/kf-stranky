@@ -38,7 +38,7 @@ print <<<HTML
         <div class="inline switch offset">
           <a href="#" id="reset">$reset</a>
         </div>
-        <div class="switch" id="controls">
+        <div class="switch" id="play-controls">
           <a href="#" id="play"><img class="inline-img" src="$demodir/play.svg"/></a>
           <a href="#" id="pause"><img class="inline-img" src="$demodir/pause.svg"/></a>
         </div>

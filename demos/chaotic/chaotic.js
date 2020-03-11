@@ -2,18 +2,66 @@ const c1 = 1; // 1/tau/a^3
 const c2 = 1; // tau a^2 g
 
 var svg1, svg2, graph, state1, state2;
-var iface;
+var interaction, playing;
 
-// ***** Hamiltonian *****
-function h(a, b, pa, pb) {
-  var s2 = Math.sin(a - b)/2;
-  var z = 1 - Math.pow(s2, 2);
-  var T = (pa*pa/3 + pb*pb*3 - 2*s2*pa*pb)/2/c1/z;
-  var U = -c2 * (Math.cos(a) + Math.cos(b))/2;
-  return T+U;
+window.addEventListener('DOMContentLoaded', function() {
+  state1 = new State(0, 0, 2.6, 0);
+  state2 = new State(0.1, 0, 2.6, 0);
+
+  interaction = {};
+  playing = true;
+
+  graph = document.getElementById('graph');
+  graph.width = graph.clientWidth;
+  graph.height = graph.clientHeight;
+
+  loadFiles(filesReady);
+});
+
+function filesReady(files) {
+  var row = document.getElementById('c');
+  var br = document.getElementById('graphBreak');
+  var parser = new DOMParser();
+  svg1 = parser.parseFromString(files['pendulum.svg'], 'image/svg+xml').documentElement;
+  svg1.id = 'svg1';
+  svg1.setAttribute('data-state', 'state1');
+  row.insertBefore(svg1, br);
+  svg2 = svg1.cloneNode(true);
+  svg2.id = 'svg2';
+  svg2.setAttribute('data-state', 'state2');
+  row.insertBefore(svg2, br);
+
+  addPointerListeners(svg1, rotStart, rotMove);
+  addPointerListeners(svg2, rotStart, rotMove);
+
+  makeSwitch('controls', playControl, 0);
+
+  requestAnimationFrame(draw);
+}
+
+function draw() {
+  var lastState = [state1.alpha, state1.beta, state2.alpha, state2.beta];
+  state1.evolve(0.1);
+  state2.evolve(0.1);
+  var newState = [state1.alpha, state1.beta, state2.alpha, state2.beta];
+  displayState(svg1, state1);
+  displayState(svg2, state2);
+  updateGraph(lastState, newState);
+
+  if(playing)
+    requestAnimationFrame(draw);
 }
 
 function State(a, b, pa, pb) {
+  // ***** Hamiltonian *****
+  function h(a, b, pa, pb) {
+    var s2 = Math.sin(a - b)/2;
+    var z = 1 - Math.pow(s2, 2);
+    var T = (pa*pa/3 + pb*pb*3 - 2*s2*pa*pb)/2/c1/z;
+    var U = -c2 * (Math.cos(a) + Math.cos(b))/2;
+    return T+U;
+  }
+
   this.alpha = a;
   this.beta = b;
   this.pa = pa;
@@ -47,26 +95,13 @@ function State(a, b, pa, pb) {
   }
 }
 
-function radToDeg(rad) {
-  return rad * 180 / Math.PI;
-}
-
 function displayState(svg, state) {
+  function radToDeg(rad) {
+    return rad * 180 / Math.PI;
+  }
+
   svg.getElementById('alpha').setAttribute('transform', 'rotate(' + radToDeg(state.alpha) + ')');
   svg.getElementById('beta-alpha').setAttribute('transform', 'rotate(' + radToDeg(state.beta - state.alpha) + ')');
-}
-
-function draw() {
-  var lastState = [state1.alpha, state1.beta, state2.alpha, state2.beta];
-  state1.evolve(0.1);
-  state2.evolve(0.1);
-  var newState = [state1.alpha, state1.beta, state2.alpha, state2.beta];
-  displayState(svg1, state1);
-  displayState(svg2, state2);
-  updateGraph(lastState, newState);
-
-  if(iface.playing)
-    requestAnimationFrame(draw);
 }
 
 function clearGraph() {
@@ -99,16 +134,16 @@ function rotStart(elm, x, y, rect) {
   var dx = x - rect.width / 2;
   var dy = -(y - rect.height / 2);
   var dot = dx * Math.cos(state.alpha) + dy * Math.sin(state.alpha);
-  iface.which = dot > 0 ? 'a' : 'b';
+  interaction.which = dot > 0 ? 'a' : 'b';
   var pivot = elm.getElementById(dot > 0 ? 'pivot-red' : 'pivot-blue');
   var r2 = pivot.getBoundingClientRect();
-  iface.pivot = {
+  interaction.pivot = {
     x: r2.left - rect.left + r2.width / 2,
     y: r2.top - rect.top + r2.height / 2
   };
-  iface.rx = x - iface.pivot.x;
-  iface.ry = y - iface.pivot.y;
-  iface.rr = iface.rx * iface.rx + iface.ry * iface.ry;
+  interaction.rx = x - interaction.pivot.x;
+  interaction.ry = y - interaction.pivot.y;
+  interaction.rr = interaction.rx * interaction.rx + interaction.ry * interaction.ry;
   state1.pa = state1.pb = 0;
   state2.pa = state2.pb = 0;
   document.getElementById('pause').click();
@@ -116,17 +151,17 @@ function rotStart(elm, x, y, rect) {
 
 function rotMove(elm, x, y, rect) {
   var state = window[elm.getAttribute('data-state')];
-  var dx = x - iface.pivot.x;
-  var dy = y - iface.pivot.y;
-  var cross = (dx * iface.ry - dy * iface.rx) / iface.rr;
-  if(iface.which === 'a') {
+  var dx = x - interaction.pivot.x;
+  var dy = y - interaction.pivot.y;
+  var cross = (dx * interaction.ry - dy * interaction.rx) / interaction.rr;
+  if(interaction.which === 'a') {
     state.alpha += cross;
     state.beta += cross;
   } else
     state.beta += cross;
-  iface.rx = x - iface.pivot.x;
-  iface.ry = y - iface.pivot.y;
-  iface.rr = iface.rx * iface.rx + iface.ry * iface.ry;
+  interaction.rx = x - interaction.pivot.x;
+  interaction.ry = y - interaction.pivot.y;
+  interaction.rr = interaction.rx * interaction.rx + interaction.ry * interaction.ry;
   displayState(elm, state);
 }
 
@@ -138,49 +173,14 @@ function playControl(elm) {
 }
 
 function play() {
-  if(!iface.playing) {
-    iface.playing = true;
+  if(!playing) {
+    playing = true;
     clearGraph();
     requestAnimationFrame(draw);
   }
 }
 
 function pause() {
-  iface.playing = false;
+  playing = false;
 }
 
-function start(files) {
-  var row = document.getElementById('c');
-  var br = document.getElementById('graphBreak');
-  var parser = new DOMParser();
-  svg1 = parser.parseFromString(files['pendulum.svg'], 'image/svg+xml').documentElement;
-  svg1.id = 'svg1';
-  svg1.setAttribute('data-state', 'state1');
-  row.insertBefore(svg1, br);
-  svg2 = svg1.cloneNode(true);
-  svg2.id = 'svg2';
-  svg2.setAttribute('data-state', 'state2');
-  row.insertBefore(svg2, br);
-
-  addPointerListeners(svg1, rotStart, rotMove);
-  addPointerListeners(svg2, rotStart, rotMove);
-
-  makeSwitch('controls', playControl, 0);
-
-  requestAnimationFrame(draw);
-}
-
-window.addEventListener('DOMContentLoaded', function() {
-  state1 = new State(0, 0, 2.6, 0);
-  state2 = new State(0.1, 0, 2.6, 0);
-
-  iface = {
-    playing: true
-  };
-
-  graph = document.getElementById('graph');
-  graph.width = graph.clientWidth;
-  graph.height = graph.clientHeight;
-
-  loadFiles(start);
-});

@@ -1,11 +1,36 @@
-var canvas, gl, progs, iface;
+var canvas, gl, progs, model, interaction;
 const divX = 100, divY = 50;
 const divArrow = 10;
 const SIZE = 4;
 const numElements = SIZE * SIZE * SIZE * 2;
 
-function start(files) {
-  var vs, fs;
+window.addEventListener('DOMContentLoaded', function() {
+  canvas = document.getElementById('canvas');
+  canvas.width = canvas.clientWidth;
+  canvas.height = canvas.clientHeight;
+  gl = canvas.getContext('webgl');
+
+  if(!gl) {
+    alert('WebGL not supported');
+    return;
+  }
+
+  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+  gl.enable(gl.CULL_FACE);
+
+  initPoly();
+  model = {
+    tilt: 0.2,
+    angle: 0,
+    speed: .001
+  };
+  interaction = {};
+
+  loadFiles(filesReady);
+});
+
+function filesReady(files) {
+  progs = {};
 
   progs.bkg = new Program(gl, files['background.vert'], files['background.frag']);
 
@@ -153,6 +178,18 @@ function start(files) {
   makeSwitch('model', setModel, 0);
   makeSwitch('family', setFamily, 0);
 
+  let funcListener = function(e) {
+    newFunc(e.currentTarget.id);
+    e.preventDefault();
+  };
+
+  addPointerListeners(canvas, rotStart, rotMove);
+  document.getElementById('random').addEventListener('click', funcListener);
+  document.getElementById('l+').addEventListener('click', funcListener);
+  document.getElementById('l-').addEventListener('click', funcListener);
+  document.getElementById('m+').addEventListener('click', funcListener);
+  document.getElementById('m-').addEventListener('click', funcListener);
+
   requestAnimationFrame(draw);
 }
 
@@ -173,17 +210,17 @@ function draw(time) {
   gl.drawArrays(gl.TRIANGLES, 0, 6);
   gl.disableVertexAttribArray(progs.bkg.aPos);
 
-  if(iface.lastTime) {
+  if(interaction.lastTime) {
     if(!pointerActive(canvas))
-      iface.angle += (time - iface.lastTime) * iface.speed;
+      model.angle += (time - interaction.lastTime) * model.speed;
     else
-      iface.speed = (iface.angle - iface.lastAngle) / (time - iface.lastTime);
+      model.speed = (model.angle - interaction.lastAngle) / (time - interaction.lastTime);
   }
-  iface.lastTime = time;
-  iface.lastAngle = iface.angle;
+  interaction.lastTime = time;
+  interaction.lastAngle = model.angle;
   const qView = mulq(
-    [Math.sin((iface.tilt - Math.PI/2)/2), 0, 0, Math.cos((iface.tilt - Math.PI/2)/2)],
-    [0, 0, Math.sin(iface.angle/2), Math.cos(iface.angle/2)]
+    [Math.sin((model.tilt - Math.PI/2)/2), 0, 0, Math.cos((model.tilt - Math.PI/2)/2)],
+    [0, 0, Math.sin(model.angle/2), Math.cos(model.angle/2)]
   );
 
   gl.enable(gl.DEPTH_TEST);
@@ -645,55 +682,55 @@ function newPoly(poly) {
 
 function getPoly_random() {
   var poly;
-  switch(iface.family) {
+  switch(model.family) {
     case 'ylm':
     case 'ri': {
       let ix = Math.floor(SIZE * SIZE * Math.random());
-      let l = iface.l = Math.floor(Math.sqrt(ix));
-      let m = iface.m = ix - l*(l+1);
-      return (iface.family == 'ylm' ? poly_ylm : poly_ri)[l][l+m]; }
+      let l = model.l = Math.floor(Math.sqrt(ix));
+      let m = model.m = ix - l*(l+1);
+      return (model.family == 'ylm' ? poly_ylm : poly_ri)[l][l+m]; }
     case 'cart': {
       let ix = Math.floor(20 * Math.random());
       // This is an approximation of the appropriate cubic eq. solution
       // valid for l ≤ 5 (SIZE ≤ 6)
-      let l = iface.l = Math.floor(Math.pow(6*(ix+1), 1/3)-1);
-      let m = iface.m = ix - l*(l+1)*(l+2)/6;
+      let l = model.l = Math.floor(Math.pow(6*(ix+1), 1/3)-1);
+      let m = model.m = ix - l*(l+1)*(l+2)/6;
       return poly_cart[l][m]; }
     default: {
-      let l = iface.l = Math.floor(SIZE * Math.random());
+      let l = model.l = Math.floor(SIZE * Math.random());
       return initPoly_random(l);
     }
   }
 }
 
 function getPoly_delta(dl, dm) {
-  iface.l += dl;
-  iface.m += dm;
-  if(iface.l < 0)
-    iface.l = 0;
-  else if(iface.l >= SIZE)
-    iface.l = SIZE - 1;
+  model.l += dl;
+  model.m += dm;
+  if(model.l < 0)
+    model.l = 0;
+  else if(model.l >= SIZE)
+    model.l = SIZE - 1;
   var poly;
-  switch(iface.family) {
+  switch(model.family) {
     case 'ylm':
     case 'ri': {
-      let l = iface.l;
-      if(iface.m > iface.l)
-        iface.m = iface.l;
-      else if(iface.m < -iface.l)
-        iface.m = -iface.l;
-      let m = iface.m;
-      return (iface.family == 'ylm' ? poly_ylm : poly_ri)[l][l+m]; }
+      let l = model.l;
+      if(model.m > model.l)
+        model.m = model.l;
+      else if(model.m < -model.l)
+        model.m = -model.l;
+      let m = model.m;
+      return (model.family == 'ylm' ? poly_ylm : poly_ri)[l][l+m]; }
     case 'cart': {
-      let l = iface.l;
-      if(iface.m < 0)
-        iface.m = 0;
-      else if(iface.m >= (l+1)*(l+2)/2)
-        iface.m = (l+1)*(l+2)/2 - 1;
-      let m = iface.m;
+      let l = model.l;
+      if(model.m < 0)
+        model.m = 0;
+      else if(model.m >= (l+1)*(l+2)/2)
+        model.m = (l+1)*(l+2)/2 - 1;
+      let m = model.m;
       return poly_cart[l][m]; }
     default:
-      return initPoly_random(iface.l);
+      return initPoly_random(model.l);
   }
 }
 
@@ -710,10 +747,10 @@ function setEnabled(id, b) {
 }
 
 function updateControls() {
-  let l = iface.l, m = iface.m;
+  let l = model.l, m = model.m;
   setEnabled('l-', l > 0);
   setEnabled('l+', l < SIZE - 1);
-  switch(iface.family) {
+  switch(model.family) {
     case 'ylm':
     case 'ri':
       setEnabled('m-', m > -l);
@@ -758,63 +795,23 @@ function setModel(elm) {
 }
 
 function setFamily(elm) {
-  iface.family = elm.getAttribute('data-family');
+  model.family = elm.getAttribute('data-family');
   newFunc();
 }
 
-/***** Interaction & initialization *****/
-
 function rotStart(elm, x, y) {
-  iface.lastX = x;
-  iface.lastY = y;
+  interaction.lastX = x;
+  interaction.lastY = y;
 }
 
 function rotMove(elm, x, y) {
   var viewport = gl.getParameter(gl.VIEWPORT);
-  iface.tilt += (y - iface.lastY) / viewport[3] * 4;
-  if(iface.tilt > Math.PI / 2)
-    iface.tilt = Math.PI / 2;
-  else if(iface.tilt < -Math.PI / 2)
-    iface.tilt = -Math.PI / 2;
-  iface.angle += (x - iface.lastX) / viewport[2] * 4;
-  iface.lastX = x;
-  iface.lastY = y;
+  model.tilt += (y - interaction.lastY) / viewport[3] * 4;
+  if(model.tilt > Math.PI / 2)
+    model.tilt = Math.PI / 2;
+  else if(model.tilt < -Math.PI / 2)
+    model.tilt = -Math.PI / 2;
+  model.angle += (x - interaction.lastX) / viewport[2] * 4;
+  interaction.lastX = x;
+  interaction.lastY = y;
 }
-
-window.addEventListener('DOMContentLoaded', function() {
-  canvas = document.getElementById('canvas');
-  canvas.width = canvas.clientWidth;
-  canvas.height = canvas.clientHeight;
-  gl = canvas.getContext('webgl');
-
-  if(!gl) {
-    alert('WebGL not supported');
-    return;
-  }
-
-  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-  gl.enable(gl.CULL_FACE);
-
-  initPoly();
-
-  progs = {};
-  loadFiles(start);
-
-  iface = {
-    tilt: 0.2,
-    angle: 0,
-    speed: .001
-  };
-
-  let funcListener = function(e) {
-    newFunc(e.currentTarget.id);
-    e.preventDefault();
-  };
-
-  addPointerListeners(canvas, rotStart, rotMove);
-  document.getElementById('random').addEventListener('click', funcListener);
-  document.getElementById('l+').addEventListener('click', funcListener);
-  document.getElementById('l-').addEventListener('click', funcListener);
-  document.getElementById('m+').addEventListener('click', funcListener);
-  document.getElementById('m-').addEventListener('click', funcListener);
-});
