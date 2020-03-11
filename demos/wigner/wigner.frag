@@ -1,5 +1,6 @@
 precision highp float;
 
+uniform int uFunc;
 uniform mat2 uScaleInv;
 uniform vec2 uShift;
 uniform float uSepar;
@@ -17,7 +18,12 @@ vec3 color(float f) {
 void main(void) {
   mat2 rInv = rot(uAngle);
   vec2 trf = uScaleInv * (rInv * vPos - uShift);
-  float val = w_cat(trf, uSepar);
-  //float val = w_gauss(trf);
+  float val;
+  if(uFunc == 0)
+    val = w_gauss(trf);
+  else if(uFunc == 1)
+    val = w_fock(trf);
+  else
+    val = w_cat(trf, uSepar);
   gl_FragColor = vec4(color(val), 1.);
 }

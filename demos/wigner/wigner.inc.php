@@ -19,11 +19,25 @@ if($en) {
   $desc = 'Wigner function is an alternative description of a quantum state, used primarily in quantum optics. Its domain is the phase space. In many respects it behaves like a probability dostribution, although it can reach negative values (which substitute complex phase in explaining interference phenomena). It is shown here for several important states of a 1D harmonic oscillator. Especially time evolution and position probability density reconstruction are particularly simple in this formalism.';
 } else {
   $desc = 'Wignerova funkce je alternativní popis stavu kvantového systému užívaný zejména v kvantové optice. Je definována na proměnných fázového prostoru (souřadnice a hybnosti). V mnoha ohledech se chová jako rozdělení pravděpodobnosti, může ale nabývat záporných hodnot (pomocí kterých popíše i interferenční jevy bez potřeby komplexní fáze). Zde ukázáno pro několik důležitých stavů 1D harmonického oscilátoru. Zejména vývoj stavu a rekonstrukce hustot pravděpodobnosti polohy a hybnosti nabývají obzvlášť jednoduchého tvaru.';
+  $type = 'Výchozí stav';
+  $types = [0 => 'Vakuum', 1 => '1 foton', 2 => '"Cat" stav'];
+  $reset = 'Reset';
 }
 
 print <<<HTML
         <h1>$demotitle</h1>
         $desc
+        <p></p>
+        $type:
+        <div class="inline switch offset" id="func">\n
+HTML;
+foreach($types as $id => $name)
+  print_indent(5, '<a href="#" data-func="' . $id . '">' . $name . '</a>');
+print <<<HTML
+        </div>
+        <div class="inline switch offset">
+          <a href="#" id="reset">$reset</a>
+        </div>
         <div class="switch" id="controls">
           <a href="#" id="play"><img class="inline-img" src="$demodir/play.svg"/></a>
           <a href="#" id="pause"><img class="inline-img" src="$demodir/pause.svg"/></a>

@@ -40,6 +40,10 @@
   border-right: 1px solid #888;
 }
 
+.switch a:only-of-type {
+  border-radius: 1em;
+}
+
 .switch a:hover {
   color: black;
 }

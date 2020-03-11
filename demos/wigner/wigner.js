@@ -32,7 +32,7 @@ function draw(time) {
   gl.drawArrays(gl.TRIANGLES, 0, 6);
   gl.disableVertexAttribArray(progs.graph.aPos);
 
-  var vpHeight = Math.ceil(0.4 * gl.canvas.height);
+  var vpHeight = Math.floor(0.4 * gl.canvas.height);
   gl.viewport(0, 0, gl.canvas.width, vpHeight);
   if(iface.playing) {
     if(angle < angleRange) {
@@ -74,12 +74,14 @@ function start(files) {
     -1, 1,
     1, -1]), gl.STATIC_DRAW);
 
-  scale = new Float32Array([1.2, 0.4, -0.1, 0.8]);
+  scale = new Float32Array([1.2, 0.7, -0.4, 0.6]);
   shift = new Float32Array([0, 1]);
-  catSepar = 2.5;
+  catSepar = 1.5;
   updateUniforms();
 
   makeSwitch('controls', playControl, 0);
+  makeSwitch('func', changeFuncType, 0);
+  document.getElementById('reset').addEventListener('click', reset);
 }
 
 function playControl(elm) {
@@ -111,10 +113,30 @@ function pause() {
     c*shift[0] + s*shift[1],
     -s*shift[0] + c*shift[1]
   ]);
-  updateUniforms();
   angle = 0;
+  updateUniforms();
   updateControls();
   document.getElementById('shape-controls').classList.remove('hidden');
+}
+
+function reset(e) {
+  angle = 0;
+  scale = new Float32Array([1, 0, 0, 1]);
+  shift = new Float32Array([0, 0]);
+  updateUniforms();
+  updateControls();
+  requestAnimationFrame(draw);
+  e.preventDefault();
+}
+
+function changeFuncType(elm) {
+  var id = elm.getAttribute('data-func');
+  ['wigner', 'history', 'graph'].forEach(function(p) {
+    gl.useProgram(progs[p].program);
+    gl.uniform1i(progs[p].uFunc, id);
+  });
+  angle = 0;
+  requestAnimationFrame(draw);
 }
 
 function updateUniforms() {

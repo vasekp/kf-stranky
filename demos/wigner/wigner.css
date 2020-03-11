@@ -17,6 +17,10 @@
   height: .8em;
 }
 
+.offset {
+  margin-left: .5em !important;
+}
+
 #coords {
   position: absolute;
   left: 0;
