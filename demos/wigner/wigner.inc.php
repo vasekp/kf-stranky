@@ -17,11 +17,28 @@ if($early) {
 
 if($en) {
   $desc = 'Wigner function is an alternative description of a quantum state, used primarily in quantum optics. Its domain is the phase space. In many respects it behaves like a probability dostribution, although it can reach negative values (which substitute complex phase in explaining interference phenomena). It is shown here for several important states of a 1D harmonic oscillator. Especially time evolution and position probability density reconstruction are particularly simple in this formalism.';
+  $type = 'Initial state';
+  $types = [0 => 'Vacuum', 1 => '1 photon', 2 => '"Cat" state'];
+  $reset = 'Reset';
+  $try = 'Tips for trying:';
+  $tips = array(
+    'In paused mode, you can control displacement and squeezing. Try resetting the vacuum state and reaching a coherent state, squeezed vacuum, phase- or amplitude-squeezed states.',
+    'Gaussian states behave in terms of quadratures just like ensembles of classical trajectories. Imagine for comparison a group of sinusoids with equal frequency but with randomized amplitudes and phases. Can anything similar be said for the states featuring negativity?',
+    'Note with the single-excitation state, how negative (red) values of the Wigner function can cancel out positive (blue) down to exact zero but never below.',
+    'Watch the birth and decay of interference fringes when two packets meet (with cat states). How does their distance affect your observation?'
+  );
 } else {
   $desc = 'Wignerova funkce je alternativní popis stavu kvantového systému užívaný zejména v kvantové optice. Je definována na proměnných fázového prostoru (souřadnice a hybnosti). V mnoha ohledech se chová jako rozdělení pravděpodobnosti, může ale nabývat záporných hodnot (pomocí kterých popíše i interferenční jevy bez potřeby komplexní fáze). Zde ukázáno pro několik důležitých stavů 1D harmonického oscilátoru. Zejména vývoj stavu a rekonstrukce hustot pravděpodobnosti polohy a hybnosti nabývají obzvlášť jednoduchého tvaru.';
   $type = 'Výchozí stav';
   $types = [0 => 'Vakuum', 1 => '1 foton', 2 => '"Cat" stav'];
   $reset = 'Reset';
+  $try = 'Zkuste si:';
+  $tips = array(
+    'Po zastavení můžete ovládat posunutí a stlačení stavu. Zkuste si z vakua vyrobit koherentní stav, stlačené vakuum, fázově a amplitudově stlačený stav.',
+    'Gaussovské stavy se z hlediska kvadratur chovají stejně jako směs klasických trajektorií. Porovnejte si časový průběh rozdělení s množinou sinusoid stejné frekvence, ale náhodně rozdělené fáze, amplitudy a posunu. Platí podobná intuice i pro stavy s negativitou?',
+    'Všimněte si na příkladu 1-fotonového stavu, jak záporné (červené) hodnoty Wignerovy funkce dokáží vyrušit kladné (modré) až k nule, ale nikdy pod ní.',
+    'Sledujte vznik interferenčních proužků, když se dva balíky překryjí (u "cat" stavu). Jak se projeví jejich vzdálenost?'
+  );
 }
 
 print <<<HTML
@@ -110,6 +127,12 @@ print <<<HTML
               <path id="separ" d="M 0 0" marker-end="url(#rot)"/>
             </g>
           </svg>
-        </div>\n
+        </div>
+        <h2>$try</h2>\n
 HTML;
+
+print_indent(4, '<ul>');
+foreach($tips as $tip)
+  print_indent(5, '<li>' . $tip . '</li>');
+print_indent(4, '</ul>');
 ?>
