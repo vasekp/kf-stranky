@@ -55,6 +55,16 @@ function start(files) {
     -1, 1,
     1, -1]), gl.STATIC_DRAW);
 
+  var scaleMat = new Float32Array([1.2, 1.5, -1.5, 0.53]);
+  var scaleInv = new Float32Array([0.53, -1.5, 1.5, 1.2]);
+  var shift = new Float32Array([2, 1]);
+
+  ['wigner', 'quad', 'graph'].forEach(function(p) {
+    gl.useProgram(progs[p].program);
+    gl.uniformMatrix2fv(progs[p].uScaleInv, false, scaleInv);
+    gl.uniform2fv(progs[p].uShift, shift);
+  });
+
   requestAnimationFrame(draw);
 }
 
