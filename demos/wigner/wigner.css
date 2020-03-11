@@ -12,24 +12,62 @@
   height: 50em;
 }
 
+.inline-img {
+  width: .8em;
+  height: .8em;
+}
+
 #coords {
   position: absolute;
   left: 0;
   top: 0;
   width: 25em;
   height: 25em;
+  opacity: 0.7;
 }
 
 #coords .filled {
-  fill: #0008;
+  fill: black;
 }
 
 #coords .stroked {
-  stroke: #0008;
-  stroke-width: 0.08;
+  stroke: black;
+  stroke-width: 0.03;
   fill: none;
 }
 
+#coords #shape-controls {
+  transition: opacity .5s;
+}
+
+#coords #shape-controls.hidden {
+  opacity: 0;
+}
+
+#coords .filled.c1 {
+  fill: #4c4;
+}
+
+#coords .stroked.c1 {
+  stroke: #4c4;
+}
+
+#coords .filled.c2 {
+  fill: #c44;
+}
+
+#coords .stroked.c2 {
+  stroke: #c44;
+}
+
+#coords .filled.c3 {
+  fill: #44c;
+}
+
+#coords .stroked.c3 {
+  stroke: #44c;
+}
+
 #coords .text {
-  font-size: 1px;
+  font-size: .4px;
 }
