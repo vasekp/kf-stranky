@@ -7,7 +7,7 @@ const numElements = SIZE * SIZE * SIZE * 2;
 function start(files) {
   var vs, fs;
 
-  progs.bkg = createProgram(gl, files['background.vert'], files['background.frag']);
+  progs.bkg = new Program(gl, files['background.vert'], files['background.frag']);
 
   progs.bkg.bPos = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, progs.bkg.bPos);
@@ -19,7 +19,7 @@ function start(files) {
     -1, 1,
     1, -1]), gl.STATIC_DRAW);
 
-  progs.sphere = createProgram(gl, files['sphere.vert'], files['sphere.frag']);
+  progs.sphere = new Program(gl, files['sphere.vert'], files['sphere.frag']);
 
   var strideX = 3;
   var strideY = strideX * divX;
@@ -60,7 +60,7 @@ function start(files) {
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, progs.sphere.bIx);
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
 
-  progs.arrow = createProgram(gl, files['arrow.vert'], files['arrow.frag']);
+  progs.arrow = new Program(gl, files['arrow.vert'], files['arrow.frag']);
 
   strideX = 3 * 3 * 2;
   var attribs = new Float32Array(strideX * divArrow + 2 * 3 * 2);

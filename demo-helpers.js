@@ -30,54 +30,51 @@ function loadFiles(func) {
 
 /***** OpenGL *****/
 
-function createGLShader(ctx, type, source) {
-  var shader = ctx.createShader(type);
+function Shader(ctx, type, source) {
+  shader = ctx.createShader(type);
   ctx.shaderSource(shader, source);
   ctx.compileShader(shader);
-  if(ctx.getShaderParameter(shader, ctx.COMPILE_STATUS))
-    return shader;
-  else {
+  if(!ctx.getShaderParameter(shader, ctx.COMPILE_STATUS)) {
     console.log(ctx.getShaderInfoLog(shader));
     ctx.deleteShader(shader);
+    throw 'Shader compilation failed.';
   }
+  this.shader = shader;
 }
 
-function createGLProgram(ctx, vertexShader, fragmentShader) {
+function Program(ctx, vs, fs) {
   var program = ctx.createProgram();
-  ctx.attachShader(program, vertexShader);
-  ctx.attachShader(program, fragmentShader);
+  function attach(s, type) {
+    if(s instanceof Shader)
+      ctx.attachShader(program, s.shader);
+    else
+      ctx.attachShader(program, new Shader(ctx, type, s).shader);
+  }
+  attach(vs, gl.VERTEX_SHADER);
+  attach(fs, gl.FRAGMENT_SHADER);
+
   ctx.linkProgram(program);
-  if(ctx.getProgramParameter(program, ctx.LINK_STATUS))
-    return program;
-  else {
+  if(!ctx.getProgramParameter(program, ctx.LINK_STATUS)) {
     console.log(ctx.getProgramInfoLog(program));
     ctx.deleteProgram(program);
+    throw 'Program linking failed.';
   }
-}
 
-function createProgram(ctx, vertSource, fragSource) {
-  var ret = {};
-  var vs = createGLShader(gl, gl.VERTEX_SHADER, vertSource);
-  var fs = createGLShader(gl, gl.FRAGMENT_SHADER, fragSource);
-  var program = createGLProgram(gl, vs, fs);
-  if(!program)
-    return null;
-  ret.program = program;
+  this.program = program;
   const numUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
   for(let i = 0; i < numUniforms; i++) {
     let name = gl.getActiveUniform(program, i).name;
     if(name.indexOf('[') > 0)
       name = name.substring(0, name.indexOf('['));
     const loc = gl.getUniformLocation(program, name);
-    ret[name] = loc;
+    this[name] = loc;
   }
   const numAttribs = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES);
   for(let i = 0; i < numAttribs; i++) {
     const name = gl.getActiveAttrib(program, i).name;
     const loc = gl.getAttribLocation(program, name);
-    ret[name] = loc;
+    this[name] = loc;
   }
-  return ret;
 }
 
 /***** Mouse and touch event listeners *****/

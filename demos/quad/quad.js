@@ -40,9 +40,9 @@ function draw(time) {
 function start(files) {
   var vs, fs;
 
-  progs.wigner = createProgram(gl, files['wigner.vert'], files['functions.glsl'] + files['wigner.frag']);
-  progs.quad = createProgram(gl, files['quad.vert'], files['functions.glsl'] + files['quad.frag']);
-  progs.graph = createProgram(gl, files['graph.vert'], files['functions.glsl'] + files['graph.frag']);
+  progs.wigner = new Program(gl, files['wigner.vert'], files['functions.glsl'] + files['wigner.frag']);
+  progs.quad = new Program(gl, files['quad.vert'], files['functions.glsl'] + files['quad.frag']);
+  progs.graph = new Program(gl, files['graph.vert'], files['functions.glsl'] + files['graph.frag']);
   progs.bufs = {};
 
   progs.bufs.full = gl.createBuffer();
