@@ -8,6 +8,7 @@ function draw(time) {
     iface.angle += (time - iface.lastTime) * iface.speed;
   iface.lastTime = time;
 
+  gl.clear(gl.COLOR_BUFFER_BIT);
   gl.bindBuffer(gl.ARRAY_BUFFER, progs.bufs.full);
 
   gl.viewport(0, gl.canvas.height / 2, gl.canvas.width, gl.canvas.height / 2);
@@ -28,14 +29,23 @@ function draw(time) {
   gl.drawArrays(gl.TRIANGLES, 0, 6);
   gl.disableVertexAttribArray(progs.graph.aPos);
 
-  gl.viewport(0, 0, gl.canvas.width, 0.4 * gl.canvas.height);
-  gl.useProgram(progs.quad.program);
-  gl.enableVertexAttribArray(progs.quad.aPos);
-  gl.vertexAttribPointer(progs.quad.aPos, 2, gl.FLOAT, false, 0, 0);
-  gl.uniform1f(progs.quad.uAngle, iface.angle);
-  gl.uniform1f(progs.quad.uSepar, catSepar);
-  gl.drawArrays(gl.TRIANGLES, 0, 6);
-  gl.disableVertexAttribArray(progs.quad.aPos);
+  var vpHeight = Math.ceil(0.4 * gl.canvas.height);
+  gl.viewport(0, 0, gl.canvas.width, vpHeight);
+  if(iface.playing) {
+    if(iface.angle > -4) {
+      var startY = Math.floor(vpHeight * (iface.angle + 4)/4);
+      gl.enable(gl.SCISSOR_TEST);
+      gl.scissor(0, startY, gl.canvas.width, vpHeight - startY);
+    }
+    gl.useProgram(progs.quad.program);
+    gl.enableVertexAttribArray(progs.quad.aPos);
+    gl.vertexAttribPointer(progs.quad.aPos, 2, gl.FLOAT, false, 0, 0);
+    gl.uniform1f(progs.quad.uAngle, iface.angle);
+    gl.uniform1f(progs.quad.uSepar, catSepar);
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    gl.disableVertexAttribArray(progs.quad.aPos);
+    gl.disable(gl.SCISSOR_TEST);
+  }
 
   if(iface.playing)
     requestAnimationFrame(draw);
@@ -136,6 +146,10 @@ function updateControls() {
 }
 
 function pStart(elm, x, y, rect) {
+  if(iface.playing) {
+    document.getElementById('pause').click();
+    return;
+  }
   var tx = 5*(2*x/rect.width - 1);
   var ty = -5*(2*y/rect.height - 1);
   function dist(tx, ty, mx, my) {
@@ -207,7 +221,7 @@ function pMove(elm, x, y, rect) {
         let rot = Math.atan2(dy*u[0] - dx*u[1], dx*u[0] + dy*u[1]);
         let c = Math.cos(rot), s = Math.sin(rot);
         scale = new Float32Array([c*scale[0] - s*scale[1], s*scale[0] + c*scale[1], c*scale[2] - s*scale[3], s*scale[2] + c*scale[3]]);
-        catSepar = Math.hypot(dx, dy) / Math.hypot(u[0], u[1]);
+        catSepar = Math.max(Math.min(Math.hypot(dx, dy) / Math.hypot(u[0], u[1]), 4), 0.5);
         break; }
     }
   }
@@ -234,6 +248,7 @@ window.addEventListener('DOMContentLoaded', function() {
     return;
   }
 
+  gl.clearColor(1, 1, 1, 1);
   progs = {};
   loadFiles(start);
 
@@ -244,5 +259,4 @@ window.addEventListener('DOMContentLoaded', function() {
 
   var coords = document.getElementById('coords');
   addPointerListeners(coords, pStart, pMove);
-  coords.addEventListener('click', function() { document.getElementById('pause').click(); });
 });
