@@ -2,6 +2,8 @@
 if($early)
   return;
 
+include "demos-header-$prilang.inc.php";
+
 $sql = "select id, title_$prilang as title from demo_topics";
 $result = $db->query($sql);
 $topics = array();

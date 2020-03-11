@@ -23,7 +23,7 @@ if($en) {
 $stranky = array(
   'landing' => $en ? 'Intro' : 'Úvod',
   'classes' => $en ? 'Classes' : 'Výuka',
-  'demos' => $en ? 'Demonstrations' : 'Pomůcky',
+  'demos' => $en ? 'Demonstrations' : 'Ukázky',
   'theses' => $en ? 'Theses' : 'Školení',
   'pub' => $en ? 'Publications' : 'Publikace',
   'personal' => $en ? 'Personal' : 'Osobní'
