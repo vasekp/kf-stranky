@@ -3,10 +3,33 @@
   width: 25em;
   border: inset 2px;
   margin: 0 auto;
+  position: relative;
 }
 
 #canvas {
   display: block;
   width: 25em;
   height: 50em;
+}
+
+#coords {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 25em;
+  height: 25em;
+}
+
+#coords .filled {
+  fill: #0008;
+}
+
+#coords .stroked {
+  stroke: #0008;
+  stroke-width: 0.08;
+  fill: none;
+}
+
+#coords .text {
+  font-size: 1px;
 }

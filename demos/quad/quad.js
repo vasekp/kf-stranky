@@ -55,9 +55,9 @@ function start(files) {
     -1, 1,
     1, -1]), gl.STATIC_DRAW);
 
-  var scaleMat = new Float32Array([1.2, 1.5, -1.5, 0.53]);
-  var scaleInv = new Float32Array([0.53, -1.5, 1.5, 1.2]);
-  var shift = new Float32Array([2, 1]);
+  var scaleMat = new Float32Array([1.2, 0.4, -0.1, 0.8]);
+  var scaleInv = new Float32Array([0.8, -0.4, 0.1, 1.2]);
+  var shift = new Float32Array([0, 1]);
 
   ['wigner', 'quad', 'graph'].forEach(function(p) {
     gl.useProgram(progs[p].program);
