@@ -44,7 +44,7 @@
   transition: opacity .5s;
 }
 
-#coords #shape-controls.hidden {
+#coords .hidden {
   opacity: 0;
 }
 

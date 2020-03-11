@@ -10,5 +10,7 @@ function switchClick(element, callback) {
     child.classList.remove('selected');
   });
   element.classList.add('selected');
+  if(element.id)
+    element.parentNode.setAttribute('data-selected', element.id);
   callback(element);
 }

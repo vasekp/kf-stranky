@@ -125,6 +125,11 @@ function play() {
 
 function pause() {
   playing = false;
+  resetAngle();
+  document.getElementById('shape-controls').classList.remove('hidden');
+}
+
+function resetAngle() {
   const c = Math.cos(angle);
   const s = Math.sin(angle);
   scale = new Float32Array([
@@ -140,7 +145,6 @@ function pause() {
   angle = 0;
   updateUniforms();
   updateControls();
-  document.getElementById('shape-controls').classList.remove('hidden');
 }
 
 function reset(e) {
@@ -159,7 +163,8 @@ function changeFuncType(elm) {
     gl.useProgram(progs[p].program);
     gl.uniform1i(progs[p].uFunc, id);
   });
-  angle = 0;
+  resetAngle();
+  document.getElementById('separ').classList.toggle('hidden', elm.id != 'cat');
   requestAnimationFrame(draw);
 }
 
