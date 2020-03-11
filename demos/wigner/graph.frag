@@ -8,8 +8,8 @@ varying float vQuad;
 varying float vVal;
 
 void main(void) {
-  mat2 r = rot(uAngle);
-  mat2 rInv = rot(-uAngle);
+  mat2 r = rot(-uAngle);
+  mat2 rInv = rot(uAngle);
   float f = faktor(uScaleInv * rInv);
   float q0 = vQuad - (r*uShift).x;
   float val = /*f*/int_cat(f*q0, uSepar, uScaleInv*rInv);

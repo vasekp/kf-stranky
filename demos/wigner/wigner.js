@@ -1,12 +1,15 @@
 var gl;
 var iface, progs;
 
+var angle, lastTime;
 var scale, shift, catSepar;
+const speed = 0.001;
+const angleRange = 4;
 
 function draw(time) {
-  if(iface.lastTime)
-    iface.angle += (time - iface.lastTime) * iface.speed;
-  iface.lastTime = time;
+  if(lastTime)
+    angle += (time - lastTime) * speed;
+  lastTime = time;
 
   gl.clear(gl.COLOR_BUFFER_BIT);
   gl.bindBuffer(gl.ARRAY_BUFFER, progs.bufs.full);
@@ -15,7 +18,7 @@ function draw(time) {
   gl.useProgram(progs.wigner.program);
   gl.enableVertexAttribArray(progs.wigner.aPos);
   gl.vertexAttribPointer(progs.wigner.aPos, 2, gl.FLOAT, false, 0, 0);
-  gl.uniform1f(progs.wigner.uAngle, iface.angle);
+  gl.uniform1f(progs.wigner.uAngle, angle);
   gl.uniform1f(progs.wigner.uSepar, catSepar);
   gl.drawArrays(gl.TRIANGLES, 0, 6);
   gl.disableVertexAttribArray(progs.wigner.aPos);
@@ -24,7 +27,7 @@ function draw(time) {
   gl.useProgram(progs.graph.program);
   gl.enableVertexAttribArray(progs.graph.aPos);
   gl.vertexAttribPointer(progs.graph.aPos, 2, gl.FLOAT, false, 0, 0);
-  gl.uniform1f(progs.graph.uAngle, iface.angle);
+  gl.uniform1f(progs.graph.uAngle, angle);
   gl.uniform1f(progs.graph.uSepar, catSepar);
   gl.drawArrays(gl.TRIANGLES, 0, 6);
   gl.disableVertexAttribArray(progs.graph.aPos);
@@ -32,15 +35,15 @@ function draw(time) {
   var vpHeight = Math.ceil(0.4 * gl.canvas.height);
   gl.viewport(0, 0, gl.canvas.width, vpHeight);
   if(iface.playing) {
-    if(iface.angle > -4) {
-      var startY = Math.floor(vpHeight * (iface.angle + 4)/4);
+    if(angle < angleRange) {
+      var startY = Math.floor(vpHeight * (1 - angle/angleRange));
       gl.enable(gl.SCISSOR_TEST);
       gl.scissor(0, startY, gl.canvas.width, vpHeight - startY);
     }
     gl.useProgram(progs.quad.program);
     gl.enableVertexAttribArray(progs.quad.aPos);
     gl.vertexAttribPointer(progs.quad.aPos, 2, gl.FLOAT, false, 0, 0);
-    gl.uniform1f(progs.quad.uAngle, iface.angle);
+    gl.uniform1f(progs.quad.uAngle, angle);
     gl.uniform1f(progs.quad.uSepar, catSepar);
     gl.drawArrays(gl.TRIANGLES, 0, 6);
     gl.disableVertexAttribArray(progs.quad.aPos);
@@ -50,7 +53,7 @@ function draw(time) {
   if(iface.playing)
     requestAnimationFrame(draw);
   else
-    iface.lastTime = null;
+    lastTime = null;
 }
 
 function start(files) {
@@ -96,21 +99,20 @@ function play() {
 
 function pause() {
   iface.playing = false;
-  cancelAnimationFrame(iface.cb);
-  const c = Math.cos(iface.angle);
-  const s = Math.sin(iface.angle);
+  const c = Math.cos(angle);
+  const s = Math.sin(angle);
   scale = new Float32Array([
-    c*scale[0] - s*scale[1],
-    s*scale[0] + c*scale[1],
-    c*scale[2] - s*scale[3],
-    s*scale[2] + c*scale[3]
+    c*scale[0] + s*scale[1],
+    -s*scale[0] + c*scale[1],
+    c*scale[2] + s*scale[3],
+    -s*scale[2] + c*scale[3]
   ]);
   shift = new Float32Array([
-    c*shift[0] - s*shift[1],
-    s*shift[0] + c*shift[1]
+    c*shift[0] + s*shift[1],
+    -s*shift[0] + c*shift[1]
   ]);
   updateUniforms();
-  iface.angle = 0;
+  angle = 0;
   updateControls();
   document.getElementById('shape-controls').classList.remove('hidden');
 }
@@ -252,10 +254,8 @@ window.addEventListener('DOMContentLoaded', function() {
   progs = {};
   loadFiles(start);
 
-  iface = {
-    angle: 0,
-    speed: -.001
-  };
+  iface = {};
+  angle = 0;
 
   var coords = document.getElementById('coords');
   addPointerListeners(coords, pStart, pMove);

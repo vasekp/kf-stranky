@@ -15,9 +15,8 @@ vec3 color(float f) {
 }
 
 void main(void) {
-  mat2 r = rot(uAngle);
-  mat2 rInv = rot(-uAngle);
-  vec2 trf = uScaleInv * rInv * (vPos - r * uShift);
+  mat2 rInv = rot(uAngle);
+  vec2 trf = uScaleInv * (rInv * vPos - uShift);
   float val = w_cat(trf, uSepar);
   //float val = w_gauss(trf);
   gl_FragColor = vec4(color(val), 1.);
