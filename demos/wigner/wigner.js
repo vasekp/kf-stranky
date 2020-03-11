@@ -61,7 +61,7 @@ function start(files) {
 
   progs.wigner = new Program(gl, files['wigner.vert'], files['functions.glsl'] + files['wigner.frag']);
   progs.history = new Program(gl, files['history.vert'], files['functions.glsl'] + files['history.frag']);
-  progs.graph = new Program(gl, files['graph.vert'], files['functions.glsl'] + files['graph.frag']);
+  progs.graph = new Program(gl, files['functions.glsl'] + files['graph.vert'], files['functions.glsl'] + files['graph.frag']);
   progs.bufs = {};
 
   progs.bufs.full = gl.createBuffer();
