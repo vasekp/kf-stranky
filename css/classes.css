@@ -24,3 +24,8 @@
   opacity: .5;
   transition: opacity .5s ease-in;
 }
+
+.strikeout {
+  opacity: .3;
+  text-decoration: line-through;
+}
