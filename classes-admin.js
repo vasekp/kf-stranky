@@ -17,6 +17,10 @@ function sendRequest(elm, type, id, text) {
     }
     if(type === 'insert')
       elm.setAttribute('data-id', xhr.response.id);
+    if(type == 'insert' || type == 'update') {
+      elm.setAttribute('data-text', xhr.response.text);
+      elm.innerHTML = xhr.response.html;
+    }
     elm.classList.remove('changed');
   };
   xhr.send(data);
@@ -26,6 +30,15 @@ var raSave = recordsArrived;
 recordsArrived = function(r) {
   raSave(r);
   appendEmpty();
+}
+
+createRecord = function(id, text, html) {
+  elm = document.createElement('li');
+  elm.setAttribute('data-id', id);
+  elm.setAttribute('data-text', text);
+  elm.innerHTML = html;
+  addEventsItem(elm);
+  list.appendChild(elm);
 }
 
 function appendEmpty() {
@@ -70,7 +83,10 @@ function dateKeyDown(e) {
 
 function itemClick(e) {
   var elm = e.currentTarget;
-  toBraces(elm);
+  if(elm.contentEditable === 'true')
+    return;
+  elm.setAttribute('data-html', elm.innerHTML);
+  elm.innerText = elm.getAttribute('data-text');
   elm.contentEditable = 'true';
   elm.focus();
 }
@@ -79,7 +95,6 @@ function itemBlur(e) {
   var elm = e.currentTarget;
   var text = elm.innerText.trim();
   elm.contentEditable = 'false';
-  fromBraces(elm);
   if(!elm.classList.contains('last') && !text) {
     if(elm.getAttribute('data-id'))
       sendRequest(elm, 'delete', elm.getAttribute('data-id'));
@@ -90,6 +105,8 @@ function itemBlur(e) {
     else {
       sendRequest(elm, 'insert', '', text);
     }
+  } else if(text) {
+    elm.innerHTML = elm.getAttribute('data-html');
   }
 }
 
@@ -122,12 +139,6 @@ function addEventsItem(elm) {
   elm.addEventListener('input', itemInput);
   elm.addEventListener('keydown', itemKeyDown);
 }
-
-function toBraces(elm) {
-  Array.from(elm.getElementsByClassName('litref')).forEach(function(child) {
-    elm.replaceChild(document.createTextNode('{' + child.innerText + '}'), child); });
-}
-
 
 window.addEventListener('DOMContentLoaded', function(event) {
   admin = document.getElementById('admin');

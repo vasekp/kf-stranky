@@ -13,6 +13,9 @@
 }
 
 .litref {
+  vertical-align: top;
+  position: relative;
+  top: .1em;
   font-size: 90%;
   color: #888;
 }

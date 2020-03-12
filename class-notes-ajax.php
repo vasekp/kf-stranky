@@ -40,10 +40,18 @@ if(in_array($type, array('insert', 'update', 'delete'))) {
 
   if($type == 'insert') {
     $result = $db->query('select last_insert_id()');
-    if($result->num_rows > 0) {
-      $response = array('id' => $result->fetch_row()[0]);
-      echo json_encode($response);
-    }
+    if($result->num_rows == 0)
+      return;
+    $id = $result->fetch_row()[0];
+  }
+
+  if($type == 'insert' || $type == 'update') {
+    $response = array(
+      'text' => $text,
+      'html' => toHTML($text),
+      'id' => $id
+    );
+    echo json_encode($response);
   }
 }
 ?>
