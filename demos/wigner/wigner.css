@@ -1,0 +1,77 @@
+#container {
+  display: block;
+  width: 25em;
+  border: inset 2px;
+  margin: 0 auto;
+  position: relative;
+}
+
+#canvas {
+  display: block;
+  width: 25em;
+  height: 50em;
+}
+
+.inline-img {
+  width: .8em;
+  height: .8em;
+}
+
+.offset {
+  margin-left: .5em !important;
+}
+
+#coords {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 25em;
+  height: 25em;
+  opacity: 0.7;
+}
+
+#coords .filled {
+  fill: black;
+}
+
+#coords .stroked {
+  stroke: black;
+  stroke-width: 0.03;
+  fill: none;
+}
+
+#coords #shape-controls {
+  transition: opacity .5s;
+}
+
+#coords .hidden {
+  opacity: 0;
+}
+
+#coords .filled.c1 {
+  fill: #4c4;
+}
+
+#coords .stroked.c1 {
+  stroke: #4c4;
+}
+
+#coords .filled.c2 {
+  fill: #c44;
+}
+
+#coords .stroked.c2 {
+  stroke: #c44;
+}
+
+#coords .filled.c3 {
+  fill: #44c;
+}
+
+#coords .stroked.c3 {
+  stroke: #44c;
+}
+
+#coords .text {
+  font-size: .4px;
+}

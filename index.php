@@ -23,6 +23,7 @@ if($en) {
 $stranky = array(
   'landing' => $en ? 'Intro' : 'Úvod',
   'classes' => $en ? 'Classes' : 'Výuka',
+  'demos' => $en ? 'Demonstrations' : 'Ukázky',
   'theses' => $en ? 'Theses' : 'Školení',
   'pub' => $en ? 'Publications' : 'Publikace',
   'personal' => $en ? 'Personal' : 'Osobní'
@@ -35,6 +36,7 @@ $filename = $curr . ($en ? '-en' : '') . '.inc.php';
 
 $scripts = array();
 $css = array();
+$files = array();
 if(file_exists($filename)) {
   $early = 1;
   include $filename;
@@ -51,6 +53,8 @@ if(file_exists($filename)) {
 <?php
 foreach($css as $url)
   print_indent(2, '<link rel="stylesheet" type="text/css" href="' . $url . '"/>');
+foreach($files as $id => $url)
+  print_indent(2, '<link rel="preload" as="fetch" href="' . $url . '"/>');
 foreach($scripts as $url)
   print_indent(2, '<script type="text/javascript" src="' . $url . '"></script>');
 ?>
@@ -72,17 +76,9 @@ foreach($stranky as $name => $text) {
     <div id="main">
       <main>
 <?php
-if(!file_exists($filename)) {
-  print_indent(4, '<div class="error">');
-  print_indent(5, $en ? 'This page does not exist.' : 'Tato stránka neexistuje.');
-  print_indent(5, '<br/>');
-  $text = $en ? 'Please report this error on ' : 'Prosím nahlašte chybu na ';
-  $text .= '<a href="https://github.com/vasekp/kf-stranky/issues" target="_blank">';
-  $text .= $en ? 'GitHub' : 'GitHubu';
-  $text .= '</a>.';
-  print_indent(5, $text);
-  print_indent(4, '</div>');
-} else {
+if(!file_exists($filename))
+  include 'hard-error.inc.php';
+else {
   $db = open_db();
   if(!$db) {
     print_indent(4, '<div class="error">Nepodařilo se připojit k databázi. Stránky mimo provoz.</div>');

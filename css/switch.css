@@ -25,7 +25,7 @@
   background-image: linear-gradient(#999, #eee);
 }
 
-.switch span, .switch a:not([href]) {
+.switch span, .switch a:not([href]), .switch a[href].disabled {
   background: #ddd;
 }
 
@@ -38,6 +38,10 @@
   border-radius: 0 1em 1em 0;
   padding-right: .6em;
   border-right: 1px solid #888;
+}
+
+.switch a:only-of-type {
+  border-radius: 1em;
 }
 
 .switch a:hover {

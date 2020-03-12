@@ -1,0 +1,54 @@
+.row {
+  text-align: center;
+}
+
+.pendulum {
+  width: 15em;
+  height: 15em;
+  border: inset 2px;
+  display: inline-block;
+}
+
+#graph {
+  width: 25em;
+  height: 10em;
+  border: inset 2px;
+  display: inline-block;
+}
+
+.inline-img {
+  width: .8em;
+  height: .8em;
+}
+
+#svg1 .fill.red {
+  fill: #f00;
+}
+
+#svg1 .fill.blue {
+  fill: #00f;
+}
+
+#svg1 .stroke.red {
+  stroke: #f00;
+}
+
+#svg1 .stroke.blue {
+  stroke: #00f;
+}
+
+#svg2 .fill.red {
+  fill: #f88;
+}
+
+#svg2 .fill.blue {
+  fill: #88f;
+}
+
+#svg2 .stroke.red {
+  stroke: #f88;
+}
+
+#svg2 .stroke.blue {
+  stroke: #88f;
+}
