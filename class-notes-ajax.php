@@ -31,7 +31,7 @@ if(in_array($type, array('insert', 'update', 'delete'))) {
     $st->bind_param("si", $text, $id);
   } else if($type == 'insert') {
     $st = $db->prepare('insert into class_notes (class_ID, date, text) values (?, ?, ?)');
-    $st->bind_param("iss", $cid, $date, $text);
+    $st->bind_param("sss", $cid, $date, $text);
   } else if($type == 'delete') {
     $st = $db->prepare('delete from class_notes where id = ?');
     $st->bind_param("i", $id);
