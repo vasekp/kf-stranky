@@ -33,31 +33,34 @@
   src: local('Source Sans Pro Bold'), local('SourceSansPro-Bold'), url('../fonts/SourceSansPro-Bold.woff2') format('woff2');
 }
 
-body {
-  background: #ddd;
+html {
   font-family: 'Source Sans Pro';
   font-size: 13pt;
-  line-height: 140%;
-  max-width: 50em;
-  margin: .5em auto;
 }
 
 @media only screen and (max-width: 520pt) {
-  body {
+  html {
     font-size: 10pt;
   }
 }
 
 @media only screen and (max-width: 400pt) {
-  body {
+  html {
     font-size: 8pt;
   }
+}
+
+body {
+  background: #ddd;
+  line-height: 140%;
+  max-width: 50rem;
+  margin: .5rem auto;
 }
 
 nav {
   display: table;
   width: 100%;
-  border-radius: 1em 1em 0 0;
+  border-radius: 1rem 1rem 0 0;
   margin: 0;
   vertical-align: middle;
   background: #888;
@@ -66,17 +69,17 @@ nav {
 
 nav a {
   display: table-cell;
-  padding: .5em 1em;
+  padding: .5rem 1rem;
   text-align: center;
   color: white;
 }
 
 nav a:first-of-type {
-  border-radius: 1em 0 0 0;
+  border-radius: 1rem 0 0 0;
 }
 
 nav a:last-of-type {
-  border-radius: 0 1em 0 0;
+  border-radius: 0 1rem 0 0;
 }
 
 nav a:hover {
@@ -88,9 +91,9 @@ nav .emph {
 }
 
 #main {
-  border-radius: 0 0 1em 1em;
+  border-radius: 0 0 1rem 1rem;
   border: 1px solid #888;
-  padding: 1.5em;
+  padding: 1.5rem;
   background: white;
   position: relative;
 }
@@ -119,22 +122,22 @@ a {
 #lastmod {
   text-align: right;
   position: absolute;
-  right: 1em;
-  bottom: .5em;
+  right: 1rem;
+  bottom: .5rem;
   font-style: italic;
   color: #ccc;
-  font-size: .8em;
+  font-size: 80%;
 }
 
 #lang {
   position: absolute;
-  right: 0.3em;
-  top: 0.3em;
+  right: 0.3rem;
+  top: 0.3rem;
 }
 
 #lang svg {
-  width: 1.5em;
-  height: 1em;
+  width: 1.5rem;
+  height: 1rem;
 }
 
 #lang svg .primary {
@@ -156,35 +159,34 @@ a {
 
 .warn {
   display: table-cell;
-  border-radius: 0.8em;
-  background: repeating-linear-gradient(-45deg, #fcc, #fcc 0.2em, #faa 0.2em, #faa 0.4em);
-  padding: 0.2em 0.4em;
+  border-radius: 0.8rem;
+  background: repeating-linear-gradient(-45deg, #fcc, #fcc 0.2rem, #faa 0.2rem, #faa 0.4rem);
+  padding: 0.2rem 0.4rem;
   border: 1px solid #c00;
 }
 
 .error {
   display: table-cell;
-  border-radius: 0.8em;
-  background: repeating-linear-gradient(-45deg, #f66, #f66 0.2em, #f88 0.2em, #f88 0.4em);
+  border-radius: 0.8rem;
+  background: repeating-linear-gradient(-45deg, #f66, #f66 0.2rem, #f88 0.2rem, #f88 0.4rem);
   border: 2px solid #900;
-  padding: 0.8em;
+  padding: 0.8rem;
   font-weight: 600;
-  font-size: 1.3em;
+  font-size: 130%;
 }
 
 h1, h2 {
   clear: both;
-  margin: 1em 0 .5em 0;
+  margin: 1.5rem 0 .7rem 0;
+  font-weight: 600;
 }
 
 h1 {
-  font-size: 1.6em;
-  font-weight: 600;
+  font-size: 160%;
 }
 
 h2 {
-  font-size: 1.4em;
-  font-weight: 600;
+  font-size: 140%;
 }
 
 b, .emph {
@@ -208,33 +210,33 @@ main a:hover {
 }
 
 p {
-  margin: 0.5em 0;
+  margin: 0.5rem 0;
 }
 
 ul {
   list-style: none;
-  margin: .5em 0;
+  margin: .5rem 0;
   padding: 0;
 }
 
 ul li {
   position: relative;
-  left: 1em;
+  left: 1rem;
 }
 
 ul li::before {
   content: "→";
   display: inline-block;
-  margin-left: -1em;
-  width: 1em;
+  margin-left: -1rem;
+  width: 1rem;
 }
 
 ol {
-  margin: .5em 0;
+  margin: .5rem 0;
 }
 
 ol li {
-  padding: 0.3em;
+  padding: .3rem;
 }
 
 sub, sup {
@@ -244,9 +246,9 @@ sub, sup {
 }
 
 sup {
-  top: -.3em;
+  top: -.2rem;
 }
 
 sub {
-  top: .4em;
+  top: .3rem;
 }

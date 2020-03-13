@@ -3,22 +3,22 @@
 }
 
 .pendulum {
-  width: 15em;
-  height: 15em;
+  width: 15rem;
+  height: 15rem;
   border: inset 2px;
   display: inline-block;
 }
 
 #graph {
-  width: 25em;
-  height: 10em;
+  width: 25rem;
+  height: 10rem;
   border: inset 2px;
   display: inline-block;
 }
 
 .inline-img {
-  width: .8em;
-  height: .8em;
+  width: .8rem;
+  height: .8rem;
 }
 
 #svg1 .fill.red {

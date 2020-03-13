@@ -1,6 +1,6 @@
 #container {
   display: block;
-  width: 25em;
+  width: 25rem;
   border: inset 2px;
   margin: 0 auto;
   position: relative;
@@ -8,25 +8,25 @@
 
 #canvas {
   display: block;
-  width: 25em;
-  height: 50em;
+  width: 25rem;
+  height: 50rem;
 }
 
 .inline-img {
-  width: .8em;
-  height: .8em;
+  width: .8rem;
+  height: .8rem;
 }
 
 .offset {
-  margin-left: .5em !important;
+  margin-left: .5rem !important;
 }
 
 #coords {
   position: absolute;
   left: 0;
   top: 0;
-  width: 25em;
-  height: 25em;
+  width: 25rem;
+  height: 25rem;
   opacity: 0.7;
 }
 

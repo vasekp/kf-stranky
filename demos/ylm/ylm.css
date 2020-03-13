@@ -1,8 +1,8 @@
 #container {
   position: relative;
   display: block;
-  width: 25em;
-  height: 25em;
+  width: 25rem;
+  height: 25rem;
   margin: 0 auto;
   border: inset 2px;
 }
@@ -15,8 +15,8 @@
 #functions {
   position: absolute;
   font-size: 90%;
-  left: .5em;
-  top: .5em;
+  left: .5rem;
+  top: .5rem;
   color: white;
   text-shadow: 0 0 .2ex black;
 }
@@ -24,5 +24,5 @@
 table, th, td {
   border: 0;
   padding: 0;
-  border-spacing: .5em;
+  border-spacing: .5rem;
 }

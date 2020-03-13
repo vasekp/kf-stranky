@@ -62,7 +62,7 @@ print <<<HTML
         </div>
         <div id="container">
           <canvas id="canvas"></canvas>
-          <svg id="coords" width="25em" height="25em"
+          <svg id="coords"
               xmlns="http://www.w3.org/2000/svg"
               xmlns:xlink="http://www.w3.org/1999/xlink"
               version="1.1" viewBox="-5 -5 10 10">

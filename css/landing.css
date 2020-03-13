@@ -2,9 +2,9 @@
 
 #photo {
   float: left;
-  padding: .5em;
+  padding: .5rem;
   border: 1px solid #888;
-  border-radius: .25em;
-  margin-right: 1em;
-  width: 8em;
+  border-radius: .25rem;
+  margin-right: 1rem;
+  width: 8rem;
 }

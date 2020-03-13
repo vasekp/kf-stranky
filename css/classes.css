@@ -8,14 +8,14 @@
 }
 
 #date {
-  width: 6em;
+  width: 6.5rem;
   text-align: center;
 }
 
 .litref {
   vertical-align: top;
   position: relative;
-  top: .1em;
+  top: .1rem;
   font-size: 90%;
   color: #888;
 }
