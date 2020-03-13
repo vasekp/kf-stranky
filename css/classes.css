@@ -1,12 +1,6 @@
 @import "switch.css";
 @import "button.css";
 
-#header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 #date {
   width: 6.5rem;
   text-align: center;
