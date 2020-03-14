@@ -32,7 +32,7 @@ window.addEventListener('DOMContentLoaded', function() {
 function filesReady(files) {
   progs = {};
 
-  progs.wigner = new Program(gl, files['wigner.vert'], files['functions.glsl'] + files['wigner.frag']);
+  progs.wigner = new Program(gl, files['functions.glsl'] + files['wigner.vert'], files['functions.glsl'] + files['wigner.frag']);
   progs.history = new Program(gl, files['history.vert'], files['functions.glsl'] + files['history.frag']);
   progs.graph = new Program(gl, files['functions.glsl'] + files['graph.vert'], files['functions.glsl'] + files['graph.frag']);
   progs.wave = new Program(gl, files['wave.vert'], files['functions.glsl'] + files['wave.frag']);
@@ -179,14 +179,14 @@ function changeFuncType(elm) {
 }
 
 function updateUniforms() {
-  var scaleInv = new Float32Array([
-    scale[3], -scale[1], -scale[2], scale[0]]);
+  var mat3 = new Float32Array([
+    scale[0], scale[1], 0,
+    scale[2], scale[3], 0,
+    shift[0], shift[1], 1]);
 
   ['wigner', 'history', 'graph', 'wave'].forEach(function(p) {
     gl.useProgram(progs[p].program);
-    gl.uniformMatrix2fv(progs[p].uScale, false, scale);
-    gl.uniformMatrix2fv(progs[p].uScaleInv, false, scaleInv);
-    gl.uniform2fv(progs[p].uShift, shift);
+    gl.uniformMatrix3fv(progs[p].uMatrix, false, mat3);
   });
 }
 
