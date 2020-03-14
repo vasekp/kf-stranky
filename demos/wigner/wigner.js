@@ -184,12 +184,10 @@ function updateUniforms() {
 
   ['wigner', 'history', 'graph', 'wave'].forEach(function(p) {
     gl.useProgram(progs[p].program);
+    gl.uniformMatrix2fv(progs[p].uScale, false, scale);
     gl.uniformMatrix2fv(progs[p].uScaleInv, false, scaleInv);
     gl.uniform2fv(progs[p].uShift, shift);
   });
-
-  gl.useProgram(progs.wave.program);
-  gl.uniformMatrix2fv(progs.wave.uScale, false, scale);
 }
 
 function updateControls() {

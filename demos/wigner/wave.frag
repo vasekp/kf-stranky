@@ -19,16 +19,15 @@ vec3 color(vec2 val) {
 }
 
 void main(void) {
+  float alpha, beta, gamma;
   mat2 r = rot(-uAngle);
+  decompose(uScale, r, uAngle, alpha, beta, gamma);
   vec2 rShift = r * uShift;
-  mat2 rs = r * uScale;
-  float th0 = atan(-uScale[1][0], -uScale[0][0]);
-  float th = atan(-sin(uAngle), -(uScale[0][0]*rs[0][0] + uScale[1][0]*rs[1][0]))
-    + floor(uAngle / 6.28)*6.28;
-  float v = length(vec2(rs[0][0], rs[1][0]));
-  float u = (rs[0][0]*rs[0][1] + rs[1][0]*rs[1][1]) / (v*v);
-  float phase = u*pow(vQuad - rShift.x, 2.)/2. + rShift.y*vQuad - th/2.;
-  float tq = (vQuad - rShift.x) / v;
-  vec2 val = 1./sqrt(v) * exp(-tq*tq/2.) * vec2(cos(phase), sin(phase));
+  float quadShifted = vQuad - rShift.x;
+  float phase = gamma * pow(quadShifted, 2.) / 2. // for exp(I gamma X^2/2)
+    + rShift.y * quadShifted + rShift.x * rShift.y / 2. // for displacement operator
+    - 0.5 * alpha; // for exp(-I alpha (X^2+P^2)/2)
+  vec2 val = sqrt(beta) * exp(-pow(beta * quadShifted, 2.)/2.) // for exp(I ln(beta) (XP+PX)/2.)
+    * vec2(cos(phase), sin(phase));
   gl_FragColor = vec4(color(val), 1.);
 }
