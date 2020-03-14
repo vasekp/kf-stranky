@@ -12,6 +12,8 @@ if($early) {
   array_push($files, $demodir . '/graph.frag');
   array_push($files, $demodir . '/history.vert');
   array_push($files, $demodir . '/history.frag');
+  array_push($files, $demodir . '/wave.vert');
+  array_push($files, $demodir . '/wave.frag');
   return;
 }
 

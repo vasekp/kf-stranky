@@ -35,6 +35,7 @@ function filesReady(files) {
   progs.wigner = new Program(gl, files['wigner.vert'], files['functions.glsl'] + files['wigner.frag']);
   progs.history = new Program(gl, files['history.vert'], files['functions.glsl'] + files['history.frag']);
   progs.graph = new Program(gl, files['functions.glsl'] + files['graph.vert'], files['functions.glsl'] + files['graph.frag']);
+  progs.wave = new Program(gl, files['wave.vert'], files['functions.glsl'] + files['wave.frag']);
   progs.bufs = {};
 
   progs.bufs.full = gl.createBuffer();
@@ -74,6 +75,15 @@ function draw(time) {
   gl.uniform1f(progs.wigner.uSepar, catSepar);
   gl.drawArrays(gl.TRIANGLES, 0, 6);
   gl.disableVertexAttribArray(progs.wigner.aPos);
+
+  gl.viewport(0, 0.99 * gl.canvas.height, gl.canvas.width, 0.02 * gl.canvas.height);
+  gl.useProgram(progs.wave.program);
+  gl.enableVertexAttribArray(progs.wave.aPos);
+  gl.vertexAttribPointer(progs.wave.aPos, 2, gl.FLOAT, false, 0, 0);
+  gl.uniform1f(progs.wave.uAngle, angle);
+  gl.uniform1f(progs.wave.uSepar, 2.5);
+  gl.drawArrays(gl.TRIANGLES, 0, 6);
+  gl.disableVertexAttribArray(progs.wave.aPos);
 
   gl.viewport(0, 0.4 * gl.canvas.height, gl.canvas.width, 0.1 * gl.canvas.height);
   gl.useProgram(progs.graph.program);
@@ -159,7 +169,7 @@ function reset(e) {
 
 function changeFuncType(elm) {
   var id = elm.getAttribute('data-func');
-  ['wigner', 'history', 'graph'].forEach(function(p) {
+  ['wigner', 'history', 'graph', 'wave'].forEach(function(p) {
     gl.useProgram(progs[p].program);
     gl.uniform1i(progs[p].uFunc, id);
   });
@@ -172,11 +182,14 @@ function updateUniforms() {
   var scaleInv = new Float32Array([
     scale[3], -scale[1], -scale[2], scale[0]]);
 
-  ['wigner', 'history', 'graph'].forEach(function(p) {
+  ['wigner', 'history', 'graph', 'wave'].forEach(function(p) {
     gl.useProgram(progs[p].program);
     gl.uniformMatrix2fv(progs[p].uScaleInv, false, scaleInv);
     gl.uniform2fv(progs[p].uShift, shift);
   });
+
+  gl.useProgram(progs.wave.program);
+  gl.uniformMatrix2fv(progs.wave.uScale, false, scale);
 }
 
 function updateControls() {
