@@ -5,6 +5,7 @@ uniform float uSepar;
 varying float vTrf;
 varying float vVal;
 varying float vAlpha;
+varying float vY;
 
 void main(void) {
   float val;
@@ -14,5 +15,5 @@ void main(void) {
     val = int_fock(vTrf);
   else
     val = int_cat(vTrf, uSepar, vAlpha);
-  gl_FragColor = vec4(vec3(smoothstep(val - .02, val + .02, vVal)), 1.);
+  gl_FragColor = vec4(vec3(smoothstep(val - .02, val + .02, vY)), 1.);
 }

@@ -96,6 +96,6 @@ vec3 color(vec2 val) {
   float norm = dot(val, val);
   if(norm < 1.0)
     return mix(vec3(0.0), clr, 2. * norm / (norm + 1.));
-  else if(norm > 1.0)
+  else if(norm >= 1.0)
     return mix(vec3(1.0), clr, 2. / (norm + 1.));
 }
