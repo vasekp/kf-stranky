@@ -1,19 +1,17 @@
 attribute vec2 aPos;
-uniform mat2 uScaleInv;
+uniform mat3 uMatrix;
 uniform float uAngle;
-uniform vec2 uShift;
-varying float vQuadTransformed;
-varying float vVal;
+varying float vTrf;
+varying float vY;
+varying float vAlpha;
 varying mat2 vRSInv;
 
 void main(void) {
   const float scale = 5.;
   float quad = scale * aPos.x;
-  mat2 r = rot(-uAngle);
-  mat2 rInv = rot(uAngle);
-  float f = faktor(uScaleInv * rInv);
-  vQuadTransformed = f*(quad - (r*uShift).x);
-  vRSInv = uScaleInv*rInv;
-  vVal = 1. + aPos.y;
+  mat3 rs = rot(uAngle) * uMatrix;
+  vTrf = udistance(rs, quad);
+  vY = 1. + aPos.y;
+  vAlpha = alpha(rs);
   gl_Position = vec4(aPos, 0.0, 1.0);
 }

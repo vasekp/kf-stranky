@@ -12,14 +12,19 @@ if($early) {
   array_push($files, $demodir . '/graph.frag');
   array_push($files, $demodir . '/history.vert');
   array_push($files, $demodir . '/history.frag');
+  array_push($files, $demodir . '/whistory.frag');
+  array_push($files, $demodir . '/wave.vert');
+  array_push($files, $demodir . '/wave.frag');
   return;
 }
 
 if($en) {
-  $desc = 'Wigner function is an alternative description of a quantum state, used primarily in quantum optics. Its domain is the phase space. In many respects it behaves like a probability dostribution, although it can reach negative values (which substitute complex phase in explaining interference phenomena). It is shown here for several important states of a 1D harmonic oscillator. Especially time evolution and position probability density reconstruction are particularly simple in this formalism.';
+  $desc = 'Wigner function is an alternative description of a quantum state, used primarily in quantum optics. Its domain is the phase space. In many respects it behaves like a probability dostribution, although it can reach negative values (which substitute complex phase in explaining interference phenomena). It is shown here for several important states of a 1D harmonic oscillator. Especially time evolution and position probability density reconstruction are particularly simple, compared to wave function approach, in this formalism.';
   $type = 'Initial state';
   $types = ['vacuum' => 'Vacuum', 'fock' => '1 photon', 'cat' => '"Cat" state'];
   $reset = 'Reset';
+  $plotType = 'Plot';
+  $plotTypes = ['prob' => 'Density', 'wave' => 'Wave function'];
   $try = 'Tips for trying:';
   $tips = array(
     'In paused mode, you can control displacement and squeezing. Try resetting the vacuum state and reaching a coherent state, squeezed vacuum, phase- or amplitude-squeezed states.',
@@ -28,10 +33,12 @@ if($en) {
     'Watch the birth and decay of interference fringes when two packets meet (with cat states). How does their distance affect your observation?'
   );
 } else {
-  $desc = 'Wignerova funkce je alternativní popis stavu kvantového systému užívaný zejména v kvantové optice. Je definována na proměnných fázového prostoru (souřadnice a hybnosti). V mnoha ohledech se chová jako rozdělení pravděpodobnosti, může ale nabývat záporných hodnot (pomocí kterých popíše i interferenční jevy bez potřeby komplexní fáze). Zde ukázáno pro několik důležitých stavů 1D harmonického oscilátoru. Zejména vývoj stavu a rekonstrukce hustot pravděpodobnosti polohy a hybnosti nabývají obzvlášť jednoduchého tvaru.';
+  $desc = 'Wignerova funkce je alternativní popis stavu kvantového systému užívaný zejména v kvantové optice. Je definována na proměnných fázového prostoru (souřadnice a hybnosti). V mnoha ohledech se chová jako rozdělení pravděpodobnosti, může ale nabývat záporných hodnot (pomocí kterých popíše i interferenční jevy bez potřeby komplexní fáze). Zde ukázáno pro několik důležitých stavů 1D harmonického oscilátoru. Zejména vývoj stavu a rekonstrukce hustot pravděpodobnosti polohy a hybnosti nabývají ve srovnání s vlnovou funkcí obzvlášť jednoduchého tvaru.';
   $type = 'Výchozí stav';
   $types = ['vacuum' => 'Vakuum', 'fock' => '1 foton', 'cat' => '"Cat" stav'];
   $reset = 'Reset';
+  $plotType = 'Vykreslit';
+  $plotTypes = ['prob' => 'Hustota', 'wave' => 'Vlnová funkce'];
   $try = 'Zkuste si:';
   $tips = array(
     'Po zastavení můžete ovládat posunutí a stlačení stavu. Zkuste si z vakua vyrobit koherentní stav, stlačené vakuum, fázově a amplitudově stlačený stav.',
@@ -43,19 +50,37 @@ if($en) {
 
 print <<<HTML
         <h1>$demotitle</h1>
-        $desc
-        <p></p>
-        $type:
-        <div class="inline switch offset" id="func">\n
+        <p>$desc</p>
+        <table>
+          <tr>
+            <td>$type:</td>
+            <td>
+              <div class="inline switch" id="func">\n
 HTML;
 $count = 0;
 foreach($types as $id => $name)
-  print_indent(5, '<a href="#" id="' . $id . '" data-func="' . $count++ . '">' . $name . '</a>');
+  print_indent(8, '<a href="#" id="' . $id . '" data-func="' . $count++ . '">' . $name . '</a>');
 print <<<HTML
-        </div>
-        <div class="inline switch offset">
-          <a href="#" id="reset">$reset</a>
-        </div>
+              </div>
+            </td>
+            <td>
+              <div class="inline switch">
+                <a href="#" id="reset">$reset</a>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>$plotType:</td>
+            <td>
+              <div class="inline switch" id="plotType">\n
+HTML;
+foreach($plotTypes as $id => $type)
+  print_indent(8, '<a href="#" id="' . $id . '">' . $type . '</a>');
+print <<<HTML
+              </div>
+            </td>
+          </tr>
+        </table>
         <div class="switch" id="play-controls">
           <a href="#" id="play"><img class="inline-img" src="$demodir/play.svg" alt="Play"/></a>
           <a href="#" id="pause"><img class="inline-img" src="$demodir/pause.svg" alt="Pause"/></a>

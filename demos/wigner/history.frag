@@ -1,23 +1,20 @@
 precision highp float;
 
 uniform int uFunc;
-uniform mat2 uScaleInv;
-uniform vec2 uShift;
+uniform mat3 uMatrix;
 uniform float uSepar;
 varying float vQuad;
 varying float vAngle;
 
 void main(void) {
-  mat2 r = rot(-vAngle);
-  mat2 rInv = rot(vAngle);
-  float f = faktor(uScaleInv * rInv);
-  float q0 = vQuad - (r*uShift).x;
+  mat3 rs = rot(vAngle) * uMatrix;
+  float trf = udistance(rs, vQuad);
   float val;
   if(uFunc == 0)
-    val = int_gauss(f*q0);
+    val = int_gauss(trf);
   else if(uFunc == 1)
-    val = int_fock(f*q0);
+    val = int_fock(trf);
   else
-    val = int_cat(f*q0, uSepar, uScaleInv*rInv);
+    val = int_cat(trf, uSepar, alpha(rs));
   gl_FragColor = vec4(vec3(1. - val), 1.);
 }

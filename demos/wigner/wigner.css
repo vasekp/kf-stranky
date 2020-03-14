@@ -17,8 +17,10 @@
   height: .8rem;
 }
 
-.offset {
-  margin-left: .5rem !important;
+table, th, td {
+  border: 0;
+  padding: 0;
+  border-spacing: .5rem;
 }
 
 #coords {
