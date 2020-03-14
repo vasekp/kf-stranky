@@ -32,10 +32,11 @@ window.addEventListener('DOMContentLoaded', function() {
 function filesReady(files) {
   progs = {};
 
-  progs.wigner = new Program(gl, files['functions.glsl'] + files['wigner.vert'], files['functions.glsl'] + files['wigner.frag']);
-  progs.history = new Program(gl, files['history.vert'], files['functions.glsl'] + files['history.frag']);
-  progs.graph = new Program(gl, files['functions.glsl'] + files['graph.vert'], files['functions.glsl'] + files['graph.frag']);
-  progs.wave = new Program(gl, files['wave.vert'], files['functions.glsl'] + files['wave.frag']);
+  var func = files['functions.glsl'];
+  progs.wigner = new Program(gl, func + files['wigner.vert'], func + files['wigner.frag']);
+  progs.history = new Program(gl, files['history.vert'], func + files['history.frag']);
+  progs.graph = new Program(gl, func + files['graph.vert'], func + files['graph.frag']);
+  progs.wave = new Program(gl, func + files['wave.vert'], func + files['wave.frag']);
   progs.bufs = {};
 
   progs.bufs.full = gl.createBuffer();

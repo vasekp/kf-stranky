@@ -89,3 +89,13 @@ float w_fock(vec2 xy) {
 float int_fock(float q) {
   return 2.*q*q * exp(-q*q);
 }
+
+vec3 color(vec2 val) {
+  const mat3 clrM = mat3(0.0, 0.433, -0.433, 0.5, -0.25, -0.25, 0.5, 0.5, 0.5);
+  vec3 clr = clrM * vec3(val, 1.0);
+  float norm = dot(val, val);
+  if(norm < 1.0)
+    return mix(vec3(0.0), clr, 2. * norm / (norm + 1.));
+  else if(norm > 1.0)
+    return mix(vec3(1.0), clr, 2. / (norm + 1.));
+}
