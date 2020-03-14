@@ -6,7 +6,7 @@
 
 .switch.inline {
   display: inline-table;
-  margin: inherit;
+  margin: 0;
 }
 
 .switch a, .switch span {

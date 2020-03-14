@@ -1,8 +1,10 @@
 var gl;
 var interaction, playing, progs;
+var fullBuff;
 
 var angle, lastTime;
 var scale, shift, catSepar;
+var plotType;
 const speed = 0.001;
 const angleRange = 4;
 
@@ -32,13 +34,15 @@ window.addEventListener('DOMContentLoaded', function() {
 function filesReady(files) {
   progs = {};
 
-  progs.wigner = new Program(gl, files['wigner.vert'], files['functions.glsl'] + files['wigner.frag']);
-  progs.history = new Program(gl, files['history.vert'], files['functions.glsl'] + files['history.frag']);
-  progs.graph = new Program(gl, files['functions.glsl'] + files['graph.vert'], files['functions.glsl'] + files['graph.frag']);
-  progs.bufs = {};
+  var func = files['functions.glsl'];
+  progs.wigner = new Program(gl, func + files['wigner.vert'], func + files['wigner.frag']);
+  progs.graph = new Program(gl, func + files['graph.vert'], func + files['graph.frag']);
+  progs.wave = new Program(gl, func + files['wave.vert'], func + files['wave.frag']);
+  progs.history = new Program(gl, files['history.vert'], func + files['history.frag']);
+  progs.whistory = new Program(gl, files['history.vert'], func + files['whistory.frag']);
 
-  progs.bufs.full = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, progs.bufs.full);
+  fullBuff = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, fullBuff);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
     -1, -1,
     1, -1,
@@ -54,6 +58,7 @@ function filesReady(files) {
 
   makeSwitch('play-controls', playControl, 0);
   makeSwitch('func', changeFuncType, 0);
+  makeSwitch('plotType', changePlotType, 0);
   document.getElementById('reset').addEventListener('click', reset);
   addPointerListeners(document.getElementById('coords'), pStart, pMove);
 }
@@ -64,7 +69,7 @@ function draw(time) {
   lastTime = time;
 
   gl.clear(gl.COLOR_BUFFER_BIT);
-  gl.bindBuffer(gl.ARRAY_BUFFER, progs.bufs.full);
+  gl.bindBuffer(gl.ARRAY_BUFFER, fullBuff);
 
   gl.viewport(0, gl.canvas.height / 2, gl.canvas.width, gl.canvas.height / 2);
   gl.useProgram(progs.wigner.program);
@@ -75,15 +80,17 @@ function draw(time) {
   gl.drawArrays(gl.TRIANGLES, 0, 6);
   gl.disableVertexAttribArray(progs.wigner.aPos);
 
+  var pGraph = (plotType === 'wave' ? progs.wave : progs.graph);
   gl.viewport(0, 0.4 * gl.canvas.height, gl.canvas.width, 0.1 * gl.canvas.height);
-  gl.useProgram(progs.graph.program);
-  gl.enableVertexAttribArray(progs.graph.aPos);
-  gl.vertexAttribPointer(progs.graph.aPos, 2, gl.FLOAT, false, 0, 0);
-  gl.uniform1f(progs.graph.uAngle, angle);
-  gl.uniform1f(progs.graph.uSepar, catSepar);
+  gl.useProgram(pGraph.program);
+  gl.enableVertexAttribArray(pGraph.aPos);
+  gl.vertexAttribPointer(pGraph.aPos, 2, gl.FLOAT, false, 0, 0);
+  gl.uniform1f(pGraph.uAngle, angle);
+  gl.uniform1f(pGraph.uSepar, catSepar);
   gl.drawArrays(gl.TRIANGLES, 0, 6);
-  gl.disableVertexAttribArray(progs.graph.aPos);
+  gl.disableVertexAttribArray(pGraph.aPos);
 
+  var pHistory = (plotType === 'wave' ? progs.whistory : progs.history);
   var vpHeight = Math.floor(0.4 * gl.canvas.height);
   gl.viewport(0, 0, gl.canvas.width, vpHeight);
   if(playing) {
@@ -92,13 +99,13 @@ function draw(time) {
       gl.enable(gl.SCISSOR_TEST);
       gl.scissor(0, startY, gl.canvas.width, vpHeight - startY);
     }
-    gl.useProgram(progs.history.program);
-    gl.enableVertexAttribArray(progs.history.aPos);
-    gl.vertexAttribPointer(progs.history.aPos, 2, gl.FLOAT, false, 0, 0);
-    gl.uniform1f(progs.history.uAngle, angle);
-    gl.uniform1f(progs.history.uSepar, catSepar);
+    gl.useProgram(pHistory.program);
+    gl.enableVertexAttribArray(pHistory.aPos);
+    gl.vertexAttribPointer(pHistory.aPos, 2, gl.FLOAT, false, 0, 0);
+    gl.uniform1f(pHistory.uAngle, angle);
+    gl.uniform1f(pHistory.uSepar, catSepar);
     gl.drawArrays(gl.TRIANGLES, 0, 6);
-    gl.disableVertexAttribArray(progs.history.aPos);
+    gl.disableVertexAttribArray(pHistory.aPos);
     gl.disable(gl.SCISSOR_TEST);
   }
 
@@ -159,24 +166,30 @@ function reset(e) {
 
 function changeFuncType(elm) {
   var id = elm.getAttribute('data-func');
-  ['wigner', 'history', 'graph'].forEach(function(p) {
+  for(p in progs) {
     gl.useProgram(progs[p].program);
     gl.uniform1i(progs[p].uFunc, id);
-  });
+  }
   resetAngle();
   document.getElementById('separ').classList.toggle('hidden', elm.id != 'cat');
   requestAnimationFrame(draw);
 }
 
-function updateUniforms() {
-  var scaleInv = new Float32Array([
-    scale[3], -scale[1], -scale[2], scale[0]]);
+function changePlotType(elm) {
+  plotType = elm.id;
+  requestAnimationFrame(draw);
+}
 
-  ['wigner', 'history', 'graph'].forEach(function(p) {
+function updateUniforms() {
+  var mat3 = new Float32Array([
+    scale[0], scale[1], 0,
+    scale[2], scale[3], 0,
+    shift[0], shift[1], 1]);
+
+  for(p in progs) {
     gl.useProgram(progs[p].program);
-    gl.uniformMatrix2fv(progs[p].uScaleInv, false, scaleInv);
-    gl.uniform2fv(progs[p].uShift, shift);
-  });
+    gl.uniformMatrix3fv(progs[p].uMatrix, false, mat3);
+  }
 }
 
 function updateControls() {
