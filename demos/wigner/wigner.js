@@ -86,7 +86,7 @@ function draw(time) {
   gl.enableVertexAttribArray(pGraph.aPos);
   gl.vertexAttribPointer(pGraph.aPos, 2, gl.FLOAT, false, 0, 0);
   gl.uniform1f(pGraph.uAngle, angle);
-  gl.uniform1f(pGraph.uSepar, 2.5);
+  gl.uniform1f(pGraph.uSepar, catSepar);
   gl.drawArrays(gl.TRIANGLES, 0, 6);
   gl.disableVertexAttribArray(pGraph.aPos);
 
