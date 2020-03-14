@@ -12,7 +12,7 @@ void main(void) {
   decompose(uMatrix, rs, vAngle, alpha, beta, gamma, gobs);
   vec2 rShift = vec2(rs[2]);
 
-  float trf = trans(rs, vQuad);
+  float trf = udistance(rs, vQuad);
   float phase = gobs * trf*trf / 2. // for exp(I gamma X^2/2)
     + rShift.y * vQuad - rShift.x * rShift.y / 2. // for displacement operator
     - 0.5 * alpha; // for exp(-I alpha (X^2+P^2)/2)

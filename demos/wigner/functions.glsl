@@ -24,7 +24,8 @@ vec2 trans(mat3 mx, vec2 v) {
   return vec2(mx * vec3(v, 1.));
 }
 
-float trans(mat3 mx, float q) {
+// This calculates the disance of mx^(-1) (x=const, y) line from the origin. */
+float udistance(mat3 mx, float q) {
   float beta = 1./length(vec2(mx[1][0], mx[0][0]));
   return beta*(q - mx[2][0]);
 }

@@ -8,7 +8,7 @@ varying float vAngle;
 
 void main(void) {
   mat3 rs = rot(vAngle) * uMatrix;
-  float trf = trans(rs, vQuad);
+  float trf = udistance(rs, vQuad);
   float val;
   if(uFunc == 0)
     val = int_gauss(trf);

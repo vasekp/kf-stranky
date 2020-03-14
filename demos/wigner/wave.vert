@@ -16,7 +16,7 @@ void main(void) {
   decompose(uMatrix, rs, uAngle, vAlpha, vBeta, gamma, vGoBS);
   vRShift = vec2(rs[2]);
   vQuad = scale * aPos.x;
-  vQuadTrf = trans(rs, vQuad);
+  vQuadTrf = udistance(rs, vQuad);
   vY = 1. + aPos.y;
   gl_Position = vec4(aPos, 0.0, 1.0);
 }
