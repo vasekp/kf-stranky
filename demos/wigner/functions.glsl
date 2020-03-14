@@ -63,6 +63,30 @@ float alpha(mat3 mx) {
   return atan(mx[1][0], mx[0][0]);
 }
 
+float w_gauss(vec2 xy) {
+  return exp(-dot(xy, xy));
+}
+
+float int_gauss(float q) {
+  return exp(-q*q);
+}
+
+float psi_gauss(float q) {
+  return exp(-q*q/2.);
+}
+
+float w_fock(vec2 xy) {
+  return (2.*dot(xy, xy) - 1.) * exp(-dot(xy, xy));
+}
+
+float int_fock(float q) {
+  return 2.*q*q * exp(-q*q);
+}
+
+float psi_fock(float q) {
+  return sqrt(2.) * q * exp(-q*q/2.);
+}
+
 float cosh(float x) {
   return (exp(x) + exp(-x))/2.;
 }
@@ -75,20 +99,25 @@ float int_cat(float q, float s, float alpha) {
   return 1./(1.+exp(-s*s)) * exp(-q*q - pow(s*cos(alpha), 2.)) * (cosh(2.*cos(alpha)*s*q) + cos(2.*sin(alpha)*s*q));
 }
 
-float w_gauss(vec2 xy) {
-  return exp(-dot(xy, xy));
+vec2 cx_unit(float a) {
+  return vec2(cos(a), sin(a));
 }
 
-float int_gauss(float q) {
-  return exp(-q*q);
+vec2 cx_mul(vec2 a, vec2 b) {
+  return vec2(a.x*b.x - a.y*b.y, a.x*b.y + a.y*b.x);
 }
 
-float w_fock(vec2 xy) {
-  return (2.*dot(xy, xy) - 1.) * exp(-dot(xy, xy));
+vec2 cx_conj(vec2 cx) {
+  return vec2(cx.x, -cx.y);
 }
 
-float int_fock(float q) {
-  return 2.*q*q * exp(-q*q);
+vec2 psi_cat_cx(float q, float s, float alpha) {
+  vec2 separ = s*vec2(cos(alpha), -sin(alpha));
+  vec2 cx1 = cx_unit(q*separ.y);
+  vec2 temp = psi_gauss(q - separ.x) * cx1
+    + psi_gauss(q + separ.x) * cx_conj(cx1);
+  float xphase = -separ.x * separ.y / 2.;
+  return cx_mul(temp, cx_unit(xphase)) / 2.;
 }
 
 vec3 color(vec2 val) {
