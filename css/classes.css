@@ -23,3 +23,17 @@
   opacity: .3;
   text-decoration: line-through;
 }
+
+table, tr, td {
+  border: 0;
+  padding: 0;
+  border-spacing: .5rem .2rem;
+}
+
+thead {
+  font-weight: 600;
+}
+
+img.filetype {
+  height: 1.5rem;
+}
