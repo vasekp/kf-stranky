@@ -35,5 +35,7 @@ thead {
 }
 
 img.filetype {
-  height: 1.5rem;
+  height: 1.2rem;
+  position: relative;
+  bottom: -.1rem;
 }

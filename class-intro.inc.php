@@ -13,18 +13,12 @@
         <p>V souladu s požadavkem rektora a vedoucího katedry bude výuka po dobu přerušení studia v důsledku epidemické krize probíhat formou <b>sdílení poznámek k samostudiu</b>. Materiály budou k nalezení na této stránce.</p>
         <h2>Ke stažení</h2>
         <table>
-          <thead>
-            <td>Datum</td>
-            <td>Soubor</td>
-            <td>Popis</td>
-          </thead>
 <?php
 $sql = 'select filename, description, timestamp from download';
 $result = $db->query($sql);
 while($row = $result->fetch_assoc()) {
   print_indent(5, '<tr>');
-  print_indent(6, '<td>' . date('j. n. Y', strtotime($row['timestamp'])) . '</td>');
-  print_indent(6, '<td><a href="download/' . $row['filename'] . '">' . $row['filename'] . '</a></td>');
+  print_indent(6, '<td><a href="download/' . $row['filename'] . '"><img class="filetype" src="images/download.svg" alt="' . $row['filename'] . '"></a></td>');
   print_indent(6, '<td>' . $row['description'] . '</td>');
   print_indent(5, '</tr>');
 }
