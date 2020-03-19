@@ -6,7 +6,21 @@ if($early) {
   return;
 }
 
-include "pub-header-$prilang.inc.php";
+$title = $en ? 'Publication list' : 'Seznam publikací';
+$filters = array(
+  'selected' => $en ? 'Selected' : 'Vybrané',
+  'recent' => $en ? 'Recent' : 'Nedávné',
+  'all' => $en ? 'All' : 'Všechny'
+);
+
+print <<<HTML
+<h1>$title</h1>
+<div class="switch hide" id="pub-filter">
+  <a id="selected" href="#">{$filters['selected']}</a>
+  <a id="recent" href="#">{$filters['recent']}</a>
+  <a id="all" href="#">{$filters['all']}</a>
+</div>\n
+HTML;
 
 $sql = 'select * from publications order by id desc';
 $result = $db->query($sql);
