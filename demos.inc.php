@@ -31,18 +31,22 @@ else {
   $demotitle = $demorow['title'];
   include $demofn;
 
-  $text = $en ? 'See also' : 'Další';
-  print_indent(4, '<h2>' . $text . '</h2>');
-  print_indent(4, '<ul>');
-  if($demorow['details']) {
-    $text = $en ? 'More details (PDF)' : 'Další informace (PDF)';
-    print_indent(5, '<li><a href="' . $demorow['details'] . '">' . $text . '</a></li>');
-  }
-  $text = $en ? "Source code" : "Zdrojový kód";
-  print_indent(5, '<li><a href="https://github.com/vasekp/kf-stranky/tree/demos/demos/' . $demo . '" '
-    . 'target="_blank">' . $text . '</a></li>');
-  $text = $en ? 'Back to list' : 'Zpět na seznam';
-  print_indent(5, '<li><a href="' . query('demos.php', array()) . '">' . $text . '</a></li>');
-  print_indent(4, '</ul>');
+  $seealso = $en ? 'See also' : 'Další';
+  $more = $en ? 'More details (PDF)' : 'Další informace (PDF)';
+  $source = $en ? "Source code" : "Zdrojový kód";
+  $back = $en ? 'Back to list' : 'Zpět na seznam';
+  if($demorow['details'])
+    $morerow = '<li><a href="' . $demorow['details'] . '">' . $more . '</a></li>';
+  else
+    $morerow = '';
+
+print <<<HTML
+<h2>$seealso</h2>
+<ul>
+$morerow
+<li><a href="https://github.com/vasekp/kf-stranky/tree/demos/demos/$demo" target="_blank">$source</a></li>
+<li><a href="{query('demos.php', array())}">$back</a></li>
+</ul>\n
+HTML;
 }
 ?>

@@ -14,10 +14,43 @@ function open_db() {
   return $conn;
 }
 
-function print_indent($offset, $text) {
-  echo str_repeat('  ', $offset);
-  echo $text;
-  echo "\n";
+function indent($text) {
+  global $debug;
+  $in = 0;
+  $arr = explode(PHP_EOL, $text);
+  $out = '';
+  foreach($arr as $line) {
+    $diff = 0;
+    $line = trim($line);
+    if($line == '')
+      continue;
+    preg_match_all('/<(.)/', $line, $matches);
+    foreach($matches[1] as $m) {
+      $diff++;
+      if($m == '!') continue;
+      if($m == '/') $diff--;
+      else $diff++;
+    }
+    preg_match_all('/(\/)?>/', $line, $matches);
+    foreach($matches[1] as $m) {
+      $diff--;
+      if($m == '/') $diff--;
+    }
+    if($diff < 0 && $line[0] == '<') {
+      $in += $diff;
+      $diff = 0;
+    }
+    if($in < 0) {
+      if($debug)
+        $out .= '<!-- INDENT ERR: in < 0 -->';
+      $in = 0;
+    }
+    $out .= str_repeat('  ', $in) . $line . PHP_EOL;
+    $in += $diff;
+  }
+  if($in > 0 && $debug)
+    $out .= '<!-- INDENT ERR: in > 0 -->';
+  return $out;
 }
 
 function query($script, $array = array()) {

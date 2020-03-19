@@ -63,50 +63,50 @@ if($en) {
 }
 
 print <<<HTML
-        <h1>$demotitle</h1>
-        $desc
-        <table>
-          <tr>
-            <td>$type:</td>
-            <td>
-              <div class="inline switch" id="family">
-                <a href="#" data-family="ylm">{$types['ylm']}</a>
-                <a href="#" data-family="ri">{$types['ri']}</a>
-                <a href="#" data-family="cart">{$types['cart']}</a>
-                <a href="#" data-family="random">{$types['random']}</a>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td>$proj:</td>
-            <td>
-              <div class="inline switch" id="model">
-                <a href="#" data-model="1">$models[0]</a>
-                <a href="#" data-model="2">$models[1]</a>
-              </div>
-            </td>
-          </tr>
-        </table>
-        <div class="switch" id="controls">
-          <a href="#" id="l-">«l</a>
-          <a href="#" id="m-">«m</a>
-          <a href="#" id="random">$new</a>
-          <a href="#" id="m+">m»</a>
-          <a href="#" id="l+">l»</a>
-        </div>
-        <div id="container">
-          <canvas id="canvas"></canvas>
-          <div id="functions">
-            $functions[0]: <span id="formula-ylm"></span>
-            <br/>
-            $functions[1]: <span id="formula-cart"></span>
-          </div>
-        </div>
-        <h2>$expl</h2>\n
+<h1>$demotitle</h1>
+$desc
+<table>
+  <tr>
+    <td>$type:</td>
+    <td>
+      <div class="inline switch" id="family">
+        <a href="#" data-family="ylm">{$types['ylm']}</a>
+        <a href="#" data-family="ri">{$types['ri']}</a>
+        <a href="#" data-family="cart">{$types['cart']}</a>
+        <a href="#" data-family="random">{$types['random']}</a>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td>$proj:</td>
+    <td>
+      <div class="inline switch" id="model">
+        <a href="#" data-model="1">$models[0]</a>
+        <a href="#" data-model="2">$models[1]</a>
+      </div>
+    </td>
+  </tr>
+</table>
+<div class="switch" id="controls">
+  <a href="#" id="l-">«l</a>
+  <a href="#" id="m-">«m</a>
+  <a href="#" id="random">$new</a>
+  <a href="#" id="m+">m»</a>
+  <a href="#" id="l+">l»</a>
+</div>
+<div id="container">
+  <canvas id="canvas"></canvas>
+  <div id="functions">
+    $functions[0]: <span id="formula-ylm"></span>
+    <br/>
+    $functions[1]: <span id="formula-cart"></span>
+  </div>
+</div>
+<h2>$expl</h2>\n
 HTML;
 
-print_indent(4, '<ul>');
+echo '<ul>' . PHP_EOL;
 foreach($explItems as $item)
-  print_indent(5, '<li>' . $item . '</li>');
-print_indent(4, '</ul>');
+  echo '<li>' . $item . '</li>' . PHP_EOL;
+echo '</ul>' . PHP_EOL;
 ?>
