@@ -18,8 +18,17 @@
   opacity: .5;
 }
 
-.edit:not([data-id]):not([contentEditable=true]) {
+.edit.last:not([contentEditable=true]) {
   opacity: .5;
+}
+
+.edit.html[contentEditable=true] {
+  font-family: monospace;
+  font-size: 80%;
+}
+
+#intro, #announces {
+  min-height: 1rem;
 }
 
 li.warn {
