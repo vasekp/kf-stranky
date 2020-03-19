@@ -35,14 +35,18 @@ function recordsArrived(r) {
   if(r.date_prev) {
     elm.setAttribute('href', '#');
     elm.setAttribute('data-date', r.date_prev);
-  } else
+  } else {
     elm.removeAttribute('href');
+    elm.removeAttribute('data-date');
+  }
   elm = document.getElementById('next');
   if(r.date_next) {
     elm.setAttribute('href', '#');
     elm.setAttribute('data-date', r.date_next);
-  } else
+  } else {
     elm.removeAttribute('href');
+    elm.removeAttribute('data-date');
+  }
   clearList();
   r.records.forEach(function(row) {
     createRecord(row.id, row.text, row.html);
@@ -69,7 +73,10 @@ function datePick(date) {
 }
 
 function arrowClick(e) {
-  datePick(e.currentTarget.getAttribute('data-date'));
+  var date = e.currentTarget.getAttribute('data-date');
+  if(!date)
+    return;
+  datePick(date);
   e.preventDefault();
 }
 
