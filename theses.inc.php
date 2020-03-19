@@ -14,8 +14,7 @@ $languages = array(
   'sk' => 'Slovak'
 );
 
-$text = '<h1>' . ($en ? 'Project supervision' : 'Školení') . '</h1>';
-echo $text . PHP_EOL;
+echo '<h1>' . ($en ? 'Project supervision' : 'Školení') . '</h1>' . PHP_EOL;
 
 $sql = "select url, title_$prilang as title from theses where state='open'";
 $result = $db->query($sql);

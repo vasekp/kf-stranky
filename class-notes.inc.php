@@ -7,24 +7,28 @@ if(!$r) {
   return;
 }
 
-echo '<h1>Poznámky k přednáškám 02KFA</h1>' . PHP_EOL;
-echo '<div class="switch larger" id="date-buttons">' . PHP_EOL;
-$text = '<a id="prev"';
+$prevlink = '<a id="prev"';
 if($r->date_prev) {
-  $text .= ' href="' . query('', array('s' => 'notes', 'date' => $r->date_prev)) . '"';
-  $text .= ' data-date="' . $r->date_prev . '"';
+  $prevlink .= ' href="' . query('', array('s' => 'notes', 'date' => $r->date_prev)) . '"';
+  $prevlink .= ' data-date="' . $r->date_prev . '"';
 }
-$text .= '>«</a>';
-echo $text . PHP_EOL;
-echo '<span id="date" data-date="' . $r->date . '">' . $r->date_text . '</span>' . PHP_EOL;
-$text = '<a id="next"';
+$prevlink .= '>«</a>';
+
+$nextlink = '<a id="next"';
 if($r->date_next) {
-  $text .= ' href="' . query('', array('s' => 'notes', 'date' => $r->date_next)) . '"';
-  $text .= ' data-date="' . $r->date_next . '"';
+  $nextlink .= ' href="' . query('', array('s' => 'notes', 'date' => $r->date_next)) . '"';
+  $nextlink .= ' data-date="' . $r->date_next . '"';
 }
-$text .= '>»</a>';
-echo $text . PHP_EOL;
-echo '</div>' . PHP_EOL;
+$nextlink .= '>»</a>';
+
+print <<<HTML
+<h1>Poznámky k přednáškám 02KFA</h1>
+<div class="switch larger" id="date-buttons">
+$prevlink
+<span id="date" data-date="{$r->date}">{$r->date_text}</span>
+$nextlink
+</div>\n
+HTML;
 
 echo '<ul id="list">' . PHP_EOL;
 foreach($r->records as $row) {

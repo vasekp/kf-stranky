@@ -31,18 +31,21 @@ else {
   $demotitle = $demorow['title'];
   include $demofn;
 
-  $text = $en ? 'See also' : 'Další';
-  echo '<h2>' . $text . '</h2>' . PHP_EOL;
-  echo '<ul>' . PHP_EOL;
-  if($demorow['details']) {
-    $text = $en ? 'More details (PDF)' : 'Další informace (PDF)';
-    echo '<li><a href="' . $demorow['details'] . '">' . $text . '</a></li>' . PHP_EOL;
-  }
-  $text = $en ? "Source code" : "Zdrojový kód";
-  echo '<li><a href="https://github.com/vasekp/kf-stranky/tree/demos/demos/' . $demo . '" '
-    . 'target="_blank">' . $text . '</a></li>' . PHP_EOL;
-  $text = $en ? 'Back to list' : 'Zpět na seznam';
-  echo '<li><a href="' . query('demos.php', array()) . '">' . $text . '</a></li>' . PHP_EOL;
-  echo '</ul>' . PHP_EOL;
+  $seealso = $en ? 'See also' : 'Další';
+  $more = $en ? 'More details (PDF)' : 'Další informace (PDF)';
+  $source = $en ? "Source code" : "Zdrojový kód";
+  $back = $en ? 'Back to list' : 'Zpět na seznam';
+  if($demorow['details'])
+    $morerow = '<li><a href="' . $demorow['details'] . '">' . $more . '</a></li>';
+  else
+    $morerow = '';
+print <<<HTML
+<h2>$seealso</h2>
+<ul>
+$morerow
+<li><a href="https://github.com/vasekp/kf-stranky/tree/demos/demos/$demo" target="_blank">$source</a></li>
+<li><a href="{query('demos.php', array())}">$back</a></li>
+</ul>\n
+HTML;
 }
 ?>
