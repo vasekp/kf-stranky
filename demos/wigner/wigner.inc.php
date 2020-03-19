@@ -49,112 +49,116 @@ if($en) {
 }
 
 print <<<HTML
-        <h1>$demotitle</h1>
-        <p>$desc</p>
-        <table>
-          <tr>
-            <td>$type:</td>
-            <td>
-              <div class="inline switch" id="func">\n
+<h1>$demotitle</h1>
+<p>$desc</p>
+<table>
+  <tr>
+    <td>$type:</td>
+    <td>
+      <div class="inline switch" id="func">\n
 HTML;
+
 $count = 0;
 foreach($types as $id => $name)
   echo '<a href="#" id="' . $id . '" data-func="' . $count++ . '">' . $name . '</a>' . PHP_EOL;
+
 print <<<HTML
-              </div>
-            </td>
-            <td>
-              <div class="inline switch">
-                <a href="#" id="reset">$reset</a>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td>$plotType:</td>
-            <td>
-              <div class="inline switch" id="plotType">\n
+      </div>
+    </td>
+    <td>
+      <div class="inline switch">
+        <a href="#" id="reset">$reset</a>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td>$plotType:</td>
+    <td>
+      <div class="inline switch" id="plotType">\n
 HTML;
+
 foreach($plotTypes as $id => $type)
   echo '<a href="#" id="' . $id . '">' . $type . '</a>' . PHP_EOL;
+
 print <<<HTML
-              </div>
-            </td>
-          </tr>
-        </table>
-        <div class="switch" id="play-controls">
-          <a href="#" id="play"><img class="inline-img" src="$demodir/play.svg" alt="Play"/></a>
-          <a href="#" id="pause"><img class="inline-img" src="$demodir/pause.svg" alt="Pause"/></a>
-        </div>
-        <div id="container">
-          <canvas id="canvas"></canvas>
-          <svg id="coords"
-              xmlns="http://www.w3.org/2000/svg"
-              xmlns:xlink="http://www.w3.org/1999/xlink"
-              version="1.1" viewBox="-5 -5 10 10">
-            <defs>
-              <path id="apath" d="M -1 -1 L 1 0 L -1 1 z"/>
-              <marker class="filled" id="coord-arrow" viewbox="-1 -1 2 2" markerUnits="userSpaceOnUse"
-                  markerWidth=".2" markerHeight=".2" orient="auto">
-                <use xlink:href="#apath"/>
-              </marker>
-              <marker class="filled c1" id="c1-me" viewbox="-1 -1 2 2" markerUnits="userSpaceOnUse"
-                  markerWidth=".2" markerHeight=".2" orient="auto">
-                <use xlink:href="#apath"/>
-              </marker>
-              <marker class="filled c1" id="c1-ms" viewbox="-1 -1 2 2" markerUnits="userSpaceOnUse"
-                  markerWidth=".2" markerHeight=".2" orient="auto">
-                <use xlink:href="#apath" transform="scale(-1, 1)"/>
-              </marker>
-              <marker class="filled c2" id="c2-me" viewbox="-1 -1 2 2" markerUnits="userSpaceOnUse"
-                  markerWidth=".2" markerHeight=".2" orient="auto">
-                <use xlink:href="#apath"/>
-              </marker>
-              <marker class="filled c2" id="c2-ms" viewbox="-1 -1 2 2" markerUnits="userSpaceOnUse"
-                  markerWidth=".2" markerHeight=".2" orient="auto">
-                <use xlink:href="#apath" transform="scale(-1, 1)"/>
-              </marker>
-              <marker class="filled c3" id="c3-me" viewbox="-1 -1 2 2" markerUnits="userSpaceOnUse"
-                  markerWidth=".2" markerHeight=".2" orient="auto">
-                <use xlink:href="#apath"/>
-              </marker>
-              <marker class="filled c3" id="c3-ms" viewbox="-1 -1 2 2" markerUnits="userSpaceOnUse"
-                  markerWidth=".2" markerHeight=".2" orient="auto">
-                <use xlink:href="#apath" transform="scale(-1, 1)"/>
-              </marker>
-              <marker id="skew" class="stroked c1" viewbox="-1 -1 2 2" markerUnits="userSpaceOnUse"
-                  markerWidth="2" markerHeight="2" orient="auto">
-                <path d="M -.15 -.15 H .15 V .15 H -.15 z"/>
-                <path d="M -.5 0 H .5" marker-start="url(#c1-ms)" marker-end="url(#c1-me)"/>
-                <path d="M 0 -.5 V .5" marker-start="url(#c1-ms)" marker-end="url(#c1-me)"/>
-              </marker>
-              <marker id="rot" class="stroked c2" viewbox="-1 -1 2 2" markerUnits="userSpaceOnUse"
-                  markerWidth="2" markerHeight="2" orient="auto">
-                <path d="M -.15 -.15 H .15 V .15 H -.15 z"/>
-                <path d="M -.5 0 H .5" marker-start="url(#c2-ms)" marker-end="url(#c2-me)"/>
-                <path d="M -.1 -.5 Q .1 0 -.1 .5" marker-start="url(#c2-ms)" marker-end="url(#c2-me)"/>
-              </marker>
-              <marker id="move" class="stroked c3" viewbox="-1 -1 2 2" markerUnits="userSpaceOnUse"
-                  markerWidth="2" markerHeight="2" orient="auto">
-                <path d="M -.15 -.15 H .15 V .15 H -.15 z"/>
-                <path d="M -.5 0 H .5" marker-start="url(#c3-ms)" marker-end="url(#c3-me)"/>
-                <path d="M 0 -.5 V .5" marker-start="url(#c3-ms)" marker-end="url(#c3-me)"/>
-              </marker>
-            </defs>
-            <path class="stroked" d="M -4 0 H 4" marker-end="url(#coord-arrow)"/>
-            <path class="stroked" d="M 0 4 V -4" marker-end="url(#coord-arrow)"/>
-            <text class="filled text" x="4" y="-.2">q</text>
-            <text class="filled text" x=".2" y="-4">p</text>
-            <g id="shape-controls" class="hidden" transform="scale(1, -1)">
-              <path id="bounds" class="stroked" d="M 0 0" stroke-dasharray=".1 .1"/>
-              <path id="edge-x" d="M 0 0" marker-end="url(#skew)"/>
-              <path id="edge-y" d="M 0 0" marker-end="url(#skew)"/>
-              <path id="corner-xy" d="M 0 0" marker-end="url(#rot)"/>
-              <path id="center" d="M 0 0" marker-end="url(#move)"/>
-              <path id="separ" d="M 0 0" marker-end="url(#rot)"/>
-            </g>
-          </svg>
-        </div>
-        <h2>$try</h2>\n
+      </div>
+    </td>
+  </tr>
+</table>
+<div class="switch" id="play-controls">
+  <a href="#" id="play"><img class="inline-img" src="$demodir/play.svg" alt="Play"/></a>
+  <a href="#" id="pause"><img class="inline-img" src="$demodir/pause.svg" alt="Pause"/></a>
+</div>
+<div id="container">
+  <canvas id="canvas"></canvas>
+  <svg id="coords"
+      xmlns="http://www.w3.org/2000/svg"
+      xmlns:xlink="http://www.w3.org/1999/xlink"
+      version="1.1" viewBox="-5 -5 10 10">
+    <defs>
+      <path id="apath" d="M -1 -1 L 1 0 L -1 1 z"/>
+      <marker class="filled" id="coord-arrow" viewbox="-1 -1 2 2" markerUnits="userSpaceOnUse"
+          markerWidth=".2" markerHeight=".2" orient="auto">
+        <use xlink:href="#apath"/>
+      </marker>
+      <marker class="filled c1" id="c1-me" viewbox="-1 -1 2 2" markerUnits="userSpaceOnUse"
+          markerWidth=".2" markerHeight=".2" orient="auto">
+        <use xlink:href="#apath"/>
+      </marker>
+      <marker class="filled c1" id="c1-ms" viewbox="-1 -1 2 2" markerUnits="userSpaceOnUse"
+          markerWidth=".2" markerHeight=".2" orient="auto">
+        <use xlink:href="#apath" transform="scale(-1, 1)"/>
+      </marker>
+      <marker class="filled c2" id="c2-me" viewbox="-1 -1 2 2" markerUnits="userSpaceOnUse"
+          markerWidth=".2" markerHeight=".2" orient="auto">
+        <use xlink:href="#apath"/>
+      </marker>
+      <marker class="filled c2" id="c2-ms" viewbox="-1 -1 2 2" markerUnits="userSpaceOnUse"
+          markerWidth=".2" markerHeight=".2" orient="auto">
+        <use xlink:href="#apath" transform="scale(-1, 1)"/>
+      </marker>
+      <marker class="filled c3" id="c3-me" viewbox="-1 -1 2 2" markerUnits="userSpaceOnUse"
+          markerWidth=".2" markerHeight=".2" orient="auto">
+        <use xlink:href="#apath"/>
+      </marker>
+      <marker class="filled c3" id="c3-ms" viewbox="-1 -1 2 2" markerUnits="userSpaceOnUse"
+          markerWidth=".2" markerHeight=".2" orient="auto">
+        <use xlink:href="#apath" transform="scale(-1, 1)"/>
+      </marker>
+      <marker id="skew" class="stroked c1" viewbox="-1 -1 2 2" markerUnits="userSpaceOnUse"
+          markerWidth="2" markerHeight="2" orient="auto">
+        <path d="M -.15 -.15 H .15 V .15 H -.15 z"/>
+        <path d="M -.5 0 H .5" marker-start="url(#c1-ms)" marker-end="url(#c1-me)"/>
+        <path d="M 0 -.5 V .5" marker-start="url(#c1-ms)" marker-end="url(#c1-me)"/>
+      </marker>
+      <marker id="rot" class="stroked c2" viewbox="-1 -1 2 2" markerUnits="userSpaceOnUse"
+          markerWidth="2" markerHeight="2" orient="auto">
+        <path d="M -.15 -.15 H .15 V .15 H -.15 z"/>
+        <path d="M -.5 0 H .5" marker-start="url(#c2-ms)" marker-end="url(#c2-me)"/>
+        <path d="M -.1 -.5 Q .1 0 -.1 .5" marker-start="url(#c2-ms)" marker-end="url(#c2-me)"/>
+      </marker>
+      <marker id="move" class="stroked c3" viewbox="-1 -1 2 2" markerUnits="userSpaceOnUse"
+          markerWidth="2" markerHeight="2" orient="auto">
+        <path d="M -.15 -.15 H .15 V .15 H -.15 z"/>
+        <path d="M -.5 0 H .5" marker-start="url(#c3-ms)" marker-end="url(#c3-me)"/>
+        <path d="M 0 -.5 V .5" marker-start="url(#c3-ms)" marker-end="url(#c3-me)"/>
+      </marker>
+    </defs>
+    <path class="stroked" d="M -4 0 H 4" marker-end="url(#coord-arrow)"/>
+    <path class="stroked" d="M 0 4 V -4" marker-end="url(#coord-arrow)"/>
+    <text class="filled text" x="4" y="-.2">q</text>
+    <text class="filled text" x=".2" y="-4">p</text>
+    <g id="shape-controls" class="hidden" transform="scale(1, -1)">
+      <path id="bounds" class="stroked" d="M 0 0" stroke-dasharray=".1 .1"/>
+      <path id="edge-x" d="M 0 0" marker-end="url(#skew)"/>
+      <path id="edge-y" d="M 0 0" marker-end="url(#skew)"/>
+      <path id="corner-xy" d="M 0 0" marker-end="url(#rot)"/>
+      <path id="center" d="M 0 0" marker-end="url(#move)"/>
+      <path id="separ" d="M 0 0" marker-end="url(#rot)"/>
+    </g>
+  </svg>
+</div>
+<h2>$try</h2>\n
 HTML;
 
 echo '<ul>' . PHP_EOL;

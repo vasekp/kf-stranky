@@ -9,10 +9,10 @@ $rep = $en
   : 'Prosím nahlašte chybu na <a href="' . $url . '" target="_blank">GitHubu.</a>';
 
 print <<<HTML
-        <div class="error">
-          $dne
-          <br/>
-          $rep
-        </div>\n
+<div class="error">
+  $dne
+  <br/>
+  $rep
+</div>\n
 HTML;
 ?>

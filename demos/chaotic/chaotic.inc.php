@@ -28,18 +28,18 @@ if($en) {
 }
 
 print <<<HTML
-        <h1>$demotitle</h1>
-        $desc
-        <div class="switch" id="controls">
-          <a href="#" id="play"><img class="inline-img" src="$demodir/play.svg" alt="Play"/></a>
-          <a href="#" id="pause"><img class="inline-img" src="$demodir/pause.svg" alt="Pause"/></a>
-        </div>
-        <div class="row" id="c">
-          <!-- SVG elements dynamically created here -->
-          <br id="graphBreak"/>
-          <canvas id="graph"></canvas>
-        </div>
-        <h2>$try</h2>\n
+<h1>$demotitle</h1>
+$desc
+<div class="switch" id="controls">
+  <a href="#" id="play"><img class="inline-img" src="$demodir/play.svg" alt="Play"/></a>
+  <a href="#" id="pause"><img class="inline-img" src="$demodir/pause.svg" alt="Pause"/></a>
+</div>
+<div class="row" id="c">
+  <!-- SVG elements dynamically created here -->
+  <br id="graphBreak"/>
+  <canvas id="graph"></canvas>
+</div>
+<h2>$try</h2>\n
 HTML;
 
 echo '<ul>' . PHP_EOL;

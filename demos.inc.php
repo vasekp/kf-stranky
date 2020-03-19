@@ -39,6 +39,7 @@ else {
     $morerow = '<li><a href="' . $demorow['details'] . '">' . $more . '</a></li>';
   else
     $morerow = '';
+
 print <<<HTML
 <h2>$seealso</h2>
 <ul>
