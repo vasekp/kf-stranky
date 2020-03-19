@@ -18,7 +18,7 @@
   opacity: .5;
 }
 
-.edit.last:not([contentEditable=true]) {
+.edit:empty:not([contentEditable=true]) {
   opacity: .5;
 }
 

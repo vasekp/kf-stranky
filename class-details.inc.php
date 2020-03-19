@@ -1,4 +1,13 @@
 <?php
+if($early) {
+  if($admin) {
+    array_push($css, 'css/classes-admin.css');
+    array_push($scripts, 'classes-admin.js');
+    array_push($scripts, 'class-details-admin.js');
+  }
+  return;
+}
+
 $cid = 'kf19';
 
 $sql = "select title, KOS, intro, announces from classes where ID='$cid'";
@@ -32,12 +41,13 @@ if($admin)
   $adminrow = '<input type="hidden" id="admin" value="' . $_GET['admin'] . '"/>';
 else
   $adminrow = '';
+$notes_url = query('', array('s' => 'notes'));
 
 print <<<HTML
 </table>
 $adminrow
 <div class="buttons">
-  <a class="button" href="{echo query('', array('s' => 'notes'))}">Zápis z hodin</a>
+  <a class="button" href="$notes_url">Zápis z hodin</a>
   <a class="button" href="https://physics.fjfi.cvut.cz/studium/predmety/292-02kfa" target="_blank">Stránky cvičení</a>
 </div>\n
 HTML;

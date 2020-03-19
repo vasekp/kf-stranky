@@ -1,58 +1,27 @@
-var admin, empty;
+var admin;
 
-function sendRequest(elm, type, text) {
-  var xhr = new XMLHttpRequest();
-  xhr.open('POST', 'class-details-ajax.php', true);
-  var data = new FormData();
-  data.append('type', type);
-  data.append('text', text);
-  data.append('pass', admin.value);
-  xhr.onload = function() {
-    if(xhr.status !== 200) {
-      elm.classList.add('warn');
-      return;
-    }
-    elm.classList.remove('changed');
-    elm.innerHTML = text;
-  };
-  xhr.send(data);
-}
-
-function itemClick(e) {
-  var elm = e.currentTarget;
-  if(elm.contentEditable === 'true')
-    return;
-  elm.innerText = elm.innerHTML.trim();
-  elm.contentEditable = 'true';
-  elm.focus();
-}
-
-function itemBlur(e) {
-  var elm = e.currentTarget;
+function updateText(elm) {
   var text = elm.innerText.trim();
-  elm.contentEditable = 'false';
-  if(elm.classList.contains('changed')) {
-    sendRequest(elm, elm.id, text);
-  } else {
-    elm.innerHTML = text;
-  }
-}
-
-function itemInput(e) {
-  var elm = e.currentTarget;
-  elm.classList.add('changed');
-}
-
-function itemKeyDown(e) {
+  var data = {
+    'type': 'html',
+    'which': elm.id,
+    'text': text,
+    'pass': admin.value
+  };
+  sendRequest(elm, data, function() {
+    elm.innerHTML = elm.innerText.trim();
+  });
 }
 
 function addEvents(elm) {
-  elm.classList.add('edit');
   elm.classList.add('html');
-  elm.addEventListener('click', itemClick);
-  elm.addEventListener('blur', itemBlur);
-  elm.addEventListener('input', itemInput);
-  elm.addEventListener('keydown', itemKeyDown);
+  function onEnter(elm) {
+    elm.innerText = elm.innerHTML.trim();
+  };
+  function onLeaveUnchanged(elm) {
+    elm.innerHTML = elm.innerText.trim();
+  }
+  makeEditable(elm, onEnter, onLeaveUnchanged, updateText, null, null);
 }
 
 window.addEventListener('DOMContentLoaded', function(event) {

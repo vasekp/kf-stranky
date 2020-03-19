@@ -1,35 +1,49 @@
 var admin, empty;
 
-function sendRequest(elm, type, id, text) {
-  var xhr = new XMLHttpRequest();
-  xhr.open('POST', 'class-notes-ajax.php', true);
-  var data = new FormData();
-  data.append('type', type);
-  data.append('id', id);
-  data.append('date', document.getElementById('date').getAttribute('data-date'));
-  data.append('text', text);
-  data.append('pass', admin.value);
-  xhr.responseType = 'json';
-  xhr.onload = function() {
-    if(xhr.status !== 200) {
-      elm.classList.add('warn');
-      return;
-    }
-    if(type === 'insert')
-      elm.setAttribute('data-id', xhr.response.id);
-    if(type == 'insert' || type == 'update') {
-      elm.setAttribute('data-text', xhr.response.text);
-      elm.innerHTML = xhr.response.html;
-    }
-    elm.classList.remove('changed');
+function createNote(text, elm) {
+  var date = document.getElementById('date').getAttribute('data-date');
+  var data = {
+    'type': 'insert',
+    'text': text,
+    'date': date,
+    'pass': admin.value
   };
-  xhr.send(data);
+  sendRequest(elm, data, function(elm, response) {
+    elm.setAttribute('data-id', response.id);
+    elm.setAttribute('data-text', response.text);
+    elm.innerHTML = response.html;
+  });
+}
+
+function updateNote(id, text, elm) {
+  var data = {
+    'type': 'update',
+    'id': id,
+    'text': text,
+    'pass': admin.value
+  };
+  sendRequest(elm, data, function(elm, response) {
+    elm.setAttribute('data-text', response.text);
+    elm.innerHTML = response.html;
+  });
+}
+
+function deleteNote(id, elm) {
+  var data = {
+    'type': 'delete',
+    'id': id,
+    'pass': admin.value
+  };
+  sendRequest(elm, data, function() {
+    list.removeChild(elm);
+  });
 }
 
 var raSave = recordsArrived;
 recordsArrived = function(r) {
   raSave(r);
   appendEmpty();
+  document.getElementById('date').classList.remove('changed');
 }
 
 createRecord = function(id, text, html) {
@@ -37,114 +51,108 @@ createRecord = function(id, text, html) {
   elm.setAttribute('data-id', id);
   elm.setAttribute('data-text', text);
   elm.innerHTML = html;
-  addEventsItem(elm);
+  addEvents(elm);
   list.appendChild(elm);
 }
 
 function appendEmpty() {
   var clone = empty.cloneNode(true);
-  addEventsItem(clone);
+  addEvents(clone);
   list.appendChild(clone);
   return clone;
 }
 
-function newDatePrepare() {
-  clearList();
-  var date = document.getElementById('date');
-  var re = /\d{1,2}\. ?\d{1,2}\. ?\d{4}/;
-  var match;
-  if(match = re.exec(date.innerText))
-    date.innerText = match[0];
-  date.removeAttribute('data-date');
-  date.contentEditable = 'true';
-  date.focus();
-}
+function addEventsDate(elm) {
+  function onEnter(elm) {
+    clearList();
+    var date = document.getElementById('date');
+    var re = /\d{1,2}\. ?\d{1,2}\. ?\d{4}/;
+    var match;
+    if(match = re.exec(date.innerText))
+      date.innerText = match[0];
+    date.removeAttribute('data-date');
+  }
 
-function newDateEntered() {
-  var re = /^(\d{1,2})\. ?(\d{1,2})\. ?(\d{4})$/;
-  var array;
-  var date = document.getElementById('date');
-  if(array = re.exec(date.innerText.trim())) {
+  function onLeave(elm) {
+    var re = /^(\d{1,2})\. ?(\d{1,2})\. ?(\d{4})$/;
+    var array;
+    var array = re.exec(elm.innerText.trim());
+    if(!array) {
+      elm.click();
+      return;
+    }
     var date_sql = array[3] + '-' + array[2] + '-' + array[1];
-    date.setAttribute('data-date', date_sql);
-    date.contentEditable = 'false';
+    elm.setAttribute('data-date', date_sql);
     get_records_async(date_sql);
     var clone = appendEmpty();
     clone.click();
   }
-}
 
-function dateKeyDown(e) {
-  if(e.keyCode == 13) {
-    e.currentTarget.blur();
-    e.preventDefault();
+  function onKeyDown(elm, key) {
+    if(key == 13) {
+      elm.blur();
+      return true;
+    }
   }
+
+  makeEditable(elm, onEnter, onLeave, onLeave, null, onKeyDown);
 }
 
-function itemClick(e) {
-  var elm = e.currentTarget;
-  if(elm.contentEditable === 'true')
-    return;
+
+function itemEnter(elm) {
   elm.setAttribute('data-html', elm.innerHTML);
   elm.innerText = elm.getAttribute('data-text');
-  elm.contentEditable = 'true';
-  elm.focus();
 }
 
-function itemBlur(e) {
-  var elm = e.currentTarget;
+function itemLeaveUnchanged(elm) {
+  elm.innerHTML = elm.getAttribute('data-html');
+}
+
+function itemLeaveChanged(elm) {
   var text = elm.innerText.trim();
-  elm.contentEditable = 'false';
-  if(!elm.classList.contains('last') && !text) {
-    if(elm.getAttribute('data-id'))
-      sendRequest(elm, 'delete', elm.getAttribute('data-id'));
-    list.removeChild(elm);
-  } else if(text && elm.classList.contains('changed')) {
-    if(elm.getAttribute('data-id'))
-      sendRequest(elm, 'update', elm.getAttribute('data-id'), text);
-    else {
-      sendRequest(elm, 'insert', '', text);
+  var id = elm.getAttribute('data-id');
+  if(!text && id) {
+    deleteNote(id, elm);
+  } else {
+    if(id) {
+      updateNote(id, text, elm);
+    } else {
+      createNote(text, elm);
     }
-  } else if(text) {
-    elm.innerHTML = elm.getAttribute('data-html');
   }
 }
 
-function itemInput(e) {
-  var elm = e.currentTarget;
-  elm.classList.add('changed');
+function itemInput(elm) {
   if(elm.classList.contains('last') && !!elm.innerText.trim()) {
     elm.classList.remove('last');
     var clone = empty.cloneNode(true);
-    addEventsItem(clone);
+    addEvents(clone);
     list.appendChild(clone);
   }
 }
 
-function itemKeyDown(e) {
-  if(e.keyCode == 13 || e.keyCode == 38 || e.keyCode == 40) {
-    var next = (e.keyCode == 38
-      ? e.currentTarget.previousElementSibling
-      : e.currentTarget.nextElementSibling);
+function itemKeyDown(elm, key) {
+  const ENTER = 13;
+  const UP = 38;
+  const DOWN = 40;
+  if(key == ENTER || key == UP || key == DOWN) {
+    var next = (key == UP
+      ? elm.previousElementSibling
+      : elm.nextElementSibling);
     if(next)
       next.click();
-    e.preventDefault();
+    return true;
   }
 }
 
-function addEventsItem(elm) {
-  elm.classList.add('edit');
-  elm.addEventListener('click', itemClick);
-  elm.addEventListener('blur', itemBlur);
-  elm.addEventListener('input', itemInput);
-  elm.addEventListener('keydown', itemKeyDown);
+function addEvents(elm) {
+  makeEditable(elm, itemEnter, itemLeaveUnchanged, itemLeaveChanged, itemInput, itemKeyDown);
 }
+
 
 window.addEventListener('DOMContentLoaded', function(event) {
   admin = document.getElementById('admin');
-  Array.from(list.getElementsByTagName('li')).forEach(addEventsItem);
+  Array.from(list.getElementsByTagName('li')).forEach(addEvents);
   empty = list.lastElementChild.cloneNode(true);
-  document.getElementById('date').addEventListener('keydown', dateKeyDown);
-  document.getElementById('date').addEventListener('blur', newDateEntered);
-  document.getElementById('date').addEventListener('click', newDatePrepare);
+  addEventsDate(document.getElementById('date'));
 });
