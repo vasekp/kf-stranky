@@ -1,6 +1,8 @@
 <?php
 include 'shared.inc.php';
 
+ob_start('indent');
+
 $curr = basename($_SERVER['SCRIPT_FILENAME'], '.php');
 if($curr == 'error') {
   $en = array_key_exists('REDIRECT_QUERY_STRING', $_SERVER) && (strpos($_SERVER['REDIRECT_QUERY_STRING'], 'l=en') !== false);

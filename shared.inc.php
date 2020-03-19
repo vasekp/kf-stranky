@@ -20,6 +20,38 @@ function print_indent($offset, $text) {
   echo "\n";
 }
 
+function indent($text) {
+  $in = 0;
+  $arr = explode(PHP_EOL, $text);
+  $out = '';
+  foreach($arr as $line) {
+    $diff = 0;
+    preg_match_all('/<(.)/', $line, $matches);
+    foreach($matches[1] as $m) {
+      if($m == '!') continue;
+      if($m == '/') $diff--;
+      else $diff++;
+    }
+    preg_match_all('/\/>/', $line, $matches);
+    foreach($matches[0] as $m) {
+      $diff--;
+    }
+    if($diff < 0)
+      $in += $diff;
+    if($in < 0) {
+      if($debug)
+        $out .= '<!-- INDENT ERR: in < 0 -->';
+      $in = 0;
+    }
+    $out .= str_repeat('  ', $in) . trim($line) . PHP_EOL;
+    if($diff > 0)
+      $in += $diff;
+  }
+  if($in > 0 && $debug)
+    $out .= '<!-- INDENT ERR: in > 0 -->';
+  return $out;
+}
+
 function query($script, $array = array()) {
   global $en;
   if($en && !array_key_exists('l', $array))
