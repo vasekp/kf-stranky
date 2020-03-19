@@ -12,7 +12,7 @@ $sql = 'select * from publications order by id desc';
 $result = $db->query($sql);
 $counter = 0;
 
-echo "<ol>\n";
+echo '<ol>' . PHP_EOL;
 while($row = $result->fetch_assoc()) {
   $filters = array('f-all');
   if($counter++ < 5)
@@ -38,7 +38,7 @@ while($row = $result->fetch_assoc()) {
         . 'arXiv:' . $row['arxiv'] . ' [' . $row['arxiv2'] . ']</a>';
   echo '<li class="filter ' . join(' ', $filters) . '">' . $output. '</li>' . PHP_EOL;
 }
-echo '</ol>';
+echo '</ol>' . PHP_EOL;
 
 $sql = 'select max(timestamp) from publications';
 $result = $db->query($sql);

@@ -22,6 +22,8 @@ function indent($text) {
   foreach($arr as $line) {
     $diff = 0;
     $line = trim($line);
+    if($line == '')
+      continue;
     preg_match_all('/<(.)/', $line, $matches);
     foreach($matches[1] as $m) {
       $diff++;

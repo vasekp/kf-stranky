@@ -61,7 +61,7 @@ foreach($scripts as $url)
   echo '<script type="text/javascript" src="' . $url . '"></script>' . PHP_EOL;
 ?>
     <title>
-      Václav Potoček<?php if($title) echo ' - ' . $title; echo "\n"; ?>
+      Václav Potoček<?php if($title) echo ' - ' . $title; echo PHP_EOL; ?>
     </title>
   </head>
   <body>
@@ -95,11 +95,9 @@ else {
         <div id="lastmod">
 <?php
 if(file_exists($filename)) {
-  $text = $en ? 'Last modified: ' : 'Poslední úprava: ';
-  $text .= '<span id="modtime">';
-  $text .= date('j.n.Y G:i', isset($modtime) ? $modtime : filemtime($filename));
-  $text .= '</span>';
-  echo $text . PHP_EOL;
+  echo ($en ? 'Last modified: ' : 'Poslední úprava: ') . PHP_EOL;
+  $lastmod = date('j.n.Y G:i', isset($modtime) ? $modtime : filemtime($filename));
+  echo '<span id="modtime">' . $lastmod . '</span>' . PHP_EOL;
 }
 ?>
         </div>
