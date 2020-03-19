@@ -59,7 +59,7 @@ print <<<HTML
 HTML;
 $count = 0;
 foreach($types as $id => $name)
-  print_indent(8, '<a href="#" id="' . $id . '" data-func="' . $count++ . '">' . $name . '</a>');
+  echo '<a href="#" id="' . $id . '" data-func="' . $count++ . '">' . $name . '</a>' . PHP_EOL;
 print <<<HTML
               </div>
             </td>
@@ -75,7 +75,7 @@ print <<<HTML
               <div class="inline switch" id="plotType">\n
 HTML;
 foreach($plotTypes as $id => $type)
-  print_indent(8, '<a href="#" id="' . $id . '">' . $type . '</a>');
+  echo '<a href="#" id="' . $id . '">' . $type . '</a>' . PHP_EOL;
 print <<<HTML
               </div>
             </td>
@@ -157,8 +157,8 @@ print <<<HTML
         <h2>$try</h2>\n
 HTML;
 
-print_indent(4, '<ul>');
+echo '<ul>' . PHP_EOL;
 foreach($tips as $tip)
-  print_indent(5, '<li>' . $tip . '</li>');
-print_indent(4, '</ul>');
+  echo '<li>' . $tip . '</li>' . PHP_EOL;
+echo '</ul>' . PHP_EOL;
 ?>

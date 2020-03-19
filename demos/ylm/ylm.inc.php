@@ -105,8 +105,8 @@ print <<<HTML
         <h2>$expl</h2>\n
 HTML;
 
-print_indent(4, '<ul>');
+echo '<ul>' . PHP_EOL;
 foreach($explItems as $item)
-  print_indent(5, '<li>' . $item . '</li>');
-print_indent(4, '</ul>');
+  echo '<li>' . $item . '</li>' . PHP_EOL;
+echo '</ul>' . PHP_EOL;
 ?>

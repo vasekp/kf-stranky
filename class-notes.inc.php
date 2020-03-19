@@ -7,40 +7,40 @@ if(!$r) {
   return;
 }
 
-print_indent(4, '<h1>Poznámky k přednáškám 02KFA</h1>');
-print_indent(4, '<div class="switch larger" id="date-buttons">');
+echo '<h1>Poznámky k přednáškám 02KFA</h1>' . PHP_EOL;
+echo '<div class="switch larger" id="date-buttons">' . PHP_EOL;
 $text = '<a id="prev"';
 if($r->date_prev) {
   $text .= ' href="' . query('', array('s' => 'notes', 'date' => $r->date_prev)) . '"';
   $text .= ' data-date="' . $r->date_prev . '"';
 }
 $text .= '>«</a>';
-print_indent(5, $text);
-print_indent(5, '<span id="date" data-date="' . $r->date . '">' . $r->date_text . '</span>');
+echo $text . PHP_EOL;
+echo '<span id="date" data-date="' . $r->date . '">' . $r->date_text . '</span>' . PHP_EOL;
 $text = '<a id="next"';
 if($r->date_next) {
   $text .= ' href="' . query('', array('s' => 'notes', 'date' => $r->date_next)) . '"';
   $text .= ' data-date="' . $r->date_next . '"';
 }
 $text .= '>»</a>';
-print_indent(5, $text);
-print_indent(4, '</div>');
+echo $text . PHP_EOL;
+echo '</div>' . PHP_EOL;
 
-print_indent(4, '<ul id="list">');
+echo '<ul id="list">' . PHP_EOL;
 foreach($r->records as $row) {
   if($admin)
-    print_indent(5, '<li data-id="' . $row['id'] . '" '
+    echo '<li data-id="' . $row['id'] . '" '
       . 'data-text="' . $row['text'] . '">'
-      . toHTML($row['text']) . '</li>');
+      . toHTML($row['text']) . '</li>' . PHP_EOL;
   else
-    print_indent(5, '<li>' . toHTML($row['text']) . '</li>');
+    echo '<li>' . toHTML($row['text']) . '</li>' . PHP_EOL;
 }
 if($admin)
-  print_indent(5, '<li class="last"></li>');
-print_indent(4, '</ul>');
+  echo '<li class="last"></li>' . PHP_EOL;
+echo '</ul>' . PHP_EOL;
 
 if($admin)
-  print_indent(4, '<input type="hidden" id="admin" value="' . $_GET['admin'] . '"/>');
+  echo '<input type="hidden" id="admin" value="' . $_GET['admin'] . '"/>' . PHP_EOL;
 
 if($r->mod_time)
   $modtime = strtotime($r->mod_time);

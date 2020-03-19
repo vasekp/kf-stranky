@@ -54,11 +54,11 @@ if(file_exists($filename)) {
     <link rel="stylesheet" type="text/css" href="<?php print $addr_prefix; ?>css/main.css"/>
 <?php
 foreach($css as $url)
-  print_indent(2, '<link rel="stylesheet" type="text/css" href="' . $url . '"/>');
+  echo '<link rel="stylesheet" type="text/css" href="' . $url . '"/>' . PHP_EOL;
 foreach($files as $id => $url)
-  print_indent(2, '<link rel="preload" as="fetch" href="' . $url . '"/>');
+  echo '<link rel="preload" as="fetch" href="' . $url . '"/>' . PHP_EOL;
 foreach($scripts as $url)
-  print_indent(2, '<script type="text/javascript" src="' . $url . '"></script>');
+  echo '<script type="text/javascript" src="' . $url . '"></script>' . PHP_EOL;
 ?>
     <title>
       Václav Potoček<?php if($title) echo ' - ' . $title; echo "\n"; ?>
@@ -68,10 +68,10 @@ foreach($scripts as $url)
     <nav>
 <?php
 foreach($stranky as $name => $text) {
-  print_indent(3, '<span class="hide">[</span>');
-  print_indent(3, '<a href="' . $addr_prefix . query($name . '.php') . '"'
-    . ($name==$curr ? ' class="emph">' : '>') . $text . '</a>');
-  print_indent(3, '<span class="hide">]</span>');
+  echo '<span class="hide">[</span>' . PHP_EOL;
+  echo '<a href="' . $addr_prefix . query($name . '.php') . '"'
+    . ($name==$curr ? ' class="emph">' : '>') . $text . '</a>' . PHP_EOL;
+  echo '<span class="hide">]</span>' . PHP_EOL;
 }
 ?>
     </nav>
@@ -83,7 +83,7 @@ if(!file_exists($filename))
 else {
   $db = open_db();
   if(!$db) {
-    print_indent(4, '<div class="error">Nepodařilo se připojit k databázi. Stránky mimo provoz.</div>');
+    echo '<div class="error">Nepodařilo se připojit k databázi. Stránky mimo provoz.</div>' . PHP_EOL;
   } else {
     include $filename;
     $db->close();
@@ -99,7 +99,7 @@ if(file_exists($filename)) {
   $text .= '<span id="modtime">';
   $text .= date('j.n.Y G:i', isset($modtime) ? $modtime : filemtime($filename));
   $text .= '</span>';
-  print_indent(5, $text);
+  echo $text . PHP_EOL;
 }
 ?>
         </div>
@@ -108,7 +108,7 @@ if(file_exists($filename)) {
 <?php
 $g = $_GET;
 $g['l'] = $seclang;
-print_indent(5, '<a href="' . query('', $g) . '">');
+echo '<a href="' . query('', $g) . '">' . PHP_EOL;
 ?>
             <span class="hide">Switch language:</span>
             <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="30" height="20">

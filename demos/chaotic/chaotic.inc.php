@@ -42,8 +42,8 @@ print <<<HTML
         <h2>$try</h2>\n
 HTML;
 
-print_indent(4, '<ul>');
+echo '<ul>' . PHP_EOL;
 foreach($tips as $tip)
-  print_indent(5, '<li>' . $tip . '</li>');
-print_indent(4, '</ul>');
+  echo '<li>' . $tip . '</li>' . PHP_EOL;
+echo '</ul>' . PHP_EOL;
 ?>

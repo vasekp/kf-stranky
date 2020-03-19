@@ -16,15 +16,15 @@ $lasttid = -1;
 while($row = $result->fetch_assoc()) {
   if($row['tid'] != $lasttid) {
     if($lasttid != -1)
-      print_indent(4, '</ul>');
-    print_indent(4, '<h2>' . $topics[$row['tid']] . '</h2>');
+      echo '</ul>' . PHP_EOL;
+    echo '<h2>' . $topics[$row['tid']] . '</h2>' . PHP_EOL;
     $lasttid = $row['tid'];
-    print_indent(4, '<ul>');
+    echo '<ul>' . PHP_EOL;
   }
-  print_indent(5, '<li><a href="' . query('', array('demo' => $row['name'])) . '">' . $row['title'] . '</a></li>');
+  echo '<li><a href="' . query('', array('demo' => $row['name'])) . '">' . $row['title'] . '</a></li>' . PHP_EOL;
 }
 if($lasttid != -1)
-  print_indent(4, '</ul>');
+  echo '</ul>' . PHP_EOL;
 
 $sql = 'select max(timestamp) from demos';
 $result = $db->query($sql);

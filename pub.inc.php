@@ -12,7 +12,7 @@ $sql = 'select * from publications order by id desc';
 $result = $db->query($sql);
 $counter = 0;
 
-print_indent(4, '<ol>');
+echo "<ol>\n";
 while($row = $result->fetch_assoc()) {
   $filters = array('f-all');
   if($counter++ < 5)
@@ -36,9 +36,9 @@ while($row = $result->fetch_assoc()) {
   else if($row['type'] == 'preprint')
     $output .= 'Preprint at <a href="https://arxiv.org/abs/' . $row['arxiv'] . '" target="_blank">'
         . 'arXiv:' . $row['arxiv'] . ' [' . $row['arxiv2'] . ']</a>';
-  print_indent(5, '<li class="filter ' . join(' ', $filters) . '">' . $output. '</li>');
+  echo '<li class="filter ' . join(' ', $filters) . '">' . $output. '</li>' . PHP_EOL;
 }
-print_indent(4, '</ol>');
+echo '</ol>';
 
 $sql = 'select max(timestamp) from publications';
 $result = $db->query($sql);

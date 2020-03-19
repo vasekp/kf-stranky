@@ -14,13 +14,8 @@ function open_db() {
   return $conn;
 }
 
-function print_indent($offset, $text) {
-  echo str_repeat('  ', $offset);
-  echo $text;
-  echo "\n";
-}
-
 function indent($text) {
+  global $debug;
   $in = 0;
   $arr = explode(PHP_EOL, $text);
   $out = '';

@@ -32,17 +32,17 @@ else {
   include $demofn;
 
   $text = $en ? 'See also' : 'Další';
-  print_indent(4, '<h2>' . $text . '</h2>');
-  print_indent(4, '<ul>');
+  echo '<h2>' . $text . '</h2>' . PHP_EOL;
+  echo '<ul>' . PHP_EOL;
   if($demorow['details']) {
     $text = $en ? 'More details (PDF)' : 'Další informace (PDF)';
-    print_indent(5, '<li><a href="' . $demorow['details'] . '">' . $text . '</a></li>');
+    echo '<li><a href="' . $demorow['details'] . '">' . $text . '</a></li>' . PHP_EOL;
   }
   $text = $en ? "Source code" : "Zdrojový kód";
-  print_indent(5, '<li><a href="https://github.com/vasekp/kf-stranky/tree/demos/demos/' . $demo . '" '
-    . 'target="_blank">' . $text . '</a></li>');
+  echo '<li><a href="https://github.com/vasekp/kf-stranky/tree/demos/demos/' . $demo . '" '
+    . 'target="_blank">' . $text . '</a></li>' . PHP_EOL;
   $text = $en ? 'Back to list' : 'Zpět na seznam';
-  print_indent(5, '<li><a href="' . query('demos.php', array()) . '">' . $text . '</a></li>');
-  print_indent(4, '</ul>');
+  echo '<li><a href="' . query('demos.php', array()) . '">' . $text . '</a></li>' . PHP_EOL;
+  echo '</ul>' . PHP_EOL;
 }
 ?>
