@@ -56,7 +56,7 @@ if(file_exists($filename)) {
 foreach($css as $url)
   echo '<link rel="stylesheet" type="text/css" href="' . $url . '"/>' . PHP_EOL;
 foreach($files as $id => $url)
-  echo '<link rel="preload" as="fetch" href="' . $url . '"/>' . PHP_EOL;
+  echo '<link rel="preload" as="fetch" href="' . $url . '" crossorigin/>' . PHP_EOL;
 foreach($scripts as $url)
   echo '<script type="text/javascript" src="' . $url . '"></script>' . PHP_EOL;
 ?>
