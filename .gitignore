@@ -4,5 +4,6 @@ google*
 */
 !css
 !demos
+!demos/*
 !fonts
 !images

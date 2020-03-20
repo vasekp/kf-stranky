@@ -52,5 +52,15 @@ $adminrow
 </div>\n
 HTML;
 
-$modtime = filemtime(__FILE__);
+$sql = <<<SQL
+select coalesce(greatest(c1,c2),c1) from
+  (select
+    (select modified from classes) as c1,
+    (select max(timestamp) from download) as c2
+  ) as sub
+SQL;
+
+$result = $db->query($sql);
+if($result->num_rows > 0)
+  $modtime = strtotime($result->fetch_row()[0]);
 ?>
