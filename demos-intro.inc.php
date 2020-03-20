@@ -17,7 +17,7 @@ print <<<HTML
 <p>$l2 <a href="$github" target="_blank">GitHub</a>.</p>\n
 HTML;
 
-$sql = "select id, title_$prilang as title from demo_topics";
+$sql = "select id, title_$prilang as title from demo_topics order by title";
 $result = $db->query($sql);
 $topics = array();
 while($row = $result->fetch_assoc())
@@ -26,7 +26,7 @@ while($row = $result->fetch_assoc())
     'demos' => array()
   );
 
-$sql = "select name, topic_ID as tid, title_$prilang as title from demos order by topic_ID";
+$sql = "select name, topic_ID as tid, title_$prilang as title from demos order by timestamp";
 $result = $db->query($sql);
 while($row = $result->fetch_assoc()) {
   if(file_exists("demos/{$row['name']}/{$row['name']}.inc.php"))
