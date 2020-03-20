@@ -21,23 +21,28 @@ $sql = "select id, title_$prilang as title from demo_topics";
 $result = $db->query($sql);
 $topics = array();
 while($row = $result->fetch_assoc())
-  $topics[$row['id']] = $row['title'];
+  $topics[$row['id']] = array(
+    'title' => $row['title'],
+    'demos' => array()
+  );
 
 $sql = "select name, topic_ID as tid, title_$prilang as title from demos order by topic_ID";
 $result = $db->query($sql);
-$lasttid = -1;
-while($row = $result->fetch_assoc()) {
-  if($row['tid'] != $lasttid) {
-    if($lasttid != -1)
-      echo '</ul>' . PHP_EOL;
-    echo '<h2>' . $topics[$row['tid']] . '</h2>' . PHP_EOL;
-    $lasttid = $row['tid'];
-    echo '<ul>' . PHP_EOL;
-  }
-  echo '<li><a href="' . query('', array('demo' => $row['name'])) . '">' . $row['title'] . '</a></li>' . PHP_EOL;
-}
-if($lasttid != -1)
+while($row = $result->fetch_assoc())
+  $topics[$row['tid']]['demos'][] = array(
+    'title' => $row['title'],
+    'url' => query('', array('demo' => $row['name']))
+  );
+
+foreach($topics as $topic) {
+  if(count($topic['demos']) == 0)
+    continue;
+  echo '<h2>' . $topic['title'] . '</h2>' . PHP_EOL;
+  echo '<ul>' . PHP_EOL;
+  foreach($topic['demos'] as $demo)
+    echo '<li><a href="' . $demo['url'] . '">' . $demo['title'] . '</a></li>' . PHP_EOL;
   echo '</ul>' . PHP_EOL;
+}
 
 $sql = 'select max(timestamp) from demos';
 $result = $db->query($sql);
