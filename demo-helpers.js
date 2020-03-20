@@ -77,7 +77,7 @@ function Program(ctx, vs, fs) {
   }
 }
 
-/***** Mouse and touch event listeners *****/
+/***** Mouse and pointer event listeners *****/
 
 function callBack(elm, ev, func) {
   if(!func)
@@ -86,62 +86,33 @@ function callBack(elm, ev, func) {
   func(elm, ev.clientX - rect.left, ev.clientY - rect.top, rect);
 }
 
-function mouseDown(e, callback) {
-  if(e.button != 0)
-    return;
+function pointerDown(e, callback) {
   var elm = e.currentTarget;
+  if(pointerActive(elm))
+    return;
   elm.setAttribute('data-rotating', 'true');
-  e.currentTarget.setPointerCapture(e.pointerID);
+  elm.setAttribute('data-pointerId', e.pointerId);
+  e.currentTarget.setPointerCapture(e.pointerId);
   e.preventDefault();
   callBack(elm, e, callback);
 }
 
-function mouseMove(e, callback) {
+function pointerMove(e, callback) {
   var elm = e.currentTarget;
-  if(pointerActive(elm))
-    callBack(elm, e, callback);
+  if(!pointerActive(elm) || !elm.hasAttribute('data-pointerId')
+      || e.pointerId != elm.getAttribute('data-pointerId'))
+    return;
+  callBack(elm, e, callback);
 }
 
-function mouseUp(e, callback) {
+function pointerUp(e, callback) {
   var elm = e.currentTarget;
+  if(!pointerActive(elm) || !elm.hasAttribute('data-pointerId')
+      || e.pointerId != elm.getAttribute('data-pointerId'))
+    return;
   elm.removeAttribute('data-rotating');
-  elm.releasePointerCapture(e.pointerID);
+  elm.releasePointerCapture(e.pointerId);
   callBack(elm, e, callback);
-}
-
-function touchDown(e, callback) {
-  var elm = e.currentTarget;
-  if(pointerActive(elm))
-    return;
-  elm.setAttribute('data-rotating', 'true');
-  elm.setAttribute('data-touchID', e.touches[0].identifier);
-  e.preventDefault();
-  callBack(elm, e.touches[0], callback);
-}
-
-function touchMove(e, callback) {
-  var elm = e.currentTarget;
-  if(!pointerActive(elm) || !elm.hasAttribute('data-touchID'))
-    return;
-  var pid = elm.getAttribute('data-touchID');
-  var rect = elm.getBoundingClientRect();
-  for(let i = 0; i < e.touches.length; i++)
-    if(e.touches[i].identifier == pid)
-      callBack(elm, e.touches[i], callback);
-}
-
-function touchUp(e, callback) {
-  var elm = e.currentTarget;
-  if(!pointerActive(elm))
-    return;
-  var pid = elm.getAttribute('data-touchID');
-  var stillThere = Array.from(e.touches, function(t) { return t.identifier; }).includes(pid);
-  if(!stillThere) {
-    for(let i = 0; i < e.touches.length; i++)
-      if(e.touches[i].identifier === elm.getAttribute(pid))
-        callBack(elm, e.touches[i], callback);
-    elm.removeAttribute('data-rotating');
-  }
 }
 
 function pointerActive(elm) {
@@ -149,12 +120,8 @@ function pointerActive(elm) {
 }
 
 function addPointerListeners(elm, fStart, fMove, fEnd) {
-  elm.addEventListener('mousedown', function(e) { mouseDown(e, fStart); } );
-  elm.addEventListener('mousemove', function(e) { mouseMove(e, fMove); } );
-  elm.addEventListener('mouseup', function(e) { mouseUp(e, fEnd); } );
-
-  elm.addEventListener('touchstart', function(e) { touchDown(e, fStart); } );
-  elm.addEventListener('touchmove', function(e) { touchMove(e, fMove); } );
-  elm.addEventListener('touchend', function(e) { touchUp(e, fEnd); } );
-  elm.addEventListener('touchcancel', function(e) { touchUp(e, fEnd); } );
+  elm.addEventListener('pointerdown', function(e) { pointerDown(e, fStart); } );
+  elm.addEventListener('pointermove', function(e) { pointerMove(e, fMove); } );
+  elm.addEventListener('pointerup', function(e) { pointerUp(e, fEnd); } );
+  elm.addEventListener('pointercancel', function(e) { pointerUp(e, fEnd); } );
 }
