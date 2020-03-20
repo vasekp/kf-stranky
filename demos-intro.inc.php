@@ -17,27 +17,34 @@ print <<<HTML
 <p>$l2 <a href="$github" target="_blank">GitHub</a>.</p>\n
 HTML;
 
-$sql = "select id, title_$prilang as title from demo_topics";
+$sql = "select id, title_$prilang as title from demo_topics order by title";
 $result = $db->query($sql);
 $topics = array();
 while($row = $result->fetch_assoc())
-  $topics[$row['id']] = $row['title'];
+  $topics[$row['id']] = array(
+    'title' => $row['title'],
+    'demos' => array()
+  );
 
-$sql = "select name, topic_ID as tid, title_$prilang as title from demos order by topic_ID";
+$sql = "select name, topic_ID as tid, title_$prilang as title from demos order by timestamp";
 $result = $db->query($sql);
-$lasttid = -1;
 while($row = $result->fetch_assoc()) {
-  if($row['tid'] != $lasttid) {
-    if($lasttid != -1)
-      echo '</ul>' . PHP_EOL;
-    echo '<h2>' . $topics[$row['tid']] . '</h2>' . PHP_EOL;
-    $lasttid = $row['tid'];
-    echo '<ul>' . PHP_EOL;
-  }
-  echo '<li><a href="' . query('', array('demo' => $row['name'])) . '">' . $row['title'] . '</a></li>' . PHP_EOL;
+  if(file_exists("demos/{$row['name']}/{$row['name']}.inc.php"))
+    $topics[$row['tid']]['demos'][] = array(
+      'title' => $row['title'],
+      'url' => query('', array('demo' => $row['name']))
+    );
 }
-if($lasttid != -1)
+
+foreach($topics as $topic) {
+  if(count($topic['demos']) == 0)
+    continue;
+  echo '<h2>' . $topic['title'] . '</h2>' . PHP_EOL;
+  echo '<ul>' . PHP_EOL;
+  foreach($topic['demos'] as $demo)
+    echo '<li><a href="' . $demo['url'] . '">' . $demo['title'] . '</a></li>' . PHP_EOL;
   echo '</ul>' . PHP_EOL;
+}
 
 $sql = 'select max(timestamp) from demos';
 $result = $db->query($sql);
