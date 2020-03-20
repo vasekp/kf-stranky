@@ -28,11 +28,13 @@ while($row = $result->fetch_assoc())
 
 $sql = "select name, topic_ID as tid, title_$prilang as title from demos order by topic_ID";
 $result = $db->query($sql);
-while($row = $result->fetch_assoc())
-  $topics[$row['tid']]['demos'][] = array(
-    'title' => $row['title'],
-    'url' => query('', array('demo' => $row['name']))
-  );
+while($row = $result->fetch_assoc()) {
+  if(file_exists("demos/{$row['name']}/{$row['name']}.inc.php"))
+    $topics[$row['tid']]['demos'][] = array(
+      'title' => $row['title'],
+      'url' => query('', array('demo' => $row['name']))
+    );
+}
 
 foreach($topics as $topic) {
   if(count($topic['demos']) == 0)
