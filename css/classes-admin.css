@@ -1,3 +1,10 @@
+@font-face {
+  font-family: 'Source Code Pro';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Source Code Pro Regular'), local('SourceCodePro-Regular'), url('../fonts/SourceCodePro-Regular.woff2') format('woff2');
+}
+
 #date {
   outline: 0;
 }
@@ -23,8 +30,9 @@
 }
 
 .edit.html[contentEditable=true] {
-  font-family: monospace;
+  font-family: 'Source Code Pro', monospace;
   font-size: 80%;
+  line-height: 140%;
 }
 
 #intro, #announces {
