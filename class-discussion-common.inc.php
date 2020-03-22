@@ -1,6 +1,11 @@
 <?php
 $cid = 'kf19';
 
+const STATUS_OK = 0;
+const STATUS_FAIL = 1;
+const STATUS_INCOMPLETE = 2;
+const STATUS_DBERROR = 3;
+
 function validate_dldid($cid, $dldid) {
   global $db;
   $sql = 'select id from download where id=? and class_ID=?';
@@ -11,7 +16,7 @@ function validate_dldid($cid, $dldid) {
   return $st->fetch(); // bool
 }
 
-function get_discussion($dldid) {
+function get_discussion($dldid, $data = null) {
   global $db;
   global $cid;
   if(!validate_dldid($cid, $dldid))
@@ -23,7 +28,8 @@ function get_discussion($dldid) {
   echo '<div class="discussion" id="discussion' . $dldid . '">' . PHP_EOL;
   while($row = $result->fetch_assoc()) {
     $count++;
-    $name = $row['name'];
+    $name = htmlspecialchars($row['name']);
+    $text = htmlspecialchars($row['text']);
     if($name)
       $namespan = '<span class="name' . ($name == 'VP' ? ' vp' : '') . '">' . $name . ':</span>';
     else
@@ -33,16 +39,30 @@ function get_discussion($dldid) {
   <div class="item">
     <span class="date">$date</span>
     $namespan
-    {$row['text']}
+    $text
   </div>\n
 HTML;
   }
+  $url = query('', array('discuss' => $dldid));
+
+  if($data !== null && $data['dldid'] == $dldid) {
+    $text = htmlspecialchars($data['text']);
+    $name = htmlspecialchars($data['name']);
+    $mText = $data['status'] == STATUS_INCOMPLETE && in_array('text', $data['missing']) ? ' class="missing"' : '';
+    $mCaptcha = $data['status'] == STATUS_INCOMPLETE && in_array('captcha', $data['missing']) ? ' class="missing"' : '';
+  } else
+    $text = $name = $mText = $mCaptcha = '';
+
   print <<<HTML
   <div class="item">
-    <textarea></textarea>
-    <button id="send">Odeslat</button>
-    <p>Iniciály (nepovinné): <input id="name" type="text" maxlength="3" pattern="[a-zA-Z]{0,3}"/></p>
-    <p>Opište první slovo ze strany 423: <input id="captcha" type="text"/></p>
+    <form action="$url" method="post">
+      <textarea name="text"$mText>$text</textarea>
+      <p>Iniciály (nepovinné): <input name="name" type="text" maxlength="3" value="$name"/></p>
+      <p>Opište první slovo ze strany 423: <input name="captcha" type="text"$mCaptcha/></p>
+      <input type="hidden" name="class_ID" value="$cid"/>
+      <input type="hidden" name="dld_ID" value="$dldid"/>
+      <input type="submit" id="send" value="Odeslat">
+    </form>
   </div>
 </div>\n
 HTML;
@@ -51,5 +71,62 @@ HTML;
     'count' => $count,
     'html' => ob_get_clean()
   );
+}
+
+function discussion_submit($post) {
+  global $secrets;
+  if(!array_key_exists('dld_ID', $post) || !array_key_exists('class_ID', $post))
+    return array('status' => STATUS_FAIL);
+  $cid = $post['class_ID'];
+  $dldid = $post['dld_ID'];
+
+  $missing = array();
+  if(!array_key_exists('text', $post) || trim($post['text']) == '')
+    $missing[] = 'text';
+  if(!array_key_exists('captcha', $post) || trim($post['captcha']) == '')
+    $missing[] = 'captcha';
+  $text = trim($post['text']);
+  $name = array_key_exists('name', $post) ? strtoupper($post['name']) : '';
+  $captcha = $post['captcha'];
+  $addr = $_SERVER['REMOTE_ADDR'];
+  /*if(!(ctype_alpha($name) && strlen($name) <= 3))
+    $name = '';*/
+  if($name == 'VP' && $captcha != $secrets['vpcaptcha'])
+    $name = '';
+
+  /* This will be useful in case we need to refill user-entered data for corrections. */
+  $ret = array(
+    'dldid' => $dldid,
+    'text' => $text,
+    'name' => $name,
+  );
+
+  if(!validate_dldid($cid, $dldid)) {
+    $ret['status'] = STATUS_FAIL;
+    return $ret;
+  }
+
+  if(!empty($missing)) {
+    $ret['status'] = STATUS_INCOMPLETE;
+    $ret['missing'] = $missing;
+    return $ret;
+  }
+
+  global $db;
+  $sql = 'insert into discussion (dld_ID, name, text, address) values (?, ?, ?, ?)';
+  $st = $db->prepare($sql);
+  $st->bind_param('isss', $dldid, $name, $text, $addr);
+  $success = $st->execute();
+  $success = true;
+
+  if($success) {
+    $ret['status'] = STATUS_OK;
+    $ret['text'] = '';
+  } else {
+    $ret['status'] = STATUS_DBERROR;
+    $ret['error'] = $db->error;
+  }
+
+  return $ret;
 }
 ?>

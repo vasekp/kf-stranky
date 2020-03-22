@@ -11,6 +11,11 @@ if($early) {
 
 include 'class-discussion-common.inc.php';
 
+if($_SERVER['REQUEST_METHOD'] == 'POST')
+  $data = discussion_submit($_POST);
+else
+  $data = null;
+
 $sql = "select title, KOS, intro, announces from classes where ID='$cid'";
 $result = $db->query($sql);
 $row = $result->fetch_assoc();
@@ -42,7 +47,7 @@ while($row = $result->fetch_assoc()) {
   include 'images/discussion.svg.php';
   $bubble = ob_get_clean();
   if(array_key_exists('discuss', $_GET) && $_GET['discuss'] == $row['id'])
-    $discussion = get_discussion($row['id'])['html'];
+    $discussion = get_discussion($row['id'], $data)['html'];
   else
     $discussion = '';
   print <<<HTML

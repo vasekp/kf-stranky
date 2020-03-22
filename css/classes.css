@@ -107,7 +107,7 @@
   color: #00c;
 }
 
-.discussion .item >:last-child {
+.discussion form >p:last-of-type {
   margin-bottom: 0;
 }
 
@@ -128,7 +128,7 @@
   resize: vertical;
 }
 
-#name {
+input[name="name"] {
   text-transform: uppercase;
 }
 
@@ -137,4 +137,8 @@
   position: absolute;
   right: .5rem;
   bottom: .5rem;
+}
+
+.missing {
+  box-shadow: 0 0 2px red;
 }
