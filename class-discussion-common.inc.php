@@ -95,7 +95,7 @@ function discussion_submit($post) {
   if(!array_key_exists('captcha', $post) || trim($post['captcha']) == '')
     $missing[] = 'captcha';
   $text = trim($post['text']);
-  $name = array_key_exists('name', $post) ? strtoupper($post['name']) : '';
+  $name = array_key_exists('name', $post) ? mb_strtoupper($post['name']) : '';
   $captcha = $post['captcha'];
   $attempt = array_key_exists('attempt', $post) ? $post['attempt'] : 0;
 
@@ -119,8 +119,10 @@ function discussion_submit($post) {
   }
 
   $addr = $_SERVER['REMOTE_ADDR'];
-  /*if(!(ctype_alpha($name) && strlen($name) <= 3))
-    $name = '';*/
+  if(!preg_match('/^[\p{Latin}]+$/u', $name))
+    $name = '';
+  $name = mb_substr($name, 0, 3);
+  $ret['name'] = $name;
   // A simple double-insert prevention. If the same request is received twice (from a time-outed AJAX followed by a form POST),
   // it will get the same CRC and will only be recorded once (without error). Should the user later decide to write the same
   // text, for some reason, it will get a higher serial and a collision will not happen.
