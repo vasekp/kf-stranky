@@ -14,7 +14,7 @@ function sendRequest(elm, data, callback, errorCallback, timeoutCallback) {
     callback(elm, xhr.response);
   };
   if(timeoutCallback) {
-    xhr.timeout = 500;
+    xhr.timeout = 1000;
     xhr.ontimeout = function() { timeoutCallback(elm); };
   }
   xhr.send(xhrData);
