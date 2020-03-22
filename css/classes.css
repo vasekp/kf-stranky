@@ -24,18 +24,125 @@
   text-decoration: line-through;
 }
 
-table, tr, td {
-  border: 0;
-  padding: 0;
-  border-spacing: .5rem .2rem;
+.download {
+  display: flex;
+  margin: .2rem 0;
 }
 
-thead {
-  font-weight: 600;
+.icon, .bubble {
+  flex-basis: 1.5rem;
+  text-align: center;
+  flex-grow: 0;
+  flex-shrink: 0;
 }
 
-img.filetype {
+.icon {
+  flex-basis: 1.5rem;
+}
+
+.bubble {
+  flex-basis: 2.5rem;
+}
+
+.text {
+  flex-grow: 1;
+}
+
+.icon img {
   height: 1.2rem;
   position: relative;
   bottom: -.1rem;
+}
+
+.bubble svg {
+  height: 1.2rem;
+  position: relative;
+  bottom: -.1rem;
+}
+
+.bubble [data-count="0"] {
+  opacity: .5;
+}
+
+.discussion {
+  margin: 0 2.5rem 0 1.5rem;
+}
+
+.discussion .item {
+  border: 1px solid #888;
+  border-bottom: none;
+  background: #eee;
+  padding: .5rem;
+  position: relative;
+}
+
+.discussion .item:first-of-type {
+  border-radius: .5rem .5rem 0 0;
+}
+
+.discussion .item:last-of-type {
+  border-radius: 0 0 .5rem .5rem;
+  border-bottom: 1px solid #888;
+}
+
+.discussion .item:only-of-type {
+  border-radius: .5rem;
+}
+
+.discussion .date {
+  float: right;
+  display: inline-block;
+  font-size: 80%;
+  color: #888;
+  position: relative;
+  right: -.2rem;
+  top: -.5rem;
+}
+
+.discussion .name {
+  font-weight: 600;
+}
+
+.discussion .name.vp {
+  color: #00c;
+}
+
+.discussion form >p:last-of-type {
+  margin-bottom: 0;
+}
+
+.discussion input, .discussion button, .discussion textarea {
+  border: 1pt solid #888;
+  font-size: inherit;
+  font-family: inherit;
+  border-radius: .2rem;
+}
+
+.discussion input {
+  max-width: 5em;
+}
+
+.discussion textarea {
+  display: block;
+  width: 100%;
+  resize: vertical;
+}
+
+input[name="name"] {
+  text-transform: uppercase;
+}
+
+#send {
+  background: inherit;
+  position: absolute;
+  right: .5rem;
+  bottom: .5rem;
+}
+
+.missing {
+  box-shadow: 0 0 2px red;
+}
+
+.new {
+  box-shadow: 0 0 3px yellow;
 }

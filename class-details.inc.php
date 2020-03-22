@@ -1,5 +1,6 @@
 <?php
 if($early) {
+  array_push($scripts, 'class-discussion.js');
   if($admin) {
     array_push($css, 'css/classes-admin.css');
     array_push($scripts, 'classes-admin.js');
@@ -8,7 +9,12 @@ if($early) {
   return;
 }
 
-$cid = 'kf19';
+include 'class-discussion-common.inc.php';
+
+if($_SERVER['REQUEST_METHOD'] == 'POST')
+  $data = discussion_submit($_POST);
+else
+  $data = null;
 
 $sql = "select title, KOS, intro, announces from classes where ID='$cid'";
 $result = $db->query($sql);
@@ -23,19 +29,44 @@ print <<<HTML
 <div id="announces">
 {$row['announces']}
 </div>
-<h2>Ke stažení</h2>
-<table>\n
+<h2>Ke stažení</h2>\n
 HTML;
 
-$sql = 'select filename, description, timestamp from download';
+$sql = <<<SQL
+select dld.ID as id, filename, description, count(dis.ID) as count
+  from download as dld
+  left join discussion as dis on dis.dld_ID = dld.ID
+  group by dld.ID
+SQL;
 $result = $db->query($sql);
-while($row = $result->fetch_assoc())
+while($row = $result->fetch_assoc()) {
+  $url = query('', array('discuss' => $row['id']));
+  $count = $row['count'] ? $row['count'] : '';
+  $ccount = $row['count'] ? $row['count'] : 0;
+  ob_start();
+  include 'images/discussion.svg.php';
+  $bubble = ob_get_clean();
+  if(array_key_exists('discuss', $_GET) && $_GET['discuss'] == $row['id'])
+    $discussion = get_discussion($row['id'], $data)['html'];
+  else
+    $discussion = '';
   print <<<HTML
-<tr>
-<td><a href="download/{$row['filename']}"><img class="filetype" src="images/download.svg" alt="{$row['filename']}"/></a></td>
-<td>{$row['description']}</td>
-</tr>\n
+<div class="download" id="download{$row['id']}" data-id="{$row['id']}">
+  <div class="icon">
+    <a href="download/{$row['filename']}"><img src="images/download.svg" alt="{$row['filename']}"/></a>
+  </div>
+  <div class="text">
+    {$row['description']}
+  </div>
+  <div class="bubble">\n
+    <a href="$url" id="bubble{$row['id']}" data-id="{$row['id']}" data-count="$ccount">
+      $bubble
+    </a>
+  </div>
+</div>
+$discussion\n
 HTML;
+}
 
 if($admin)
   $adminrow = '<input type="hidden" id="admin" value="' . $_GET['admin'] . '"/>';
@@ -44,7 +75,6 @@ else
 $notes_url = query('', array('s' => 'notes'));
 
 print <<<HTML
-</table>
 $adminrow
 <div class="buttons">
   <a class="button" href="$notes_url">Zápis z hodin</a>
