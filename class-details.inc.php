@@ -9,7 +9,7 @@ if($early) {
   return;
 }
 
-$cid = 'kf19';
+include 'class-discussion-common.inc.php';
 
 $sql = "select title, KOS, intro, announces from classes where ID='$cid'";
 $result = $db->query($sql);
@@ -35,48 +35,32 @@ select dld.ID as id, filename, description, count(dis.ID) as count
 SQL;
 $result = $db->query($sql);
 while($row = $result->fetch_assoc()) {
+  $url = query('', array('discuss' => $row['id']));
+  $count = $row['count'] ? $row['count'] : '';
+  $empty = $count ? '' : 'empty ';
+  ob_start();
+  include 'images/discussion.svg.php';
+  $bubble = ob_get_clean();
+  if(array_key_exists('discuss', $_GET) && $_GET['discuss'] == $row['id'])
+    $discussion = get_discussion($row['id'])['html'];
+  else
+    $discussion = '';
   print <<<HTML
-<div class="download">
+<div class="download" id="download{$row['id']}" data-id="{$row['id']}">
   <div class="icon">
     <a href="download/{$row['filename']}"><img src="images/download.svg" alt="{$row['filename']}"/></a>
   </div>
   <div class="text">
     {$row['description']}
   </div>
-  <div class="bubble">\n
-HTML;
-  $content = $row['count'] ? $row['count'] : '';
-  include 'images/discussion.svg.php';
-  print <<<HTML
+  <div class="{$empty}bubble">\n
+    <a href="$url">
+      $bubble
+    </a>
   </div>
-</div>\n
+</div>
+$discussion\n
 HTML;
-
-  $sql2 = "select name, text, timestamp from discussion where dld_ID='{$row['id']}'";
-  $result2 = $db->query($sql2);
-  while($row2 = $result2->fetch_assoc()) {
-    $name = $row2['name'];
-    if($name)
-      $namespan = '<span class="name' . ($name == 'VP' ? ' vp' : '') . '">' . $name . ':</span>';
-    else
-      $namespan = '';
-    $date = date('j.n.Y G:i', strtotime($row2['timestamp']));
-    print <<<HTML
-<div class="discussion">
-  <div class="item">
-    <span class="date">$date</span>
-    $namespan
-    {$row2['text']}
-  </div>
-  <div class="item">
-    <textarea></textarea>
-    <button id="send">Odeslat</button>
-    <p>Iniciály (nepovinné): <input id="name" type="text" maxlength="3" pattern="[a-zA-Z]{0,3}"/></p>
-    <p>Opište první slovo ze strany 423: <input id="captcha" type="text"/></p>
-  </div>
-</div>\n
-HTML;
-  }
 }
 
 if($admin)

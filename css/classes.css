@@ -29,22 +29,22 @@
   margin: .2rem 0;
 }
 
-.download .icon, .download .bubble {
+.icon, .bubble {
   flex-basis: 1.5rem;
   text-align: center;
   flex-grow: 0;
   flex-shrink: 0;
 }
 
-.download .icon {
+.icon {
   flex-basis: 1.5rem;
 }
 
-.download .bubble {
+.bubble {
   flex-basis: 2.5rem;
 }
 
-.download .text {
+.text {
   flex-grow: 1;
 }
 
@@ -58,6 +58,10 @@
   height: 1.2rem;
   position: relative;
   bottom: -.1rem;
+}
+
+.bubble.empty {
+  opacity: .5;
 }
 
 .discussion {
