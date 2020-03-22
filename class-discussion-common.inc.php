@@ -44,23 +44,31 @@ HTML;
   }
   $url = query('', array('discuss' => $dldid));
 
+  $attempt = 0;
   if($data !== null && $data['dldid'] == $dldid) {
     $text = htmlspecialchars($data['text']);
     $name = htmlspecialchars($data['name']);
     $mText = $data['status'] == STATUS_INCOMPLETE && in_array('text', $data['missing']) ? ' class="missing"' : '';
     $mCaptcha = $data['status'] == STATUS_INCOMPLETE && in_array('captcha', $data['missing']) ? ' class="missing"' : '';
+    $attempt = $data['attempt'];
   } else
     $text = $name = $mText = $mCaptcha = '';
+
+  $sql = "select challenge from captcha where class_ID='$cid' order by id";
+  $result = $db->query($sql);
+  $result->data_seek(gen_captcha($dldid, $count, $attempt, $result->num_rows));
+  $challenge = $result->fetch_row()[0];
 
   print <<<HTML
   <div class="item">
     <form action="$url" method="post">
       <textarea name="text"$mText id="text">$text</textarea>
       <p>Iniciály (nepovinné): <input name="name" type="text" maxlength="3" value="$name"/></p>
-      <p>Opište první slovo ze strany 423: <input name="captcha" id="captcha" type="text"$mCaptcha/></p>
+      <p>Opište první slovo ze strany <span id="challenge">$challenge</span>: <input name="captcha" id="captcha" type="text"$mCaptcha/></p>
       <input type="hidden" name="class_ID" value="$cid"/>
       <input type="hidden" name="dld_ID" value="$dldid"/>
       <input type="hidden" name="serial" value="$count"/>
+      <input type="hidden" name="attempt" id="attempt" value="$attempt"/>
       <input type="submit" id="send" value="Odeslat">
     </form>
   </div>
@@ -89,12 +97,14 @@ function discussion_submit($post) {
   $text = trim($post['text']);
   $name = array_key_exists('name', $post) ? strtoupper($post['name']) : '';
   $captcha = $post['captcha'];
+  $attempt = array_key_exists('attempt', $post) ? $post['attempt'] : 0;
 
   /* This will be useful in case we need to refill user-entered data for corrections. */
   $ret = array(
     'dldid' => $dldid,
     'text' => $text,
     'name' => $name,
+    'attempt' => $attempt
   );
 
   if(!validate_dldid($cid, $dldid)) {
@@ -111,14 +121,32 @@ function discussion_submit($post) {
   $addr = $_SERVER['REMOTE_ADDR'];
   /*if(!(ctype_alpha($name) && strlen($name) <= 3))
     $name = '';*/
-  if($name == 'VP' && $captcha != $secrets['vpcaptcha'])
-    $name = '';
   // A simple double-insert prevention. If the same request is received twice (from a time-outed AJAX followed by a form POST),
   // it will get the same CRC and will only be recorded once (without error). Should the user later decide to write the same
   // text, for some reason, it will get a higher serial and a collision will not happen.
   $hash = crc32($serial . $text);
 
   global $db;
+  if($name != 'VP') {
+    $sql = "select challenge, response from captcha where class_ID='$cid' order by id";
+    $result = $db->query($sql);
+    $result->data_seek(gen_captcha($dldid, $serial, $attempt, $result->num_rows));
+    $accept_re = preg_replace('/[^a-z]/u', '.', mb_strtolower($result->fetch_row()[1]));
+  } else
+    $accept_re = $secrets['vpcaptcha'];
+
+  if(!preg_match("/^$accept_re$/u", mb_strtolower($captcha))) {
+    $ret['status'] = STATUS_INCOMPLETE;
+    $ret['missing'] = array('captcha');
+    $attempt = ($attempt + 1) % 3;
+    $ret['attempt'] = $attempt;
+    if($name != 'VP') {
+      $result->data_seek(gen_captcha($dldid, $serial, $attempt, $result->num_rows));
+      $ret['challenge'] = $result->fetch_row()[0];
+    }
+    return $ret;
+  }
+
   $sql = 'insert into discussion (dld_ID, name, text, hash, address) values (?, ?, ?, ?, ?) on duplicate key update name=name';
   $st = $db->prepare($sql);
   $st->bind_param('issis', $dldid, $name, $text, $hash, $addr);

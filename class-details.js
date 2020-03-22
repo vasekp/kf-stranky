@@ -85,6 +85,9 @@ function submitSuccess(elm, response) {
       response.missing.forEach(function(s) {
         document.getElementById(s).classList.add('missing');
       });
+      document.getElementById('attempt').value = response.attempt;
+      if(response.challenge)
+        document.getElementById('challenge').innerText = response.challenge;
       break;
     case 2: // Database error
       alert('Nastala neznámá chyba. Prosím nahlaste tento výstup: ' + response.error);
