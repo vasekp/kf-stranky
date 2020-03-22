@@ -60,6 +60,7 @@ HTML;
       <p>Opište první slovo ze strany 423: <input name="captcha" id="captcha" type="text"$mCaptcha/></p>
       <input type="hidden" name="class_ID" value="$cid"/>
       <input type="hidden" name="dld_ID" value="$dldid"/>
+      <input type="hidden" name="serial" value="$count"/>
       <input type="submit" id="send" value="Odeslat">
     </form>
   </div>
@@ -74,10 +75,11 @@ HTML;
 
 function discussion_submit($post) {
   global $secrets;
-  if(!array_key_exists('dld_ID', $post) || !array_key_exists('class_ID', $post))
+  if(!array_key_exists('dld_ID', $post) || !array_key_exists('class_ID', $post) || !array_key_exists('serial', $post))
     return array('status' => STATUS_FAIL, 'error' => 'Invalid IDs');
   $cid = $post['class_ID'];
   $dldid = $post['dld_ID'];
+  $serial = $post['serial'];
 
   $missing = array();
   if(!array_key_exists('text', $post) || trim($post['text']) == '')
@@ -87,11 +89,6 @@ function discussion_submit($post) {
   $text = trim($post['text']);
   $name = array_key_exists('name', $post) ? strtoupper($post['name']) : '';
   $captcha = $post['captcha'];
-  $addr = $_SERVER['REMOTE_ADDR'];
-  /*if(!(ctype_alpha($name) && strlen($name) <= 3))
-    $name = '';*/
-  if($name == 'VP' && $captcha != $secrets['vpcaptcha'])
-    $name = '';
 
   /* This will be useful in case we need to refill user-entered data for corrections. */
   $ret = array(
@@ -111,12 +108,21 @@ function discussion_submit($post) {
     return $ret;
   }
 
+  $addr = $_SERVER['REMOTE_ADDR'];
+  /*if(!(ctype_alpha($name) && strlen($name) <= 3))
+    $name = '';*/
+  if($name == 'VP' && $captcha != $secrets['vpcaptcha'])
+    $name = '';
+  // A simple double-insert prevention. If the same request is received twice (from a time-outed AJAX followed by a form POST),
+  // it will get the same CRC and will only be recorded once (without error). Should the user later decide to write the same
+  // text, for some reason, it will get a higher serial and a collision will not happen.
+  $hash = crc32($serial . $text);
+
   global $db;
-  $sql = 'insert into discussion (dld_ID, name, text, address) values (?, ?, ?, ?)';
+  $sql = 'insert into discussion (dld_ID, name, text, hash, address) values (?, ?, ?, ?, ?) on duplicate key update name=name';
   $st = $db->prepare($sql);
-  $st->bind_param('isss', $dldid, $name, $text, $addr);
+  $st->bind_param('issis', $dldid, $name, $text, $hash, $addr);
   $success = $st->execute();
-  $success = true;
 
   if($success) {
     $ret['status'] = STATUS_OK;
