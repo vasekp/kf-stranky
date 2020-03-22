@@ -142,3 +142,7 @@ input[name="name"] {
 .missing {
   box-shadow: 0 0 2px red;
 }
+
+.new {
+  box-shadow: 0 0 3px yellow;
+}

@@ -46,6 +46,9 @@ function requestDiscussion(dldid) {
   function timeOut() {
     window.location.replace(document.getElementById('bubble' + dldid).href);
   }
+  var anchor = document.getElementById('bubble' + dldid);
+  anchor.classList.add('loading');
+  anchor.getElementsByTagName('text')[0].textContent = '...';
   sendRequest(dldid, { 'query': 'get', 'dld_ID': dldid }, discussionReceived, timeOut, timeOut);
 }
 
@@ -60,12 +63,18 @@ function discussionReceived(dldid, response) {
   var elm = document.getElementById('download' + dldid);
   elm.parentElement.insertBefore(content, elm.nextSibling);
   var anchor = document.getElementById('bubble' + dldid);
+  anchor.classList.remove('loading');
   anchor.setAttribute('data-count', response.count);
   elm.getElementsByTagName('text')[0].textContent = response.count ? response.count : '';
 
+  if(typeof(Storage) === 'undefined')
+    return;
+
   var lsKey = 'discussion-lastSeen-' + dldid;
-  if(typeof(Storage) !== 'undefined')
-    localStorage[lsKey] = response.count;
+  var lastSeen = localStorage[lsKey] || 0;
+  localStorage[lsKey] = response.count;
+  for(let i = lastSeen; i < response.count; i++)
+    content.children[i].classList.add('new');
 }
 
 function onSubmit(e) {
@@ -77,10 +86,12 @@ function onSubmit(e) {
   });
   data['text'] = elm.getElementsByTagName('textarea')[0].value;
   data['query'] = 'submit';
+  elm.classList.add('loading');
   sendRequest(elm, data, submitSuccess, submitTimeout, submitTimeout);
 }
 
 function submitSuccess(elm, response) {
+  elm.classList.remove('loading');
   switch(response.status) {
     case 0: // Success
       requestDiscussion(response.dldid);
@@ -126,9 +137,13 @@ window.addEventListener('DOMContentLoaded', function(event) {
     var id = anchor.getAttribute('data-id');
     var count = anchor.getAttribute('data-count');
     var lsKey = 'discussion-lastSeen-' + id;
-    if(document.getElementById('discussion' + id))
+    if(document.getElementById('discussion' + id)) {
+      var div = document.getElementById('discussion' + id);
+      var lastSeen = localStorage[lsKey] || 0;
       localStorage[lsKey] = count;
-    else {
+      for(let i = lastSeen; i < count; i++)
+        div.children[i].classList.add('new');
+    } else {
       var lastSeen = localStorage[lsKey] || 0;
       var newItems = count - lastSeen;
       if(newItems == 0)

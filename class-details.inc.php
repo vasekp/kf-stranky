@@ -1,6 +1,6 @@
 <?php
 if($early) {
-  array_push($scripts, 'class-details.js');
+  array_push($scripts, 'class-discussion.js');
   if($admin) {
     array_push($css, 'css/classes-admin.css');
     array_push($scripts, 'classes-admin.js');
