@@ -15,7 +15,7 @@ function sendRequest(elm, data, callback, errorCallback, timeoutCallback) {
   };
   if(timeoutCallback) {
     xhr.timeout = 500;
-    xhr.ontimeout = timeoutCallback;
+    xhr.ontimeout = function() { timeoutCallback(elm); };
   }
   xhr.send(xhrData);
 }
@@ -37,23 +37,75 @@ function downloadParent(elm) {
 function bubbleClick(e) {
   e.preventDefault();
   var elm = e.currentTarget;
-  function timeOut() {
-    window.location.replace(elm.href);
-  }
   var pelm = downloadParent(elm);
   var id = pelm.getAttribute('data-id');
   if(document.getElementById('discussion' + id))
     return;
-  sendRequest(pelm, { 'dld_ID' : id }, discussionReceived, timeOut, timeOut);
+  requestDiscussion(id);
 }
 
-function discussionReceived(elm, response) {
+function requestDiscussion(dldid) {
+  function timeOut() {
+    window.location.replace(document.getElementById('bubble' + dldid).href);
+  }
+  sendRequest(dldid, { 'query': 'get', 'dld_ID': dldid }, discussionReceived, timeOut, timeOut);
+}
+
+function discussionReceived(dldid, response) {
   Array.from(document.getElementsByClassName('discussion')).forEach(function(elm) {
     elm.parentElement.removeChild(elm);
   });
   var content = new DOMParser().parseFromString(response.html, 'text/html').getElementsByClassName('discussion')[0];
+
+  addEventsForm(content.getElementsByTagName('form')[0]);
+
+  var elm = document.getElementById('download' + dldid);
   elm.parentElement.insertBefore(content, elm.nextSibling);
   elm.getElementsByTagName('text')[0].textContent = response.count ? response.count : '';
+}
+
+function onSubmit(e) {
+  var elm = e.currentTarget;
+  e.preventDefault();
+  var data = {};
+  Array.from(elm.getElementsByTagName('input')).forEach(function(e) {
+    data[e.name] = e.value;
+  });
+  data['text'] = elm.getElementsByTagName('textarea')[0].value;
+  data['query'] = 'submit';
+  sendRequest(elm, data, submitSuccess, submitTimeout, submitTimeout);
+}
+
+function submitSuccess(elm, response) {
+  switch(response.status) {
+    case 0: // Success
+      requestDiscussion(response.dldid);
+      break;
+    case 1: // Missing fields
+      response.missing.forEach(function(s) {
+        document.getElementById(s).classList.add('missing');
+      });
+      break;
+    case 2: // Database error
+      alert('Nastala neznámá chyba. Prosím nahlaste tento výstup: ' + response.error);
+      break;
+  }
+}
+
+function submitTimeout(elm) {
+  elm.removeEventListener('submit', onSubmit);
+  elm.submit();
+}
+
+function addEventsForm(elm) {
+  function removeMissing(e) {
+    e.currentTarget.classList.remove('missing');
+  }
+  elm.addEventListener('submit', onSubmit);
+  Array.from(elm.getElementsByTagName('input')).forEach(function(e) {
+    e.addEventListener('focus', removeMissing);
+  });
+  elm.getElementsByTagName('textarea')[0].addEventListener('focus', removeMissing);
 }
 
 window.addEventListener('DOMContentLoaded', function(event) {
@@ -70,5 +122,9 @@ window.addEventListener('DOMContentLoaded', function(event) {
     newChild.setAttributeNS(null, 'fill', 'red');
     newChild.appendChild(document.createTextNode('/+1'));
     textElm.appendChild(newChild, textElm);*/
+  });
+
+  Array.from(document.getElementsByTagName('form')).forEach(function(elm) {
+    addEventsForm(elm);
   });
 });

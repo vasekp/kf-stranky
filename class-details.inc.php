@@ -59,7 +59,7 @@ while($row = $result->fetch_assoc()) {
     {$row['description']}
   </div>
   <div class="{$empty}bubble">\n
-    <a href="$url">
+    <a href="$url" id="bubble{$row['id']}">
       $bubble
     </a>
   </div>
