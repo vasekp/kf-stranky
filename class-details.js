@@ -36,9 +36,7 @@ function downloadParent(elm) {
 
 function bubbleClick(e) {
   e.preventDefault();
-  var elm = e.currentTarget;
-  var pelm = downloadParent(elm);
-  var id = pelm.getAttribute('data-id');
+  var id = e.currentTarget.getAttribute('data-id');
   if(document.getElementById('discussion' + id))
     return;
   requestDiscussion(id);
@@ -61,7 +59,13 @@ function discussionReceived(dldid, response) {
 
   var elm = document.getElementById('download' + dldid);
   elm.parentElement.insertBefore(content, elm.nextSibling);
+  var anchor = document.getElementById('bubble' + dldid);
+  anchor.setAttribute('data-count', response.count);
   elm.getElementsByTagName('text')[0].textContent = response.count ? response.count : '';
+
+  var lsKey = 'discussion-lastSeen-' + dldid;
+  if(typeof(Storage) !== 'undefined')
+    localStorage[lsKey] = response.count;
 }
 
 function onSubmit(e) {
@@ -116,15 +120,30 @@ window.addEventListener('DOMContentLoaded', function(event) {
     var anchor = elm.getElementsByTagName('a')[0];
     anchor.addEventListener('click', bubbleClick);
 
-    /*const xmlns = 'http://www.w3.org/2000/svg';
-    var textElm = elm.getElementsByTagName('text')[0];
-    textElm.textContent = textElm.textContent.trim();
-    if(!textElm.textContent)
+    if(typeof(Storage) === 'undefined')
       return;
-    var newChild = document.createElementNS(xmlns, 'tspan');
-    newChild.setAttributeNS(null, 'fill', 'red');
-    newChild.appendChild(document.createTextNode('/+1'));
-    textElm.appendChild(newChild, textElm);*/
+
+    var id = anchor.getAttribute('data-id');
+    var count = anchor.getAttribute('data-count');
+    var lsKey = 'discussion-lastSeen-' + id;
+    if(document.getElementById('discussion' + id))
+      localStorage[lsKey] = count;
+    else {
+      var lastSeen = localStorage[lsKey] || 0;
+      var newItems = count - lastSeen;
+      if(newItems == 0)
+        return;
+
+      const xmlns = 'http://www.w3.org/2000/svg';
+      var textElm = elm.getElementsByTagName('text')[0];
+      textElm.textContent = textElm.textContent.trim();
+      if(!textElm.textContent)
+        return;
+      var newChild = document.createElementNS(xmlns, 'tspan');
+      newChild.setAttributeNS(null, 'fill', 'red');
+      newChild.appendChild(document.createTextNode('/+' + newItems));
+      textElm.appendChild(newChild, textElm);
+    }
   });
 
   Array.from(document.getElementsByTagName('form')).forEach(function(elm) {

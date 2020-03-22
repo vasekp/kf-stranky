@@ -42,7 +42,7 @@ $result = $db->query($sql);
 while($row = $result->fetch_assoc()) {
   $url = query('', array('discuss' => $row['id']));
   $count = $row['count'] ? $row['count'] : '';
-  $empty = $count ? '' : 'empty ';
+  $ccount = $row['count'] ? $row['count'] : 0;
   ob_start();
   include 'images/discussion.svg.php';
   $bubble = ob_get_clean();
@@ -58,8 +58,8 @@ while($row = $result->fetch_assoc()) {
   <div class="text">
     {$row['description']}
   </div>
-  <div class="{$empty}bubble">\n
-    <a href="$url" id="bubble{$row['id']}">
+  <div class="bubble">\n
+    <a href="$url" id="bubble{$row['id']}" data-id="{$row['id']}" data-count="$ccount">
       $bubble
     </a>
   </div>

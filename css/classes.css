@@ -60,7 +60,7 @@
   bottom: -.1rem;
 }
 
-.bubble.empty {
+.bubble [data-count="0"] {
   opacity: .5;
 }
 
