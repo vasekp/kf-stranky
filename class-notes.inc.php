@@ -12,7 +12,7 @@ if($early) {
 
 include 'class-notes-common.inc.php';
 
-$r = get_records(array_key_exists('date', $_GET) ? $_GET['date'] : '', true);
+$r = get_records(array_key_exists('date', $_GET) ? $_GET['date'] : '', !$admin);
 if(!$r) {
   include 'class-details.inc.php';
   return;
