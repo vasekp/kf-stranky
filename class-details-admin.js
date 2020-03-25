@@ -1,6 +1,6 @@
 var admin;
 
-var detailsAjax = new Ajax('classes-admin-ajax.php',
+var detailsAjax = new Ajax('class-details-admin-ajax.php',
   function(response, elm) {
     elm.innerHTML = elm.innerText.trim();
     elm.classList.remove('changed');
@@ -14,7 +14,6 @@ var detailsAjax = new Ajax('classes-admin-ajax.php',
 function updateText(elm) {
   var text = elm.innerText.trim();
   var data = {
-    'type': 'html',
     'which': elm.id,
     'text': text,
     'pass': admin.value

@@ -1,7 +1,7 @@
 var admin, empty;
 
 function notesRequest(data, elm, callback) {
-  var ajax = new Ajax('classes-admin-ajax.php',
+  var ajax = new Ajax('class-notes-admin-ajax.php',
     function(response, elm) {
       callback(response, elm);
       elm.classList.remove('changed');
