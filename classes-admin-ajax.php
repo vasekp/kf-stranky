@@ -1,7 +1,7 @@
 <?php
 include 'shared.inc.php';
 
-$cid = 'kf19';
+header('Content-type: application/json');
 
 if($_SERVER['REQUEST_METHOD'] != 'POST' || !array_key_exists('type', $_POST)) {
   http_response_code(400);
@@ -12,7 +12,7 @@ if(!array_key_exists('pass', $_POST) || $_POST['pass'] != $secrets['adminpw']) {
   return;
 }
 
-header('Content-type: application/json');
+$cid = 'kf19';
 
 $type = $_POST['type'];
 if(in_array($type, array('html'))) {
@@ -23,6 +23,11 @@ if(in_array($type, array('html'))) {
   }
 
   $db = open_db();
+  if(!$db) {
+    http_response_code(500);
+    return;
+  }
+
   $text = array_key_exists('text', $_POST) ? $_POST['text'] : '';
   $st = $db->prepare('update classes set ' . $which . ' = ? where ID = ?');
   $st->bind_param('ss', $text, $cid);
@@ -38,6 +43,11 @@ if(in_array($type, array('html'))) {
   include 'class-notes-common.inc.php';
 
   $db = open_db();
+  if(!$db) {
+    http_response_code(500);
+    return;
+  }
+
   $text = array_key_exists('text', $_POST) ? $_POST['text'] : '';
   $id = array_key_exists('id', $_POST) ? $_POST['id'] : 0;
   $date = array_key_exists('date', $_POST) ? $_POST['date'] : '';
