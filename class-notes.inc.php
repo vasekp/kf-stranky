@@ -12,7 +12,7 @@ if($early) {
 
 include 'class-notes-common.inc.php';
 
-$r = get_records(array_key_exists('date', $_GET) ? $_GET['date'] : '', !$admin);
+$r = get_records(array_key_exists('date', $_GET) ? $_GET['date'] : '', !$admin, $admin);
 if(!$r) {
   include 'class-details.inc.php';
   return;
@@ -54,8 +54,12 @@ if($admin)
   echo '<li class="last"></li>' . PHP_EOL;
 echo '</ul>' . PHP_EOL;
 
-if($admin)
-  echo '<input type="hidden" id="admin" value="' . $_GET['admin'] . '"/>' . PHP_EOL;
+if($admin) print <<<HTML
+<input type="hidden" id="admin" value="{$_GET['admin']}"/>
+<div class="buttons">
+  <a class="button" id="commit" href="#">Zveřejnit</a>
+</div>\n
+HTML;
 
 if($r->mod_time)
   $modtime = strtotime($r->mod_time);

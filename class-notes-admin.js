@@ -160,10 +160,19 @@ function addEvents(elm) {
   makeEditable(elm, itemEnter, itemLeaveUnchanged, itemLeaveChanged, itemInput, itemKeyDown);
 }
 
+function commitNotes(e) {
+  var data = {
+    'type': 'commit',
+    'pass': admin.value
+  };
+  notesRequest(data, e.currentTarget, function() { });
+  e.preventDefault();
+}
 
 window.addEventListener('DOMContentLoaded', function(event) {
   admin = document.getElementById('admin');
   Array.from(list.getElementsByTagName('li')).forEach(addEvents);
   empty = list.lastElementChild.cloneNode(true);
   addEventsDate(document.getElementById('date'));
+  document.getElementById('commit').addEventListener('click', commitNotes);
 });
