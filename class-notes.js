@@ -3,10 +3,16 @@ var swtch, list;
 function get_records_async(date_sql) {
   list.classList.add('loading');
   swtch.classList.add('loading');
+  var url = addToQuery('date', date_sql);
   var ajax = new Ajax('class-notes-ajax.php',
-    recordsArrived,
+    function(response) {
+      list.classList.remove('loading');
+      swtch.classList.remove('loading');
+      history.replaceState(null, '', url);
+      recordsArrived(response)
+    },
     function() {
-      window.location.replace(addToQuery('date', date_sql));
+      location.replace(url);
     }
   );
   ajax.sendRequest({
@@ -16,8 +22,6 @@ function get_records_async(date_sql) {
 }
 
 function recordsArrived(r) {
-  list.classList.remove('loading');
-  swtch.classList.remove('loading');
   var elm = document.getElementById('date');
   elm.innerText = r.date_text;
   elm.setAttribute('data-date', r.date);
