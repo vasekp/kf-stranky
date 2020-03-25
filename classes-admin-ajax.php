@@ -1,34 +1,22 @@
 <?php
 include 'shared.inc.php';
+include 'ajax-common.inc.php';
 
-header('Content-type: application/json');
-
-if($_SERVER['REQUEST_METHOD'] != 'POST' || !array_key_exists('type', $_POST)) {
-  http_response_code(400);
-  return;
-}
-if(!array_key_exists('pass', $_POST) || $_POST['pass'] != $secrets['adminpw']) {
-  http_response_code(403);
-  return;
-}
+ajax_setup(['type' => [
+  'html' => [
+    'which' => ['intro', 'announces'],
+    'text'],
+  'insert' => ['date', 'text'],
+  'update' => ['text', 'id'],
+  'delete' => ['id']
+]], true);
 
 $cid = 'kf19';
 
 $type = $_POST['type'];
-if(in_array($type, array('html'))) {
-  $which = array_key_exists('which', $_POST) ? $_POST['which'] : '';
-  if(!in_array($which, array('intro', 'announces'))) {
-    http_response_code(400);
-    return;
-  }
-
-  $db = open_db();
-  if(!$db) {
-    http_response_code(500);
-    return;
-  }
-
-  $text = array_key_exists('text', $_POST) ? $_POST['text'] : '';
+if($type == 'html') {
+  $which = $_POST['which'];
+  $text = $_POST['text'];
   $st = $db->prepare('update classes set ' . $which . ' = ? where ID = ?');
   $st->bind_param('ss', $text, $cid);
   $success = $st->execute();
@@ -41,12 +29,6 @@ if(in_array($type, array('html'))) {
   echo json_encode($result);
 } else if(in_array($type, array('insert', 'update', 'delete'))) {
   include 'class-notes-common.inc.php';
-
-  $db = open_db();
-  if(!$db) {
-    http_response_code(500);
-    return;
-  }
 
   $text = array_key_exists('text', $_POST) ? $_POST['text'] : '';
   $id = array_key_exists('id', $_POST) ? $_POST['id'] : 0;
@@ -78,5 +60,5 @@ if(in_array($type, array('html'))) {
     );
     echo json_encode($response);
   }
-} else
-  http_response_code(400);
+}
+?>
