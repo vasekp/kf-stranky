@@ -61,7 +61,16 @@
 }
 
 .bubble [data-count="0"] {
-  opacity: .5;
+  opacity: .2;
+}
+
+.download a {
+  color: black;
+}
+
+.download:hover .bubble [data-count="0"] {
+  opacity: 1;
+  transition: opacity .5s;
 }
 
 .discussion {
