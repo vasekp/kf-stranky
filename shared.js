@@ -1,3 +1,5 @@
+'use strict';
+
 function Ajax(url, onSuccess, onError, timeout) {
   this.url = url;
 
@@ -9,7 +11,7 @@ function Ajax(url, onSuccess, onError, timeout) {
     var xhr = new XMLHttpRequest();
     xhr.open('POST', this.url, true);
     var xhrData = new FormData();
-    for(item in requestData)
+    for(let item in requestData)
       xhrData.append(item, requestData[item]);
     xhr.responseType = 'json';
     xhr.onload = function() {

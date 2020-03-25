@@ -1,3 +1,5 @@
+'use strict';
+
 var admin, empty;
 
 function notesRequest(data, elm, callback) {
@@ -60,7 +62,7 @@ recordsArrived = function(r) {
 }
 
 createRecord = function(id, text, html) {
-  elm = document.createElement('li');
+  var elm = document.createElement('li');
   elm.setAttribute('data-id', id);
   elm.setAttribute('data-text', text);
   elm.innerHTML = html;

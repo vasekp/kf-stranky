@@ -1,3 +1,5 @@
+'use strict';
+
 var swtch, list;
 
 function get_records_async(date_sql) {
@@ -54,7 +56,7 @@ function clearList() {
 }
 
 function createRecord(id, text, html) {
-  elm = document.createElement('li');
+  var elm = document.createElement('li');
   elm.innerHTML = html;
   list.appendChild(elm);
 }

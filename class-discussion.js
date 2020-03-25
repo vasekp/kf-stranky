@@ -1,3 +1,5 @@
+'use strict';
+
 function downloadParent(elm) {
   while(!elm.classList.contains('download'))
     elm = elm.parentElement;

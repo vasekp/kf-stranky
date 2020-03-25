@@ -1,3 +1,5 @@
+'use strict';
+
 function editableClick(callback) {
   return function(e) {
     var elm = e.currentTarget;

@@ -1,6 +1,8 @@
+'use strict';
+
 function applyFilter(element) {
   Array.from(document.getElementsByClassName('filter')).forEach(function(e) {
-    show = e.classList.contains("f-" + element.id);
+    var show = e.classList.contains("f-" + element.id);
     if(show)
       e.classList.remove('hide');
     else
