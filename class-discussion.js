@@ -1,33 +1,3 @@
-function sendRequest(elm, data, callback, errorCallback, timeoutCallback) {
-  var xhr = new XMLHttpRequest();
-  xhr.open('POST', 'class-discussion-ajax.php', true);
-  var xhrData = new FormData();
-  for(item in data)
-    xhrData.append(item, data[item]);
-  xhr.responseType = 'json';
-  xhr.onload = function() {
-    if(xhr.status !== 200) {
-      if(errorCallback)
-        errorCallback(elm);
-      return;
-    }
-    callback(elm, xhr.response);
-  };
-  if(timeoutCallback) {
-    xhr.timeout = 1000;
-    xhr.ontimeout = function() { timeoutCallback(elm); };
-  }
-  xhr.send(xhrData);
-}
-
-function addToQuery(key, val) {
-  var url = new URL(document.URL);
-  var sp = new URLSearchParams(url.search);
-  sp.set(key, val);
-  url.search = sp;
-  return url;
-}
-
 function downloadParent(elm) {
   while(!elm.classList.contains('download'))
     elm = elm.parentElement;
@@ -43,16 +13,21 @@ function bubbleClick(e) {
 }
 
 function requestDiscussion(dldid) {
-  function timeOut() {
-    window.location.replace(document.getElementById('bubble' + dldid).href);
-  }
   var anchor = document.getElementById('bubble' + dldid);
   anchor.classList.add('loading');
   anchor.getElementsByTagName('text')[0].textContent = '...';
-  sendRequest(dldid, { 'query': 'get', 'dld_ID': dldid }, discussionReceived, timeOut, timeOut);
+  var ajax = new Ajax('class-discussion-ajax.php',
+    discussionReceived,
+    function() {
+      location.replace(addToQuery('discuss', dldid));
+    },
+    1000
+  );
+  ajax.sendRequest({ 'query': 'get', 'dld_ID': dldid }, dldid);
 }
 
-function discussionReceived(dldid, response) {
+function discussionReceived(response, dldid) {
+  history.replaceState(null, '', addToQuery('discuss', dldid));
   Array.from(document.getElementsByClassName('discussion')).forEach(function(elm) {
     elm.parentElement.removeChild(elm);
   });
@@ -87,10 +62,11 @@ function onSubmit(e) {
   data['text'] = elm.getElementsByTagName('textarea')[0].value;
   data['query'] = 'submit';
   elm.classList.add('loading');
-  sendRequest(elm, data, submitSuccess, submitTimeout, submitTimeout);
+  var ajax = new Ajax('class-discussion-ajax.php', submitSuccess, submitTimeout, 1000);
+  ajax.sendRequest(data, elm);
 }
 
-function submitSuccess(elm, response) {
+function submitSuccess(response, elm) {
   elm.classList.remove('loading');
   switch(response.status) {
     case 0: // Success

@@ -3,28 +3,22 @@ var swtch, list;
 function get_records_async(date_sql) {
   list.classList.add('loading');
   swtch.classList.add('loading');
-  var xhr = new XMLHttpRequest();
-  xhr.open('POST', 'class-notes-ajax.php', true);
-  var data = new FormData();
-  data.append('type', 'get');
-  data.append('date', date_sql);
-  xhr.responseType = 'json';
-  xhr.onload = function() {
-    if(xhr.readyState != 4 || xhr.status !== 200)
-      return;
-    recordsArrived(xhr.response);
-    list.classList.remove('loading');
-    swtch.classList.remove('loading');
-  };
-  xhr.ontimeout = function() {
-    var url = new URL(document.URL);
-    var sp = new URLSearchParams(url.search);
-    sp.set('date', date_sql);
-    url.search = sp;
-    window.location.replace(url);
-  }
-  xhr.timeout = 500;
-  xhr.send(data);
+  var url = addToQuery('date', date_sql);
+  var ajax = new Ajax('class-notes-ajax.php',
+    function(response) {
+      list.classList.remove('loading');
+      swtch.classList.remove('loading');
+      history.replaceState(null, '', url);
+      recordsArrived(response)
+    },
+    function() {
+      location.replace(url);
+    }
+  );
+  ajax.sendRequest({
+    'type': 'get',
+    'date': date_sql
+  });
 }
 
 function recordsArrived(r) {
@@ -33,7 +27,7 @@ function recordsArrived(r) {
   elm.setAttribute('data-date', r.date);
   elm = document.getElementById('prev');
   if(r.date_prev) {
-    elm.setAttribute('href', '#');
+    elm.setAttribute('href', addToQuery('date', r.date_prev));
     elm.setAttribute('data-date', r.date_prev);
   } else {
     elm.removeAttribute('href');
@@ -41,7 +35,7 @@ function recordsArrived(r) {
   }
   elm = document.getElementById('next');
   if(r.date_next) {
-    elm.setAttribute('href', '#');
+    elm.setAttribute('href', addToQuery('date', r.date_next));
     elm.setAttribute('data-date', r.date_next);
   } else {
     elm.removeAttribute('href');
@@ -76,15 +70,13 @@ function arrowClick(e) {
   var date = e.currentTarget.getAttribute('data-date');
   if(!date)
     return;
-  datePick(date);
   e.preventDefault();
+  datePick(date);
 }
 
 function addEventsArrow(elm) {
   if(!elm)
     return;
-  if(elm.hasAttribute('href'))
-    elm.href = '#';
   elm.addEventListener('click', arrowClick);
 }
 

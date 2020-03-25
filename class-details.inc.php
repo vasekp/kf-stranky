@@ -1,5 +1,6 @@
 <?php
 if($early) {
+  array_push($scripts, 'shared.js');
   array_push($scripts, 'class-discussion.js');
   if($admin) {
     array_push($css, 'css/classes-admin.css');
@@ -56,7 +57,7 @@ while($row = $result->fetch_assoc()) {
     <a href="download/{$row['filename']}"><img src="images/download.svg" alt="{$row['filename']}"/></a>
   </div>
   <div class="text">
-    {$row['description']}
+    <a href="download/{$row['filename']}">{$row['description']}</a>
   </div>
   <div class="bubble">\n
     <a href="$url" id="bubble{$row['id']}" data-id="{$row['id']}" data-count="$ccount">

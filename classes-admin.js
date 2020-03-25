@@ -1,21 +1,3 @@
-function sendRequest(elm, data, callback) {
-  var xhr = new XMLHttpRequest();
-  xhr.open('POST', 'classes-admin-ajax.php', true);
-  var xhrData = new FormData();
-  for(item in data)
-    xhrData.append(item, data[item]);
-  xhr.responseType = 'json';
-  xhr.onload = function() {
-    if(xhr.status !== 200) {
-      elm.classList.add('warn');
-      return;
-    }
-    callback(elm, xhr.response);
-    elm.classList.remove('changed');
-  };
-  xhr.send(xhrData);
-}
-
 function editableClick(callback) {
   return function(e) {
     var elm = e.currentTarget;
