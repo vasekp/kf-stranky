@@ -3,35 +3,19 @@ var swtch, list;
 function get_records_async(date_sql) {
   list.classList.add('loading');
   swtch.classList.add('loading');
-  var xhr = new XMLHttpRequest();
-  xhr.open('POST', 'class-notes-ajax.php', true);
-  var data = new FormData();
-  data.append('type', 'get');
-  data.append('date', date_sql);
-  xhr.responseType = 'json';
-  xhr.onload = function() {
-    if(xhr.readyState != 4 || xhr.status !== 200)
-      return;
-    recordsArrived(xhr.response);
-    list.classList.remove('loading');
-    swtch.classList.remove('loading');
-  };
-  xhr.ontimeout = function() {
+  var ajax = new Ajax('class-notes-ajax.php', recordsArrived);
+  ajax.onError = ajax.onTimeout = function() {
     window.location.replace(addToQuery('date', date_sql));
   }
-  xhr.timeout = 500;
-  xhr.send(data);
-}
-
-function addToQuery(key, val) {
-  var url = new URL(document.URL);
-  var sp = new URLSearchParams(url.search);
-  sp.set(key, val);
-  url.search = sp;
-  return url;
+  ajax.sendRequest({
+    'type': 'get',
+    'date': date_sql
+  });
 }
 
 function recordsArrived(r) {
+  list.classList.remove('loading');
+  swtch.classList.remove('loading');
   var elm = document.getElementById('date');
   elm.innerText = r.date_text;
   elm.setAttribute('data-date', r.date);
@@ -80,8 +64,8 @@ function arrowClick(e) {
   var date = e.currentTarget.getAttribute('data-date');
   if(!date)
     return;
-  datePick(date);
   e.preventDefault();
+  datePick(date);
 }
 
 function addEventsArrow(elm) {

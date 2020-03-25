@@ -1,5 +1,6 @@
 <?php
 if($early) {
+  array_push($scripts, 'shared.js');
   array_push($scripts, 'class-notes.js');
   if($admin) {
     array_push($css, 'css/classes-admin.css');

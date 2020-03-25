@@ -1,5 +1,17 @@
 var admin;
 
+function detailsRequest(data, elm, callback) {
+  var ajax = new Ajax('classes-admin-ajax.php', function(response, elm) {
+    callback(response, elm);
+    elm.classList.remove('changed');
+  });
+  ajax.onError = ajax.onTimeout = function(elm) {
+    elm.innerHTML = elm.innerText.trim();
+    elm.classList.add('warn');
+  }
+  ajax.sendRequest(data, elm);
+}
+
 function updateText(elm) {
   var text = elm.innerText.trim();
   var data = {
@@ -8,7 +20,7 @@ function updateText(elm) {
     'text': text,
     'pass': admin.value
   };
-  sendRequest(elm, data, function() {
+  detailsRequest(data, elm, function() {
     elm.innerHTML = elm.innerText.trim();
   });
 }

@@ -1,5 +1,16 @@
 var admin, empty;
 
+function notesRequest(data, elm, callback) {
+  var ajax = new Ajax('classes-admin-ajax.php', function(response, elm) {
+    callback(response, elm);
+    elm.classList.remove('changed');
+  });
+  ajax.onError = ajax.onTimeout = function(elm) {
+    elm.classList.add('warn');
+  }
+  ajax.sendRequest(data, elm);
+}
+
 function createNote(text, elm) {
   var date = document.getElementById('date').getAttribute('data-date');
   var data = {
@@ -8,7 +19,7 @@ function createNote(text, elm) {
     'date': date,
     'pass': admin.value
   };
-  sendRequest(elm, data, function(elm, response) {
+  notesRequest(data, elm, function(response) {
     elm.setAttribute('data-id', response.id);
     elm.setAttribute('data-text', response.text);
     elm.innerHTML = response.html;
@@ -22,7 +33,7 @@ function updateNote(id, text, elm) {
     'text': text,
     'pass': admin.value
   };
-  sendRequest(elm, data, function(elm, response) {
+  notesRequest(data, elm, function(response) {
     elm.setAttribute('data-text', response.text);
     elm.innerHTML = response.html;
   });
@@ -34,7 +45,7 @@ function deleteNote(id, elm) {
     'id': id,
     'pass': admin.value
   };
-  sendRequest(elm, data, function() {
+  notesRequest(data, elm, function() {
     list.removeChild(elm);
   });
 }
