@@ -60,6 +60,7 @@ foreach($files as $id => $url)
 foreach($scripts as $url)
   echo '<script type="text/javascript" src="' . $url . '"></script>' . PHP_EOL;
 ?>
+      <link rel="icon" type="image/png" href="images/fjfi.png"/>
     <title>
       Václav Potoček<?php if($title) echo ' - ' . $title; echo PHP_EOL; ?>
     </title>
