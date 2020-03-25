@@ -13,15 +13,16 @@ function bubbleClick(e) {
 }
 
 function requestDiscussion(dldid) {
-  function timeOut() {
-    window.location.replace(document.getElementById('bubble' + dldid).href);
-  }
   var anchor = document.getElementById('bubble' + dldid);
   anchor.classList.add('loading');
   anchor.getElementsByTagName('text')[0].textContent = '...';
-  var ajax = new Ajax('class-discussion-ajax.php', discussionReceived);
-  ajax.timeout = 1000;
-  ajax.onError = ajax.onTimeout = timeOut;
+  var ajax = new Ajax('class-discussion-ajax.php',
+    discussionReceived,
+    function() {
+      window.location.replace(document.getElementById('bubble' + dldid).href);
+    },
+    1000
+  );
   ajax.sendRequest({ 'query': 'get', 'dld_ID': dldid }, dldid);
 }
 
@@ -60,9 +61,7 @@ function onSubmit(e) {
   data['text'] = elm.getElementsByTagName('textarea')[0].value;
   data['query'] = 'submit';
   elm.classList.add('loading');
-  var ajax = new Ajax('class-discussion-ajax.php', submitSuccess);
-  ajax.timeout = 1000;
-  ajax.onError = ajax.onTimeout = submitTimeout;
+  var ajax = new Ajax('class-discussion-ajax.php', submitSuccess, submitTimeout, 1000);
   ajax.sendRequest(data, elm);
 }
 

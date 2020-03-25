@@ -1,7 +1,9 @@
-function Ajax(url, onSuccess) {
+function Ajax(url, onSuccess, onError, timeout) {
   this.url = url;
 
   this.onSuccess = onSuccess;
+  this.onError = this.onTimeout = onError;
+  this.timeout = timeout || 500;
 
   this.sendRequest = function(requestData, callbackData) {
     var xhr = new XMLHttpRequest();
@@ -18,12 +20,10 @@ function Ajax(url, onSuccess) {
       }
       this.onSuccess(xhr.response, callbackData);
     }.bind(this);
-    if(this.onTimeout) {
-      xhr.timeout = this.timeout || 500;
-      xhr.ontimeout = function() {
-        this.onTimeout(callbackData);
-      }.bind(this);
-    }
+    xhr.timeout = this.timeout;
+    xhr.ontimeout = function() {
+      this.onTimeout(callbackData);
+    }.bind(this);
     xhr.send(xhrData);
   };
 }

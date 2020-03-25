@@ -3,10 +3,12 @@ var swtch, list;
 function get_records_async(date_sql) {
   list.classList.add('loading');
   swtch.classList.add('loading');
-  var ajax = new Ajax('class-notes-ajax.php', recordsArrived);
-  ajax.onError = ajax.onTimeout = function() {
-    window.location.replace(addToQuery('date', date_sql));
-  }
+  var ajax = new Ajax('class-notes-ajax.php',
+    recordsArrived,
+    function() {
+      window.location.replace(addToQuery('date', date_sql));
+    }
+  );
   ajax.sendRequest({
     'type': 'get',
     'date': date_sql

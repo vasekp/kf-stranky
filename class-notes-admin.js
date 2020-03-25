@@ -1,13 +1,15 @@
 var admin, empty;
 
 function notesRequest(data, elm, callback) {
-  var ajax = new Ajax('classes-admin-ajax.php', function(response, elm) {
-    callback(response, elm);
-    elm.classList.remove('changed');
-  });
-  ajax.onError = ajax.onTimeout = function(elm) {
-    elm.classList.add('warn');
-  }
+  var ajax = new Ajax('classes-admin-ajax.php',
+    function(response, elm) {
+      callback(response, elm);
+      elm.classList.remove('changed');
+    },
+    function(elm) {
+      elm.classList.add('warn');
+    }
+  );
   ajax.sendRequest(data, elm);
 }
 
