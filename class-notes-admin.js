@@ -57,8 +57,8 @@ function deleteNote(id, elm) {
 var raSave = recordsArrived;
 recordsArrived = function(r) {
   raSave(r);
-  appendEmpty();
   document.getElementById('date').classList.remove('changed');
+  appendEmpty().click();
 }
 
 createRecord = function(id, text, html) {
@@ -99,8 +99,6 @@ function addEventsDate(elm) {
     var date_sql = array[3] + '-' + array[2] + '-' + array[1];
     elm.setAttribute('data-date', date_sql);
     get_records_async(date_sql);
-    var clone = appendEmpty();
-    clone.click();
   }
 
   function onKeyDown(elm, key) {
@@ -140,9 +138,7 @@ function itemLeaveChanged(elm) {
 function itemInput(elm) {
   if(elm.classList.contains('last') && !!elm.innerText.trim()) {
     elm.classList.remove('last');
-    var clone = empty.cloneNode(true);
-    addEvents(clone);
-    list.appendChild(clone);
+    appendEmpty();
   }
 }
 
