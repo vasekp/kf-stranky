@@ -20,14 +20,6 @@ function sendRequest(elm, data, callback, errorCallback, timeoutCallback) {
   xhr.send(xhrData);
 }
 
-function addToQuery(key, val) {
-  var url = new URL(document.URL);
-  var sp = new URLSearchParams(url.search);
-  sp.set(key, val);
-  url.search = sp;
-  return url;
-}
-
 function downloadParent(elm) {
   while(!elm.classList.contains('download'))
     elm = elm.parentElement;

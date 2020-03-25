@@ -17,14 +17,18 @@ function get_records_async(date_sql) {
     swtch.classList.remove('loading');
   };
   xhr.ontimeout = function() {
-    var url = new URL(document.URL);
-    var sp = new URLSearchParams(url.search);
-    sp.set('date', date_sql);
-    url.search = sp;
-    window.location.replace(url);
+    window.location.replace(addToQuery('date', date_sql));
   }
   xhr.timeout = 500;
   xhr.send(data);
+}
+
+function addToQuery(key, val) {
+  var url = new URL(document.URL);
+  var sp = new URLSearchParams(url.search);
+  sp.set(key, val);
+  url.search = sp;
+  return url;
 }
 
 function recordsArrived(r) {
@@ -33,7 +37,7 @@ function recordsArrived(r) {
   elm.setAttribute('data-date', r.date);
   elm = document.getElementById('prev');
   if(r.date_prev) {
-    elm.setAttribute('href', '#');
+    elm.setAttribute('href', addToQuery('date', r.date_prev));
     elm.setAttribute('data-date', r.date_prev);
   } else {
     elm.removeAttribute('href');
@@ -41,7 +45,7 @@ function recordsArrived(r) {
   }
   elm = document.getElementById('next');
   if(r.date_next) {
-    elm.setAttribute('href', '#');
+    elm.setAttribute('href', addToQuery('date', r.date_next));
     elm.setAttribute('data-date', r.date_next);
   } else {
     elm.removeAttribute('href');
@@ -83,8 +87,6 @@ function arrowClick(e) {
 function addEventsArrow(elm) {
   if(!elm)
     return;
-  if(elm.hasAttribute('href'))
-    elm.href = '#';
   elm.addEventListener('click', arrowClick);
 }
 
