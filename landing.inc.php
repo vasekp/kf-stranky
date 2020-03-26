@@ -1,7 +1,9 @@
 <?php
-if($early) {
-  array_push($css, 'css/landing.css');
-  array_push($scripts, 'landing.js');
+$css[] = 'css/landing.css';
+$scripts[] = 'landing.js';
+
+if($en) {
+  include 'landing-en.inc.php';
   return;
 }
 ?>

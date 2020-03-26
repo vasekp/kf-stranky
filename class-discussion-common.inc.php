@@ -24,7 +24,11 @@ function get_discussion($dldid, $data = null) {
   $sql = "select name, text, timestamp from discussion where dld_ID='$dldid' order by timestamp";
   $result = $db->query($sql);
   $count = 0;
-  echo '<div class="discussion" id="discussion' . $dldid . '">' . PHP_EOL;
+
+  print <<<HTML
+<div class="discussion" id="discussion$dldid">\n
+HTML;
+
   while($row = $result->fetch_assoc()) {
     $count++;
     $name = htmlspecialchars($row['name']);
@@ -34,6 +38,7 @@ function get_discussion($dldid, $data = null) {
     else
       $namespan = '';
     $date = date('j.n.Y G:i', strtotime($row['timestamp']));
+
     print <<<HTML
   <div class="item">
     <span class="date">$date</span>
@@ -42,8 +47,8 @@ function get_discussion($dldid, $data = null) {
   </div>\n
 HTML;
   }
-  $url = query('', array('discuss' => $dldid));
 
+  $url = query('', ['discuss' => $dldid]);
   $attempt = 0;
   if($data !== null && $data['dldid'] == $dldid) {
     $text = htmlspecialchars($data['text']);
@@ -69,27 +74,27 @@ HTML;
       <input type="hidden" name="dld_ID" value="$dldid"/>
       <input type="hidden" name="serial" value="$count"/>
       <input type="hidden" name="attempt" id="attempt" value="$attempt"/>
-      <input type="submit" id="send" value="Odeslat">
+      <input type="submit" id="send" value="Odeslat"/>
     </form>
   </div>
 </div>\n
 HTML;
 
-  return array(
+  return [
     'count' => $count,
     'html' => ob_get_clean()
-  );
+  ];
 }
 
 function discussion_submit($post) {
   global $secrets;
   if(!array_key_exists('dld_ID', $post) || !array_key_exists('class_ID', $post) || !array_key_exists('serial', $post))
-    return array('status' => STATUS_FAIL, 'error' => 'Invalid IDs');
+    return ['status' => STATUS_FAIL, 'error' => 'Invalid IDs'];
   $cid = $post['class_ID'];
   $dldid = $post['dld_ID'];
   $serial = $post['serial'];
 
-  $missing = array();
+  $missing = [];
   if(!array_key_exists('text', $post) || trim($post['text']) == '')
     $missing[] = 'text';
   if(!array_key_exists('captcha', $post) || trim($post['captcha']) == '')
@@ -100,12 +105,12 @@ function discussion_submit($post) {
   $attempt = array_key_exists('attempt', $post) ? $post['attempt'] : 0;
 
   /* This will be useful in case we need to refill user-entered data for corrections. */
-  $ret = array(
+  $ret = [
     'dldid' => $dldid,
     'text' => $text,
     'name' => $name,
     'attempt' => $attempt
-  );
+  ];
 
   if(!validate_dldid($cid, $dldid)) {
     $ret['status'] = STATUS_FAIL;
@@ -139,7 +144,7 @@ function discussion_submit($post) {
 
   if(!preg_match("/^$accept_re$/u", mb_strtolower($captcha))) {
     $ret['status'] = STATUS_INCOMPLETE;
-    $ret['missing'] = array('captcha');
+    $ret['missing'] = ['captcha'];
     $attempt = ($attempt + 1) % 3;
     $ret['attempt'] = $attempt;
     if($name != 'VP') {

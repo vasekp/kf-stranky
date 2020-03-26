@@ -1,22 +1,19 @@
 <?php
-if($early) {
-  array_push($css, 'css/switch.css');
-  array_push($css, $demodir . '/wigner.css');
-  array_push($scripts, 'demo-helpers.js');
-  array_push($scripts, 'switch.js');
-  array_push($scripts, $demodir . '/wigner.js');
-  array_push($files, $demodir . '/functions.glsl');
-  array_push($files, $demodir . '/wigner.vert');
-  array_push($files, $demodir . '/wigner.frag');
-  array_push($files, $demodir . '/graph.vert');
-  array_push($files, $demodir . '/graph.frag');
-  array_push($files, $demodir . '/history.vert');
-  array_push($files, $demodir . '/history.frag');
-  array_push($files, $demodir . '/whistory.frag');
-  array_push($files, $demodir . '/wave.vert');
-  array_push($files, $demodir . '/wave.frag');
-  return;
-}
+$css[] = 'css/switch.css';
+$css[] = $demodir . '/wigner.css';
+$scripts[] = 'demo-helpers.js';
+$scripts[] = 'switch.js';
+$scripts[] = $demodir . '/wigner.js';
+$files[] = $demodir . '/functions.glsl';
+$files[] = $demodir . '/wigner.vert';
+$files[] = $demodir . '/wigner.frag';
+$files[] = $demodir . '/graph.vert';
+$files[] = $demodir . '/graph.frag';
+$files[] = $demodir . '/history.vert';
+$files[] = $demodir . '/history.frag';
+$files[] = $demodir . '/whistory.frag';
+$files[] = $demodir . '/wave.vert';
+$files[] = $demodir . '/wave.frag';
 
 if($en) {
   $desc = 'Wigner function is an alternative description of a quantum state, used primarily in quantum optics. Its domain is the phase space. In many respects it behaves like a probability dostribution, although it can reach negative values (which substitute complex phase in explaining interference phenomena). It is shown here for several important states of a 1D harmonic oscillator. Especially time evolution and position probability density reconstruction are particularly simple, compared to wave function approach, in this formalism.';
@@ -26,12 +23,12 @@ if($en) {
   $plotType = 'Plot';
   $plotTypes = ['prob' => 'Density', 'wave' => 'Wave function'];
   $try = 'Tips for trying:';
-  $tips = array(
+  $tips = [
     'In paused mode, you can control displacement and squeezing. Try resetting the vacuum state and reaching a coherent state, squeezed vacuum, phase- or amplitude-squeezed states.',
     'Gaussian states behave in terms of quadratures just like ensembles of classical trajectories. Imagine for comparison a group of sinusoids with equal frequency but with randomized amplitudes and phases. Can anything similar be said for the states featuring negativity?',
     'Note with the single-excitation state, how negative (red) values of the Wigner function can cancel out positive (blue) down to exact zero but never below.',
     'Watch the birth and decay of interference fringes when two packets meet (with cat states). How does their distance affect your observation?'
-  );
+  ];
 } else {
   $desc = 'Wignerova funkce je alternativní popis stavu kvantového systému užívaný zejména v kvantové optice. Je definována na proměnných fázového prostoru (souřadnice a hybnosti). V mnoha ohledech se chová jako rozdělení pravděpodobnosti, může ale nabývat záporných hodnot (pomocí kterých popíše i interferenční jevy bez potřeby komplexní fáze). Zde ukázáno pro několik důležitých stavů 1D harmonického oscilátoru. Zejména vývoj stavu a rekonstrukce hustot pravděpodobnosti polohy a hybnosti nabývají ve srovnání s vlnovou funkcí obzvlášť jednoduchého tvaru.';
   $type = 'Výchozí stav';
@@ -40,13 +37,30 @@ if($en) {
   $plotType = 'Vykreslit';
   $plotTypes = ['prob' => 'Hustota', 'wave' => 'Vlnová funkce'];
   $try = 'Zkuste si:';
-  $tips = array(
+  $tips = [
     'Po zastavení můžete ovládat posunutí a stlačení stavu. Zkuste si z vakua vyrobit koherentní stav, stlačené vakuum, fázově a amplitudově stlačený stav.',
     'Gaussovské stavy se z hlediska kvadratur chovají stejně jako směs klasických trajektorií. Porovnejte si časový průběh rozdělení s množinou sinusoid stejné frekvence, ale náhodně rozdělené fáze, amplitudy a posunu. Platí podobná intuice i pro stavy s negativitou?',
     'Všimněte si na příkladu 1-fotonového stavu, jak záporné (červené) hodnoty Wignerovy funkce dokáží vyrušit kladné (modré) až k nule, ale nikdy pod ní.',
     'Sledujte vznik interferenčních proužků, když se dva balíky překryjí (u "cat" stavu). Jak se projeví jejich vzdálenost?'
-  );
+  ];
 }
+
+$list = [];
+foreach($tips as $tip)
+  $list[] = '<li>' . $tip . '</li>';
+$tips = join(PHP_EOL, $list);
+
+$list = [];
+$count = 0;
+foreach($types as $id => $name)
+  $list[] = '<a href="#" id="' . $id . '" data-func="' . $count++ . '">' . $name . '</a>';
+$types = join(PHP_EOL, $list);
+
+$list = [];
+$count = 0;
+foreach($plotTypes as $id => $name)
+  $list[] = '<a href="#" id="' . $id . '">' . $name . '</a>';
+$plotTypes = join(PHP_EOL, $list);
 
 print <<<HTML
 <h1>$demotitle</h1>
@@ -55,14 +69,8 @@ print <<<HTML
   <tr>
     <td>$type:</td>
     <td>
-      <div class="inline switch" id="func">\n
-HTML;
-
-$count = 0;
-foreach($types as $id => $name)
-  echo '<a href="#" id="' . $id . '" data-func="' . $count++ . '">' . $name . '</a>' . PHP_EOL;
-
-print <<<HTML
+      <div class="inline switch" id="func">
+        $types
       </div>
     </td>
     <td>
@@ -74,13 +82,8 @@ print <<<HTML
   <tr>
     <td>$plotType:</td>
     <td>
-      <div class="inline switch" id="plotType">\n
-HTML;
-
-foreach($plotTypes as $id => $type)
-  echo '<a href="#" id="' . $id . '">' . $type . '</a>' . PHP_EOL;
-
-print <<<HTML
+      <div class="inline switch" id="plotType">
+        $plotTypes
       </div>
     </td>
   </tr>
@@ -158,11 +161,9 @@ print <<<HTML
     </g>
   </svg>
 </div>
-<h2>$try</h2>\n
+<h2>$try</h2>
+<ul>
+  $tips
+</ul>
 HTML;
-
-echo '<ul>' . PHP_EOL;
-foreach($tips as $tip)
-  echo '<li>' . $tip . '</li>' . PHP_EOL;
-echo '</ul>' . PHP_EOL;
 ?>

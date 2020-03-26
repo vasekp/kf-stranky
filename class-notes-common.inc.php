@@ -67,7 +67,7 @@ function get_records($date_req, $newest_if_empty) {
 
   $sql = "select id, text from class_notes where class_ID = '$cid' and date = '$date'";
   $result = $db->query($sql);
-  $records = array();
+  $records = [];
   while($row = $result->fetch_assoc()) {
     $row['html'] = toHTML($row['text']);
     $records[] = $row;

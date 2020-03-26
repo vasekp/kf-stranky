@@ -1,8 +1,14 @@
-function makeSwitch(id, callback, defaultChild) {
+function makeSwitch(id, callback, defaultChoice) {
   children = Array.from(document.getElementById(id).getElementsByTagName('a'));
   children.forEach(function(child) {
     child.addEventListener('click', function(e) { switchClick(e.currentTarget, callback); e.preventDefault(); }); });
-  switchClick(children[defaultChild], callback);
+  var active;
+  if(!isNaN(defaultChoice))
+    active = children[defaultChoice];
+  else if(defaultChoice)
+    active = document.getElementById(defaultChoice);
+  if(active)
+    switchClick(active, callback);
 }
 
 function switchClick(element, callback) {

@@ -1,67 +1,78 @@
 <?php
-if($early)
-  return;
-
-$types = array(
+$types = [
   'BP' => ($en ? 'Bachelor\'s thesis' : 'bakalářská práce'),
   'VU' => ($en ? 'Research project' : 'výzkumný úkol'),
   'DP' => ($en ? 'Master\'s thesis' : 'diplomová práce'),
   'PhD' => ($en ? 'Doctoral thesis' : 'disertační práce')
-);
+];
 
-$languages = array(
+$languages = [
   'cz' => 'Czech',
   'sk' => 'Slovak'
-);
+];
 
-echo '<h1>' . ($en ? 'Project supervision' : 'Školení') . '</h1>' . PHP_EOL;
+$title = $en ? 'Project supervision' : 'Školení';
+$curr_header = $en ? 'Current projects' : 'Současní studenti';
+$past_header = $en ? 'Past projects' : 'Obhájené práce';
 
-$sql = "select url, title_$prilang as title from theses where state='open'";
-$result = $db->query($sql);
-$text = $en
+$open_intro = $en
   ? 'At present I am offering two topics, suitable for a Bachelor\'s project:'
   : 'V současnosti jsou otevřena dvě témata, vhodná pro bakalářskou práci:';
-echo $text . PHP_EOL;
-echo '<ul>' . PHP_EOL;
-while($row = $result->fetch_assoc())
-  echo '<li><a href="' . $row['url'] . '" target="_blank">' . $row['title'] . '</a></li>' . PHP_EOL;
-echo '</ul>' . PHP_EOL;
-$text = $en
+
+$open_outro = $en
   ? 'Further topics for students of Mathematical Physics can be found at <a href="https://physics.fjfi.cvut.cz/en/q3" target="_blank">the Q³ group website</a>.'
   : 'Studenti Matematické fyziky se mohou dále inspirovat na stránce <a href="https://physics.fjfi.cvut.cz/q3" target="_blank">naší skupiny</a>.';
-echo $text . PHP_EOL;
 
-$text = '<h2>' . ($en ? 'Current projects' : 'Současní studenti') . '</h2>';
-echo $text . PHP_EOL;
+$open_list = [];
+$sql = "select url, title_$prilang as title from theses where state='open'";
+$result = $db->query($sql);
+while($row = $result->fetch_assoc())
+  $open_list[] = '<li><a href="' . $row['url'] . '" target="_blank">' . $row['title'] . '</a></li>';
+$open_list = join(PHP_EOL, $open_list);
+
+$curr_list = [];
 $sql = "select student_name, title_$prilang as title, type, year from theses where state='current'";
 $result = $db->query($sql);
-echo '<ul>' . PHP_EOL;
-while($row = $result->fetch_assoc()) {
-  $output = '<li>' . $row['student_name'] . ', <i>' . $row['title'] . '</i> ';
-  $output .= '(' . $types[$row['type']] . ')</li>';
-  echo  $output . PHP_EOL;
-}
-echo '</ul>' . PHP_EOL;
+while($row = $result->fetch_assoc())
+  $curr_list[] = '<li>' . $row['student_name'] . ', <i>' . $row['title'] . '</i> (' . $types[$row['type']] . ')</li>';
+$curr_list = join(PHP_EOL, $curr_list);
 
-$text = '<h2>' . ($en ? 'Past projects' : 'Obhájené práce') . '</h2>';
-echo $text . PHP_EOL;
+$past_list = [];
 $sql = "select student_name, title_$prilang as title, type, year, language, url from theses where state='past' order by year desc";
 $result = $db->query($sql);
-echo '<ul>' . PHP_EOL;
 while($row = $result->fetch_assoc()) {
-  $output = '<li>' . $row['student_name'] . ', <i>';
+  $line = '<li>' . $row['student_name'] . ', <i>';
   if($row['url'])
-    $output .= '<a href="' . $row['url'] . '">' . $row['title'] . '</a>';
+    $line .= '<a href="' . $row['url'] . '">' . $row['title'] . '</a>';
   else
-    $output .= $row['title'];
+    $line .= $row['title'];
   if($row['url'] && $en && $row['language'] && $row['language'] != 'en')
     $inlang = ', in ' . $languages[$row['language']];
   else
     $inlang = '';
-  $output .= '</i> (' . $types[$row['type']] . ' ' . $row['year'] . '/' . ($row['year']%100 + 1) . $inlang . ')</li>';
-  echo $output . PHP_EOL;
+  $line .= '</i> (' . $types[$row['type']] . ' ' . $row['year'] . '/' . ($row['year']%100 + 1) . $inlang . ')</li>';
+  $past_list[] = $line;
 }
-echo '</ul>' . PHP_EOL;
+$past_list = join(PHP_EOL, $past_list);
+
+print <<<HTML
+<h1>$title</h1>
+$open_intro
+<ul>
+  $open_list
+</ul>
+$open_outro
+
+<h2>$curr_header</h2>
+<ul>
+  $curr_list
+</ul>
+
+<h2>$past_header</h2>
+<ul>
+  $past_list
+</ul>
+HTML;
 
 $sql = 'select max(timestamp) from theses';
 $result = $db->query($sql);

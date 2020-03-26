@@ -1,18 +1,14 @@
 <?php
-if($early)
-  return;
-
+$page_does_not_exist = $en ? 'This page does not exist.' : 'Tato stránka neexistuje.';
+$please_report_on = $en ? 'Please report this error on' : 'Prosím nahlašte chybu na';
+$github = $en ? 'GitHub' : 'GitHubu';
 $url = 'https://github.com/vasekp/kf-stranky/issues';
-$dne = $en ? 'This page does not exist.' : 'Tato stránka neexistuje.';
-$rep = $en
-  ? 'Please report this error on <a href="' . $url . '" target="_blank">GitHub.</a>'
-  : 'Prosím nahlašte chybu na <a href="' . $url . '" target="_blank">GitHubu.</a>';
 
 print <<<HTML
 <div class="error">
-  $dne
+  $page_does_not_exist
   <br/>
-  $rep
+  $please_report_on <a href="$url" target="_blank">$github</a>.
 </div>\n
 HTML;
 ?>

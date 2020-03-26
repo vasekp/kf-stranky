@@ -1,4 +1,9 @@
-<?php if($early) return; ?>
+<?php
+if($en) {
+  include 'personal-en.inc.php';
+  return;
+}
+?>
 <h1>O mně</h1>
 <p>Absolvent FJFI ČVUT v Praze, Matematická fyzika / Matematické inženýrství:</p>
 <ul>
