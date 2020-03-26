@@ -6,6 +6,7 @@ function applyFilter(filter) {
 };
 
 window.addEventListener('DOMContentLoaded', function(event) {
-  document.getElementById('pub-filter').classList.remove('hide');
-  makeSwitch('pub-filter', function(elm) { applyFilter(elm.getAttribute('data-set')); }, 0);
+  var url = new URL(document.URL);
+  var sp = new URLSearchParams(url.search);
+  makeSwitch('pub-filter', function(elm) { applyFilter(elm.id); }, sp.get('filter') || 'selected');
 });

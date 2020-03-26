@@ -1,5 +1,6 @@
 <?php
 $css[] = 'css/switch.css';
+$scripts[] = 'shared.js';
 $scripts[] = 'switch.js';
 $scripts[] = 'pub.js';
 
@@ -9,6 +10,18 @@ $filters = [
   'recent' => $en ? 'Recent' : 'Nedávné',
   'all' => $en ? 'All' : 'Všechny'
 ];
+
+$filter = array_key_exists('filter', $_GET) && in_array($_GET['filter'], array_keys($filters)) ? $_GET['filter'] : 'selected';
+
+$list = [];
+foreach($filters as $key => $name) {
+  $href = query('', ['filter' => $key]);
+  $selected = $key == $filter ? ' class="selected"' : '';
+  $list[] = <<<HTML
+<a id="$key" href="$href"$selected>$name</a>
+HTML;
+}
+$filters = join(PHP_EOL, $list);
 
 $sql = 'select * from publications order by id desc';
 $result = $db->query($sql);
@@ -21,7 +34,11 @@ while($row = $result->fetch_assoc()) {
     $sets[] = 'recent';
   if($row['selected'])
     $sets[] = 'selected';
-  $lines[] = '<li data-sets="' . join(' ', $sets) . '">';
+  if($filter != 'all' && !in_array($filter, $sets))
+    $hide = ' class="hide"';
+  else
+    $hide = '';
+  $lines[] = '<li data-sets="' . join(' ', $sets) . '"' . $hide . '>';
 
   $lines[] = str_replace('V. Potoček', '<b>V. Potoček</b>', $row['authors']) . '.';
 
@@ -53,10 +70,8 @@ $list = join(PHP_EOL, $lines);
 
 print <<<HTML
 <h1>$title</h1>
-<div class="switch hide" id="pub-filter">
-  <a data-set="selected" href="#">$filters[selected]</a>
-  <a data-set="recent" href="#">$filters[recent]</a>
-  <a data-set="all" href="#">$filters[all]</a>
+<div class="switch" id="pub-filter">
+  $filters
 </div>
 <ol id="list">
   $list
