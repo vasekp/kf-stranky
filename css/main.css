@@ -69,7 +69,7 @@ nav {
 
 nav a {
   display: table-cell;
-  padding: .5rem 1rem;
+  padding: .5rem 0;
   text-align: center;
   color: white;
 }
