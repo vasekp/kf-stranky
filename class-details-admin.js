@@ -1,3 +1,5 @@
+'use strict';
+
 var admin;
 
 var detailsAjax = new Ajax('class-details-admin-ajax.php',

@@ -1,3 +1,5 @@
+'use strict';
+
 var admin, empty;
 
 function notesRequest(data, elm, callback) {
@@ -55,12 +57,12 @@ function deleteNote(id, elm) {
 var raSave = recordsArrived;
 recordsArrived = function(r) {
   raSave(r);
-  appendEmpty();
   document.getElementById('date').classList.remove('changed');
+  appendEmpty().click();
 }
 
 createRecord = function(id, text, html) {
-  elm = document.createElement('li');
+  var elm = document.createElement('li');
   elm.setAttribute('data-id', id);
   elm.setAttribute('data-text', text);
   elm.innerHTML = html;
@@ -97,8 +99,6 @@ function addEventsDate(elm) {
     var date_sql = array[3] + '-' + array[2] + '-' + array[1];
     elm.setAttribute('data-date', date_sql);
     get_records_async(date_sql);
-    var clone = appendEmpty();
-    clone.click();
   }
 
   function onKeyDown(elm, key) {
@@ -138,9 +138,7 @@ function itemLeaveChanged(elm) {
 function itemInput(elm) {
   if(elm.classList.contains('last') && !!elm.innerText.trim()) {
     elm.classList.remove('last');
-    var clone = empty.cloneNode(true);
-    addEvents(clone);
-    list.appendChild(clone);
+    appendEmpty();
   }
 }
 
@@ -162,10 +160,19 @@ function addEvents(elm) {
   makeEditable(elm, itemEnter, itemLeaveUnchanged, itemLeaveChanged, itemInput, itemKeyDown);
 }
 
+function commitNotes(e) {
+  var data = {
+    'type': 'commit',
+    'pass': admin.value
+  };
+  notesRequest(data, e.currentTarget, function() { });
+  e.preventDefault();
+}
 
 window.addEventListener('DOMContentLoaded', function(event) {
   admin = document.getElementById('admin');
   Array.from(list.getElementsByTagName('li')).forEach(addEvents);
   empty = list.lastElementChild.cloneNode(true);
   addEventsDate(document.getElementById('date'));
+  document.getElementById('commit').addEventListener('click', commitNotes);
 });

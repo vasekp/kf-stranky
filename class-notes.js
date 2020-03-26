@@ -1,3 +1,5 @@
+'use strict';
+
 var swtch, list;
 
 function get_records_async(date_sql) {
@@ -17,7 +19,8 @@ function get_records_async(date_sql) {
   );
   ajax.sendRequest({
     'type': 'get',
-    'date': date_sql
+    'date': date_sql,
+    'hidden': !!document.getElementById('admin')
   });
 }
 
@@ -54,7 +57,7 @@ function clearList() {
 }
 
 function createRecord(id, text, html) {
-  elm = document.createElement('li');
+  var elm = document.createElement('li');
   elm.innerHTML = html;
   list.appendChild(elm);
 }

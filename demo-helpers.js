@@ -1,3 +1,5 @@
+'use strict';
+
 /***** AJAX helpers *****/
 
 function basename(url) {
@@ -31,7 +33,7 @@ function loadFiles(func) {
 /***** OpenGL *****/
 
 function Shader(ctx, type, source) {
-  shader = ctx.createShader(type);
+  var shader = ctx.createShader(type);
   ctx.shaderSource(shader, source);
   ctx.compileShader(shader);
   if(!ctx.getShaderParameter(shader, ctx.COMPILE_STATUS)) {

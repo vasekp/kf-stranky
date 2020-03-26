@@ -1,3 +1,5 @@
+'use strict';
+
 var canvas, gl, progs, model, interaction;
 const divX = 100, divY = 50;
 const divArrow = 10;

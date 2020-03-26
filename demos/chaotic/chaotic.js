@@ -1,3 +1,5 @@
+'use strict';
+
 const c1 = 1; // 1/tau/a^3
 const c2 = 1; // tau a^2 g
 

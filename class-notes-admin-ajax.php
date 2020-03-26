@@ -6,7 +6,8 @@ include 'class-notes-common.inc.php';
 ajax_setup(['type' => [
   'insert' => ['date', 'text'],
   'update' => ['text', 'id'],
-  'delete' => ['id']
+  'delete' => ['id'],
+  'commit'
 ]], true);
 
 $cid = 'kf19';
@@ -18,13 +19,16 @@ $id = array_key_exists('id', $_POST) ? $_POST['id'] : 0;
 $date = array_key_exists('date', $_POST) ? $_POST['date'] : '';
 if($type == 'update') {
   $st = $db->prepare('update class_notes set text = ? where id = ?');
-  $st->bind_param("si", $text, $id);
+  $st->bind_param('si', $text, $id);
 } else if($type == 'insert') {
-  $st = $db->prepare('insert into class_notes (class_ID, date, text) values (?, ?, ?)');
-  $st->bind_param("sss", $cid, $date, $text);
+  $st = $db->prepare('insert into class_notes (class_ID, date, text, public) values (?, ?, ?, 0)');
+  $st->bind_param('sss', $cid, $date, $text);
 } else if($type == 'delete') {
   $st = $db->prepare('delete from class_notes where id = ?');
-  $st->bind_param("i", $id);
+  $st->bind_param('i', $id);
+} else if($type == 'commit') {
+  $st = $db->prepare('update class_notes set public = 1 where class_ID = ?');
+  $st->bind_param('s', $cid);
 }
 $st->execute();
 

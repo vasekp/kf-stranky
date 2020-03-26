@@ -9,7 +9,7 @@ if($admin) {
 
 include 'class-notes-common.inc.php';
 
-$r = get_records(array_key_exists('date', $_GET) ? $_GET['date'] : '', true);
+$r = get_records(array_key_exists('date', $_GET) ? $_GET['date'] : '', !$admin, $admin);
 if(!$r) {
   include 'class-details.inc.php';
   return;
@@ -42,6 +42,15 @@ if($admin)
   $notes[] = '<li class="last"></li>';
 $list = join(PHP_EOL, $notes);
 
+if($admin)
+  $commit_button = <<<HTML
+<div class="buttons">
+  <a class="button" id="commit" href="#">Zveřejnit</a>
+</div>
+HTML;
+else
+  $commit_button = '';
+
 print <<<HTML
 <h1>Poznámky k přednáškám 02KFA</h1>
 <div class="switch larger" id="date-buttons">
@@ -52,6 +61,7 @@ print <<<HTML
 <ul id="list">
   $list
 </ul>
+$commit_button
 $admin_row
 HTML;
 

@@ -1,5 +1,7 @@
+'use strict';
+
 function makeSwitch(id, callback, defaultChoice) {
-  children = Array.from(document.getElementById(id).getElementsByTagName('a'));
+  var children = Array.from(document.getElementById(id).getElementsByTagName('a'));
   children.forEach(function(child) {
     child.addEventListener('click', function(e) { switchClick(e.currentTarget, callback); e.preventDefault(); }); });
   var active;
