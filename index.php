@@ -13,6 +13,7 @@ if($curr == 'error') {
 }
 
 $admin = (array_key_exists('admin', $_GET) && $_GET['admin'] == $secrets['adminpw']);
+$admin_row = $admin ? '<input type="hidden" id="admin" value="' . $_GET['admin'] . '"/>' : '';
 
 if($en) {
   $prilang = 'en';
@@ -33,12 +34,25 @@ $stranky = array(
 
 if(!array_key_exists($curr, $stranky) && $curr != 'error')
   $curr = key($stranky);
-$title = $curr != 'error' ? $title = $stranky[$curr] : '';
+$title_append = $curr != 'error' ? ' - ' . $stranky[$curr] : '';
 $filename = $curr . ($en ? '-en' : '') . '.inc.php';
+$seclang_url = query('', $_GET, ['l' => $seclang]);
 
-$scripts = array();
-$css = array();
-$files = array();
+$nav_links = [];
+foreach($stranky as $name => $text) {
+  $url = query($name . '.php');
+  $emph = $name==$curr ? ' class="emph"' : '';
+  $nav_links[] = <<<HTML
+<span class="hide">[</span>
+<a href="$addr_prefix$url"$emph>$text</a>
+<span class="hide">]</span>
+HTML;
+}
+$nav_links = join(PHP_EOL, $nav_links);
+
+$css = [];
+$files = [];
+$scripts = [];
 
 ob_start();
 if(file_exists($filename)) {
@@ -50,63 +64,54 @@ if(file_exists($filename)) {
 } else
   include 'hard-error.inc.php';
 $content = ob_get_clean();
-/**********/
-?>
+
+$links = [];
+foreach($css as $url)
+  $links[] = '<link rel="stylesheet" type="text/css" href="' . $url . '"/>';
+foreach($files as $url)
+  $links[] ='<link rel="preload" as="fetch" href="' . $url . '" crossorigin/>';
+foreach($scripts as $url)
+  $links[] = '<script type="text/javascript" src="' . $url . '"></script>';
+$links = join(PHP_EOL, $links);
+
+$last_modified = $en ? 'Last modified' : 'Poslední úprava';
+if(!isset($modtime))
+  $modtime = filemtime(file_exists($filename) ? $filename : __FILE__);
+$modtime_formatted = date('j.n.Y G:i', $modtime);
+
+print <<<HTML
 <!DOCTYPE html>
 <html lang='cs'>
   <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width"/>
-    <link rel="stylesheet" type="text/css" href="<?php print $addr_prefix; ?>css/main.css"/>
-<?php
-foreach($css as $url)
-  echo '<link rel="stylesheet" type="text/css" href="' . $url . '"/>' . PHP_EOL;
-foreach($files as $id => $url)
-  echo '<link rel="preload" as="fetch" href="' . $url . '" crossorigin/>' . PHP_EOL;
-foreach($scripts as $url)
-  echo '<script type="text/javascript" src="' . $url . '"></script>' . PHP_EOL;
-?>
-      <link rel="icon" type="image/png" href="images/fjfi.png"/>
+    <link rel="stylesheet" type="text/css" href="${addr_prefix}css/main.css"/>\n
+    $links
+    <link rel="icon" type="image/png" href="images/fjfi.png"/>
     <title>
-      Václav Potoček<?php if($title) echo ' - ' . $title; echo PHP_EOL; ?>
+      Václav Potoček$title_append
     </title>
   </head>
   <body>
     <nav>
-<?php
-foreach($stranky as $name => $text) {
-  echo '<span class="hide">[</span>' . PHP_EOL;
-  echo '<a href="' . $addr_prefix . query($name . '.php') . '"'
-    . ($name==$curr ? ' class="emph">' : '>') . $text . '</a>' . PHP_EOL;
-  echo '<span class="hide">]</span>' . PHP_EOL;
-}
-?>
+      $nav_links
     </nav>
     <div id="main">
       <main>
-<?php echo $content; ?>
+        $content
       </main>
       <footer>
         <div id="lastmod">
-<?php
-if(file_exists($filename)) {
-  echo ($en ? 'Last modified: ' : 'Poslední úprava: ') . PHP_EOL;
-  $lastmod = date('j.n.Y G:i', isset($modtime) ? $modtime : filemtime($filename));
-  echo '<span id="modtime">' . $lastmod . '</span>' . PHP_EOL;
-}
-?>
+          $last_modified:
+          <span id="modtime">$modtime_formatted</span>
         </div>
         <div id="lang">
           <p class="hide"></p>
-<?php
-$g = $_GET;
-$g['l'] = $seclang;
-echo '<a href="' . query('', $g) . '">' . PHP_EOL;
-?>
+          <a href="$seclang_url">
             <span class="hide">Switch language:</span>
             <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="30" height="20">
-              <image href="<?php print $addr_prefix; ?>images/<?php echo $prilang; ?>.svg" x="0" y="0" width="100%" height="100%" class="primary"/>
-              <image href="<?php print $addr_prefix; ?>images/<?php echo $seclang; ?>.svg" x="0" y="0" width="100%" height="100%" class="secondary"/>
+              <image href="${addr_prefix}images/$prilang.svg" x="0" y="0" width="100%" height="100%" class="primary"/>
+              <image href="${addr_prefix}images/$seclang.svg" x="0" y="0" width="100%" height="100%" class="secondary"/>
             </svg>
           </a>
         </div>
@@ -114,3 +119,5 @@ echo '<a href="' . query('', $g) . '">' . PHP_EOL;
     </div>
   </body>
 </html>
+HTML;
+?>

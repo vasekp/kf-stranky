@@ -1,18 +1,13 @@
 <?php
 $title = $en ? 'Physical demonstrations' : 'Fyzikální ukázky';
-$github = 'https://github.com/vasekp/kf-stranky/issues';
-$l1 = $en
+$github_url = 'https://github.com/vasekp/kf-stranky/issues';
+$intro_text = $en
   ? 'This is a growing list of interactive demonstrations from various parts of physics. Some demos may not work in older browsers or on mobile devices.'
   : 'Na této stránce se budou postupně objevovat interaktivní ukázky z různých oblastí fyziky. Ukázky nemusejí fungovat ve starších prohlížečích nebo na mobilních zařízeních.';
-$l2 = $en
+$report_bugs_on = $en
   ? 'This is a test deployment, please report any bugs and suggestions on'
   : 'Jedná se o testovací nasazení, případné chyby a náměty prosím přidávejte na';
-
-print <<<HTML
-<h1>$title</h1>
-<p>$l1</p>
-<p>$l2 <a href="$github" target="_blank">GitHub</a>.</p>\n
-HTML;
+$github = 'GitHub';
 
 $sql = "select id, title_$prilang as title from demo_topics order by title";
 $result = $db->query($sql);
@@ -33,14 +28,28 @@ while($row = $result->fetch_assoc()) {
     );
 }
 
-foreach($topics as $topic) {
+foreach($topics as &$topic) {
+  $list = [];
+  foreach($topic['demos'] as $demo)
+    $list[] = '<li><a href="' . $demo['url'] . '">' . $demo['title'] . '</a></li>';
+  $topic['list'] = join(PHP_EOL, $list);
+}
+
+print <<<HTML
+<h1>$title</h1>
+<p>$intro_text</p>
+<p>$report_bugs_on <a href="$github_url" target="_blank">$github</a>.</p>\n
+HTML;
+
+foreach($topics as &$topic) {
   if(count($topic['demos']) == 0)
     continue;
-  echo '<h2>' . $topic['title'] . '</h2>' . PHP_EOL;
-  echo '<ul>' . PHP_EOL;
-  foreach($topic['demos'] as $demo)
-    echo '<li><a href="' . $demo['url'] . '">' . $demo['title'] . '</a></li>' . PHP_EOL;
-  echo '</ul>' . PHP_EOL;
+  print <<<HTML
+<h2>$topic[title]</h2>
+<ul>
+  $topic[list]
+</ul>\n
+HTML;
 }
 
 $sql = 'select max(timestamp) from demos';

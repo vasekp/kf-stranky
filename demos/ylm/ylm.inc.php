@@ -59,6 +59,12 @@ if($en) {
   $functions = array('Sféricky', 'Kartézsky');
 }
 
+$list = [];
+foreach($explItems as $item) {
+  $list[] = '<li>' . $item . '</li>';
+}
+$explanations = join(PHP_EOL, $list);
+
 print <<<HTML
 <h1>$demotitle</h1>
 $desc
@@ -99,11 +105,9 @@ $desc
     $functions[1]: <span id="formula-cart"></span>
   </div>
 </div>
-<h2>$expl</h2>\n
+<h2>$expl</h2>
+<ul>
+  $explanations
+</ul>
 HTML;
-
-echo '<ul>' . PHP_EOL;
-foreach($explItems as $item)
-  echo '<li>' . $item . '</li>' . PHP_EOL;
-echo '</ul>' . PHP_EOL;
 ?>

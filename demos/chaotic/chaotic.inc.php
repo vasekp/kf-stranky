@@ -24,6 +24,12 @@ if($en) {
   );
 }
 
+$list = [];
+foreach($tips as $tip) {
+  $list[] = '<li>' . $tip . '</li>';
+}
+$tips = join(PHP_EOL, $list);
+
 print <<<HTML
 <h1>$demotitle</h1>
 $desc
@@ -36,11 +42,9 @@ $desc
   <br id="graphBreak"/>
   <canvas id="graph"></canvas>
 </div>
-<h2>$try</h2>\n
+<h2>$try</h2>
+<ul>
+  $tips
+</ul>
 HTML;
-
-echo '<ul>' . PHP_EOL;
-foreach($tips as $tip)
-  echo '<li>' . $tip . '</li>' . PHP_EOL;
-echo '</ul>' . PHP_EOL;
 ?>

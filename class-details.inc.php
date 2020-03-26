@@ -21,13 +21,16 @@ $row = $result->fetch_assoc();
 print <<<HTML
 <h1>{$row['title']} <span class="smaller">({$row['KOS']})</span></h1>
 <div id="intro">
-{$row['intro']}
-</div>
+  {$row['intro']}
+</div>\n
+HTML;
+
+if($row['announces'] || $admin)
+  print <<<HTML
 <h2>Aktuality</h2>
 <div id="announces">
-{$row['announces']}
-</div>
-<h2>Ke stažení</h2>\n
+  {$row['announces']}
+</div>\n
 HTML;
 
 $sql = <<<SQL
@@ -36,6 +39,8 @@ select dld.ID as id, filename, description, count(dis.ID) as count
   left join discussion as dis on dis.dld_ID = dld.ID
   group by dld.ID
 SQL;
+if($result->num_rows > 0)
+  echo '<h2>Ke stažení</h2>' . PHP_EOL;
 $result = $db->query($sql);
 while($row = $result->fetch_assoc()) {
   $url = query('', array('discuss' => $row['id']));
@@ -48,6 +53,7 @@ while($row = $result->fetch_assoc()) {
     $discussion = get_discussion($row['id'], $data)['html'];
   else
     $discussion = '';
+
   print <<<HTML
 <div class="download" id="download{$row['id']}" data-id="{$row['id']}">
   <div class="icon">
@@ -66,18 +72,13 @@ $discussion\n
 HTML;
 }
 
-if($admin)
-  $adminrow = '<input type="hidden" id="admin" value="' . $_GET['admin'] . '"/>';
-else
-  $adminrow = '';
 $notes_url = query('', array('s' => 'notes'));
-
 print <<<HTML
-$adminrow
 <div class="buttons">
   <a class="button" href="$notes_url">Zápis z hodin</a>
   <a class="button" href="https://physics.fjfi.cvut.cz/studium/predmety/292-02kfa" target="_blank">Stránky cvičení</a>
-</div>\n
+</div>
+$admin_row
 HTML;
 
 $sql = <<<SQL
@@ -87,7 +88,6 @@ select coalesce(greatest(c1,c2),c1) from
     (select max(timestamp) from download) as c2
   ) as sub
 SQL;
-
 $result = $db->query($sql);
 if($result->num_rows > 0)
   $modtime = strtotime($result->fetch_row()[0]);

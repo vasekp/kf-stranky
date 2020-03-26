@@ -45,6 +45,23 @@ if($en) {
   );
 }
 
+$list = [];
+foreach($tips as $tip)
+  $list[] = '<li>' . $tip . '</li>';
+$tips = join(PHP_EOL, $list);
+
+$list = [];
+$count = 0;
+foreach($types as $id => $name)
+  $list[] = '<a href="#" id="' . $id . '" data-func="' . $count++ . '">' . $name . '</a>';
+$types = join(PHP_EOL, $list);
+
+$list = [];
+$count = 0;
+foreach($plotTypes as $id => $name)
+  $list[] = '<a href="#" id="' . $id . '">' . $name . '</a>';
+$plotTypes = join(PHP_EOL, $list);
+
 print <<<HTML
 <h1>$demotitle</h1>
 <p>$desc</p>
@@ -52,14 +69,8 @@ print <<<HTML
   <tr>
     <td>$type:</td>
     <td>
-      <div class="inline switch" id="func">\n
-HTML;
-
-$count = 0;
-foreach($types as $id => $name)
-  echo '<a href="#" id="' . $id . '" data-func="' . $count++ . '">' . $name . '</a>' . PHP_EOL;
-
-print <<<HTML
+      <div class="inline switch" id="func">
+        $types
       </div>
     </td>
     <td>
@@ -71,13 +82,8 @@ print <<<HTML
   <tr>
     <td>$plotType:</td>
     <td>
-      <div class="inline switch" id="plotType">\n
-HTML;
-
-foreach($plotTypes as $id => $type)
-  echo '<a href="#" id="' . $id . '">' . $type . '</a>' . PHP_EOL;
-
-print <<<HTML
+      <div class="inline switch" id="plotType">
+        $plotTypes
       </div>
     </td>
   </tr>
@@ -155,11 +161,9 @@ print <<<HTML
     </g>
   </svg>
 </div>
-<h2>$try</h2>\n
+<h2>$try</h2>
+<ul>
+  $tips
+</ul>
 HTML;
-
-echo '<ul>' . PHP_EOL;
-foreach($tips as $tip)
-  echo '<li>' . $tip . '</li>' . PHP_EOL;
-echo '</ul>' . PHP_EOL;
 ?>

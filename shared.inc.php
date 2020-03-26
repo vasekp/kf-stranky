@@ -54,10 +54,14 @@ function indent($text) {
   return $out;
 }
 
-function query($script, $array = array()) {
+function query($script /*, ...$arrays*/) {
   global $en;
-  if($en && !array_key_exists('l', $array))
-    $array['l'] = 'en';
+  if($en)
+    $array = ['l' => 'en'];
+  else
+    $array = [];
+  for($i = 1; $i < func_num_args(); $i++)
+    $array = array_merge($array, func_get_arg($i));
   $q = http_build_query($array, '', '&amp;');
   $ret = $script . ($q ? '?' . $q : '');
   return $ret ? $ret : '#';
