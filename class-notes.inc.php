@@ -46,7 +46,7 @@ print <<<HTML
 <h1>Poznámky k přednáškám 02KFA</h1>
 <div class="switch larger" id="date-buttons">
   $prevlink
-  <span id="date" data-date="{$r->date}">{$r->date_text}</span>
+  <span id="date" data-date="$r->date">$r->date_text</span>
   $nextlink
 </div>
 <ul id="list">

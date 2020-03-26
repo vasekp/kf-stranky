@@ -21,7 +21,7 @@ while($row = $result->fetch_assoc())
 $sql = "select name, topic_ID as tid, title_$prilang as title from demos order by timestamp";
 $result = $db->query($sql);
 while($row = $result->fetch_assoc()) {
-  if(file_exists("demos/{$row['name']}/{$row['name']}.inc.php"))
+  if(file_exists("demos/$row[name]/$row[name].inc.php"))
     $topics[$row['tid']]['demos'][] = [
       'title' => $row['title'],
       'url' => query('', ['demo' => $row['name']])

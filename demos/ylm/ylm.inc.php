@@ -73,10 +73,10 @@ $desc
     <td>$type:</td>
     <td>
       <div class="inline switch" id="family">
-        <a href="#" data-family="ylm">{$types['ylm']}</a>
-        <a href="#" data-family="ri">{$types['ri']}</a>
-        <a href="#" data-family="cart">{$types['cart']}</a>
-        <a href="#" data-family="random">{$types['random']}</a>
+        <a href="#" data-family="ylm">$types[ylm]</a>
+        <a href="#" data-family="ri">$types[ri]</a>
+        <a href="#" data-family="cart">$types[cart]</a>
+        <a href="#" data-family="random">$types[random]</a>
       </div>
     </td>
   </tr>

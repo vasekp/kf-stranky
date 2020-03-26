@@ -54,9 +54,9 @@ $list = join(PHP_EOL, $lines);
 print <<<HTML
 <h1>$title</h1>
 <div class="switch hide" id="pub-filter">
-  <a id="selected" href="#">{$filters['selected']}</a>
-  <a id="recent" href="#">{$filters['recent']}</a>
-  <a id="all" href="#">{$filters['all']}</a>
+  <a id="selected" href="#">$filters[selected]</a>
+  <a id="recent" href="#">$filters[recent]</a>
+  <a id="all" href="#">$filters[all]</a>
 </div>
 <ol>
   $list

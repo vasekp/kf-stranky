@@ -19,9 +19,9 @@ $result = $db->query($sql);
 $row = $result->fetch_assoc();
 
 print <<<HTML
-<h1>{$row['title']} <span class="smaller">({$row['KOS']})</span></h1>
+<h1>$row[title] <span class="smaller">($row[KOS])</span></h1>
 <div id="intro">
-  {$row['intro']}
+  $row[intro]
 </div>\n
 HTML;
 
@@ -29,7 +29,7 @@ if($row['announces'] || $admin)
   print <<<HTML
 <h2>Aktuality</h2>
 <div id="announces">
-  {$row['announces']}
+  $row[announces]
 </div>\n
 HTML;
 
@@ -55,15 +55,15 @@ while($row = $result->fetch_assoc()) {
     $discussion = '';
 
   print <<<HTML
-<div class="download" id="download{$row['id']}" data-id="{$row['id']}">
+<div class="download" id="download$row[id]" data-id="$row[id]">
   <div class="icon">
-    <a href="download/{$row['filename']}"><img src="images/download.svg" alt="{$row['filename']}"/></a>
+    <a href="download/$row[filename]"><img src="images/download.svg" alt="$row[filename]"/></a>
   </div>
   <div class="text">
-    <a href="download/{$row['filename']}">{$row['description']}</a>
+    <a href="download/$row[filename]">$row[description]</a>
   </div>
   <div class="bubble">\n
-    <a href="$url" id="bubble{$row['id']}" data-id="{$row['id']}" data-count="$ccount">
+    <a href="$url" id="bubble$row[id]" data-id="$row[id]" data-count="$ccount">
       $bubble
     </a>
   </div>
