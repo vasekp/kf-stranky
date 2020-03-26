@@ -29,7 +29,7 @@ function requestDiscussion(dldid) {
 }
 
 function discussionReceived(response, dldid) {
-  history.replaceState(null, '', addToQuery('discuss', dldid));
+  updateURL(addToQuery('discuss', dldid));
   Array.from(document.getElementsByClassName('discussion')).forEach(function(elm) {
     elm.parentElement.removeChild(elm);
   });

@@ -10,7 +10,7 @@ function get_records_async(date_sql) {
     function(response) {
       list.classList.remove('loading');
       swtch.classList.remove('loading');
-      history.replaceState(null, '', url);
+      updateURL(url);
       recordsArrived(response)
     },
     function() {
