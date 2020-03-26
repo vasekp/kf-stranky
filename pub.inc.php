@@ -16,12 +16,12 @@ $counter = 0;
 
 $lines = [];
 while($row = $result->fetch_assoc()) {
-  $classes = ['f-all'];
+  $sets = [];
   if($counter++ < 5)
-    $classes[] = 'f-recent';
+    $sets[] = 'recent';
   if($row['selected'])
-    $classes[] = 'f-selected';
-  $lines[] = '<li class="filter ' . join(' ', $classes) . '">';
+    $sets[] = 'selected';
+  $lines[] = '<li data-sets="' . join(' ', $sets) . '">';
 
   $lines[] = str_replace('V. Potoček', '<b>V. Potoček</b>', $row['authors']) . '.';
 
@@ -54,11 +54,11 @@ $list = join(PHP_EOL, $lines);
 print <<<HTML
 <h1>$title</h1>
 <div class="switch hide" id="pub-filter">
-  <a id="selected" href="#">$filters[selected]</a>
-  <a id="recent" href="#">$filters[recent]</a>
-  <a id="all" href="#">$filters[all]</a>
+  <a data-set="selected" href="#">$filters[selected]</a>
+  <a data-set="recent" href="#">$filters[recent]</a>
+  <a data-set="all" href="#">$filters[all]</a>
 </div>
-<ol>
+<ol id="list">
   $list
 </ol>
 HTML;
