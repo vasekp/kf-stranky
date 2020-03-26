@@ -1,22 +1,19 @@
 <?php
-if($early) {
-  array_push($css, 'css/switch.css');
-  array_push($css, $demodir . '/wigner.css');
-  array_push($scripts, 'demo-helpers.js');
-  array_push($scripts, 'switch.js');
-  array_push($scripts, $demodir . '/wigner.js');
-  array_push($files, $demodir . '/functions.glsl');
-  array_push($files, $demodir . '/wigner.vert');
-  array_push($files, $demodir . '/wigner.frag');
-  array_push($files, $demodir . '/graph.vert');
-  array_push($files, $demodir . '/graph.frag');
-  array_push($files, $demodir . '/history.vert');
-  array_push($files, $demodir . '/history.frag');
-  array_push($files, $demodir . '/whistory.frag');
-  array_push($files, $demodir . '/wave.vert');
-  array_push($files, $demodir . '/wave.frag');
-  return;
-}
+array_push($css, 'css/switch.css');
+array_push($css, $demodir . '/wigner.css');
+array_push($scripts, 'demo-helpers.js');
+array_push($scripts, 'switch.js');
+array_push($scripts, $demodir . '/wigner.js');
+array_push($files, $demodir . '/functions.glsl');
+array_push($files, $demodir . '/wigner.vert');
+array_push($files, $demodir . '/wigner.frag');
+array_push($files, $demodir . '/graph.vert');
+array_push($files, $demodir . '/graph.frag');
+array_push($files, $demodir . '/history.vert');
+array_push($files, $demodir . '/history.frag');
+array_push($files, $demodir . '/whistory.frag');
+array_push($files, $demodir . '/wave.vert');
+array_push($files, $demodir . '/wave.frag');
 
 if($en) {
   $desc = 'Wigner function is an alternative description of a quantum state, used primarily in quantum optics. Its domain is the phase space. In many respects it behaves like a probability dostribution, although it can reach negative values (which substitute complex phase in explaining interference phenomena). It is shown here for several important states of a 1D harmonic oscillator. Especially time evolution and position probability density reconstruction are particularly simple, compared to wave function approach, in this formalism.';

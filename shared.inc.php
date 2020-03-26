@@ -7,7 +7,7 @@ date_default_timezone_set('Europe/Prague');
 
 function open_db() {
   global $secrets;
-  $conn = new mysqli($secrets['dbserver'], 'potocvac', $secrets['dbpw'], 'potocvac');
+  $conn = @new mysqli($secrets['dbserver'], 'potocvac', $secrets['dbpw'], 'potocvac');
 
   if($conn->connect_error)
     return null;

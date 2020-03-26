@@ -17,11 +17,6 @@ if(!file_exists($demofn)) {
 }
 $modtime = filemtime($demofn);
 
-if($early) {
-  include $demofn;
-  return;
-}
-
 $sql = "select title_$prilang as title, details_$prilang as details from demos where name='$demo'";
 $result = $db->query($sql);
 if($result->num_rows == 0) {

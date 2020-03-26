@@ -39,11 +39,17 @@ $filename = $curr . ($en ? '-en' : '') . '.inc.php';
 $scripts = array();
 $css = array();
 $files = array();
+
+ob_start();
 if(file_exists($filename)) {
-  $early = 1;
-  include $filename;
-  $early = 0;
-}
+  if($db = open_db()) {
+    include $filename;
+    $db->close();
+  } else
+    include 'db-error.inc.php';
+} else
+  include 'hard-error.inc.php';
+$content = ob_get_clean();
 /**********/
 ?>
 <!DOCTYPE html>
@@ -78,19 +84,7 @@ foreach($stranky as $name => $text) {
     </nav>
     <div id="main">
       <main>
-<?php
-if(!file_exists($filename))
-  include 'hard-error.inc.php';
-else {
-  $db = open_db();
-  if(!$db) {
-    echo '<div class="error">Nepodařilo se připojit k databázi. Stránky mimo provoz.</div>' . PHP_EOL;
-  } else {
-    include $filename;
-    $db->close();
-  }
-}
-?>
+<?php echo $content; ?>
       </main>
       <footer>
         <div id="lastmod">

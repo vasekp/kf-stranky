@@ -1,7 +1,4 @@
 <?php
-if($early)
-  return;
-
 $url = 'https://github.com/vasekp/kf-stranky/issues';
 $dne = $en ? 'This page does not exist.' : 'Tato stránka neexistuje.';
 $rep = $en

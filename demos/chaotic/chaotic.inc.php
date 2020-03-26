@@ -1,13 +1,10 @@
 <?php
-if($early) {
-  array_push($css, 'css/switch.css');
-  array_push($css, $demodir . '/chaotic.css');
-  array_push($scripts, 'switch.js');
-  array_push($scripts, 'demo-helpers.js');
-  array_push($scripts, $demodir . '/chaotic.js');
-  array_push($files, $demodir . '/pendulum.svg');
-  return;
-}
+array_push($css, 'css/switch.css');
+array_push($css, $demodir . '/chaotic.css');
+array_push($scripts, 'switch.js');
+array_push($scripts, 'demo-helpers.js');
+array_push($scripts, $demodir . '/chaotic.js');
+array_push($files, $demodir . '/pendulum.svg');
 
 if($en) {
   $desc = 'A simple mechanical system in which a small difference between initial conditions can create completely different trajectories.';

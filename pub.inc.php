@@ -1,10 +1,7 @@
 <?php
-if($early) {
-  array_push($css, 'css/switch.css');
-  array_push($scripts, 'switch.js');
-  array_push($scripts, 'pub.js');
-  return;
-}
+array_push($css, 'css/switch.css');
+array_push($scripts, 'switch.js');
+array_push($scripts, 'pub.js');
 
 $title = $en ? 'Publication list' : 'Seznam publikací';
 $filters = array(

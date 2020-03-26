@@ -1,18 +1,15 @@
 <?php
-if($early) {
-  array_push($css, $demodir . '/ylm.css');
-  array_push($css, 'css/switch.css');
-  array_push($scripts, 'switch.js');
-  array_push($scripts, 'demo-helpers.js');
-  array_push($scripts, $demodir . '/ylm.js');
-  array_push($files, $demodir . '/background.vert');
-  array_push($files, $demodir . '/background.frag');
-  array_push($files, $demodir . '/sphere.vert');
-  array_push($files, $demodir . '/sphere.frag');
-  array_push($files, $demodir . '/arrow.vert');
-  array_push($files, $demodir . '/arrow.frag');
-  return;
-}
+array_push($css, $demodir . '/ylm.css');
+array_push($css, 'css/switch.css');
+array_push($scripts, 'switch.js');
+array_push($scripts, 'demo-helpers.js');
+array_push($scripts, $demodir . '/ylm.js');
+array_push($files, $demodir . '/background.vert');
+array_push($files, $demodir . '/background.frag');
+array_push($files, $demodir . '/sphere.vert');
+array_push($files, $demodir . '/sphere.frag');
+array_push($files, $demodir . '/arrow.vert');
+array_push($files, $demodir . '/arrow.frag');
 
 if($en) {
   $desc = 'Various fundamental systems of spaces of functions defined on the unit sphere. '

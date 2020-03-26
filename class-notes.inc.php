@@ -1,13 +1,10 @@
 <?php
-if($early) {
-  array_push($scripts, 'shared.js');
-  array_push($scripts, 'class-notes.js');
-  if($admin) {
-    array_push($css, 'css/classes-admin.css');
-    array_push($scripts, 'classes-admin.js');
-    array_push($scripts, 'class-notes-admin.js');
-  }
-  return;
+array_push($scripts, 'shared.js');
+array_push($scripts, 'class-notes.js');
+if($admin) {
+  array_push($css, 'css/classes-admin.css');
+  array_push($scripts, 'classes-admin.js');
+  array_push($scripts, 'class-notes-admin.js');
 }
 
 include 'class-notes-common.inc.php';

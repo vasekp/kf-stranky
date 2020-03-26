@@ -1,7 +1,4 @@
 <?php
-if($early)
-  return;
-
 $title = $en ? 'Physical demonstrations' : 'Fyzikální ukázky';
 $github = 'https://github.com/vasekp/kf-stranky/issues';
 $l1 = $en

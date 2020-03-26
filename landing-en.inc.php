@@ -1,9 +1,6 @@
 <?php
-if($early) {
-  array_push($css, 'css/landing.css');
-  array_push($scripts, 'landing.js');
-  return;
-}
+array_push($css, 'css/landing.css');
+array_push($scripts, 'landing.js');
 ?>
 <h1>
   <span class="smaller">Ing.</span>
