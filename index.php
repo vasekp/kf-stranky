@@ -35,7 +35,7 @@ $stranky = [
 if(!array_key_exists($curr, $stranky) && $curr != 'error')
   $curr = key($stranky);
 $title_append = $curr != 'error' ? ' - ' . $stranky[$curr] : '';
-$filename = $curr . ($en ? '-en' : '') . '.inc.php';
+$filename = $curr . '.inc.php';
 $seclang_url = query('', $_GET, ['l' => $seclang]);
 
 $nav_links = [];

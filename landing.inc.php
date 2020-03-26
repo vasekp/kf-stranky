@@ -1,6 +1,11 @@
 <?php
 $css[] = 'css/landing.css';
 $scripts[] = 'landing.js';
+
+if($en) {
+  include 'landing-en.inc.php';
+  return;
+}
 ?>
 <h1>
   <span class="smaller">Ing.</span>
