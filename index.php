@@ -1,27 +1,19 @@
 <?php
 include 'shared.inc.php';
 
-ob_start('indent');
+$url = parse_url($_SERVER['REQUEST_URI']);
+$is_error = array_key_exists('REDIRECT_STATUS', $_SERVER) ? $_SERVER['REDIRECT_STATUS'] != 200 : false;
+$addr_prefix = $is_error ? dirname($_SERVER['PHP_SELF']) . '/' : '';
+$curr = $is_error ? 'error' : basename($url['path'], '.php');
 
-$curr = basename($_SERVER['SCRIPT_FILENAME'], '.php');
-if($curr == 'error') {
-  $en = array_key_exists('REDIRECT_QUERY_STRING', $_SERVER) && (strpos($_SERVER['REDIRECT_QUERY_STRING'], 'l=en') !== false);
-  $addr_prefix = dirname($_SERVER['PHP_SELF']) . '/';
-} else {
-  $en = array_key_exists('l', $_GET) && $_GET['l'] == 'en';
-  $addr_prefix = '';
-}
-
-$admin = (array_key_exists('admin', $_GET) && $_GET['admin'] == $secrets['adminpw']);
-$admin_row = $admin ? '<input type="hidden" id="admin" value="' . $_GET['admin'] . '"/>' : '';
-
-if($en) {
-  $prilang = 'en';
-  $seclang = 'cz';
-} else {
-  $prilang = 'cz';
-  $seclang = 'en';
-}
+if(array_key_exists('query', $url)) {
+  parse_str($url['query'], $search);
+  $en = array_key_exists('l', $search) ? $search['l'] == 'en' : false;
+} else
+  $en = false;
+$prilang = $en ? 'en' : 'cz';
+$seclang = $en ? 'cz' : 'en';
+$seclang_url = query('', $_GET, ['l' => $seclang]);
 
 $stranky = [
   'landing' => $en ? 'Intro' : 'Úvod',
@@ -32,11 +24,13 @@ $stranky = [
   'personal' => $en ? 'Personal' : 'Osobní'
 ];
 
-if(!array_key_exists($curr, $stranky) && $curr != 'error')
+if(!array_key_exists($curr, $stranky) && !$is_error)
   $curr = key($stranky);
-$title_append = $curr != 'error' ? ' - ' . $stranky[$curr] : '';
+$title_append = !$is_error ? ' - ' . $stranky[$curr] : '';
 $filename = $curr . '.inc.php';
-$seclang_url = query('', $_GET, ['l' => $seclang]);
+
+$admin = (array_key_exists('admin', $_GET) && $_GET['admin'] == $secrets['adminpw']);
+$admin_row = $admin ? '<input type="hidden" id="admin" value="' . $_GET['admin'] . '"/>' : '';
 
 $nav_links = [];
 foreach($stranky as $name => $text) {
@@ -78,6 +72,8 @@ $last_modified = $en ? 'Last modified' : 'Poslední úprava';
 if(!isset($modtime))
   $modtime = filemtime(file_exists($filename) ? $filename : __FILE__);
 $modtime_formatted = date('j.n.Y G:i', $modtime);
+
+ob_start('indent');
 
 print <<<HTML
 <!DOCTYPE html>

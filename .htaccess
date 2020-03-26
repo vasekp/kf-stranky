@@ -1,2 +1,3 @@
 ErrorDocument 404 /~potocvac/error.php
 RedirectMatch 404 .inc.php
+RewriteRule ^(landing|classes|demos|theses|pub|personal|error).php$ /~potocvac/index.php [QSA,L]
