@@ -1,6 +1,6 @@
 <?php
-array_push($css, 'css/landing.css');
-array_push($scripts, 'landing.js');
+$css[] = 'css/landing.css';
+$scripts[] = 'landing.js';
 ?>
 <h1>
   <span class="smaller">Ing.</span>

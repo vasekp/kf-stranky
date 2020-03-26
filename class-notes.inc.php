@@ -1,10 +1,10 @@
 <?php
-array_push($scripts, 'shared.js');
-array_push($scripts, 'class-notes.js');
+$scripts[] = 'shared.js';
+$scripts[] = 'class-notes.js';
 if($admin) {
-  array_push($css, 'css/classes-admin.css');
-  array_push($scripts, 'classes-admin.js');
-  array_push($scripts, 'class-notes-admin.js');
+  $css[] = 'css/classes-admin.css';
+  $scripts[] = 'classes-admin.js';
+  $scripts[] = 'class-notes-admin.js';
 }
 
 include 'class-notes-common.inc.php';
@@ -17,14 +17,14 @@ if(!$r) {
 
 $prevlink = '<a id="prev"';
 if($r->date_prev) {
-  $prevlink .= ' href="' . query('', array('s' => 'notes', 'date' => $r->date_prev)) . '"';
+  $prevlink .= ' href="' . query('', ['s' => 'notes', 'date' => $r->date_prev]) . '"';
   $prevlink .= ' data-date="' . $r->date_prev . '"';
 }
 $prevlink .= '>«</a>';
 
 $nextlink = '<a id="next"';
 if($r->date_next) {
-  $nextlink .= ' href="' . query('', array('s' => 'notes', 'date' => $r->date_next)) . '"';
+  $nextlink .= ' href="' . query('', ['s' => 'notes', 'date' => $r->date_next]) . '"';
   $nextlink .= ' data-date="' . $r->date_next . '"';
 }
 $nextlink .= '>»</a>';

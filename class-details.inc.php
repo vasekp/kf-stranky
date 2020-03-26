@@ -1,10 +1,10 @@
 <?php
-array_push($scripts, 'shared.js');
-array_push($scripts, 'class-discussion.js');
+$scripts[] = 'shared.js';
+$scripts[] = 'class-discussion.js';
 if($admin) {
-  array_push($css, 'css/classes-admin.css');
-  array_push($scripts, 'classes-admin.js');
-  array_push($scripts, 'class-details-admin.js');
+  $css[] = 'css/classes-admin.css';
+  $scripts[] = 'classes-admin.js';
+  $scripts[] = 'class-details-admin.js';
 }
 
 include 'class-discussion-common.inc.php';
@@ -43,7 +43,7 @@ if($result->num_rows > 0)
   echo '<h2>Ke stažení</h2>' . PHP_EOL;
 $result = $db->query($sql);
 while($row = $result->fetch_assoc()) {
-  $url = query('', array('discuss' => $row['id']));
+  $url = query('', ['discuss' => $row['id']]);
   $count = $row['count'] ? $row['count'] : '';
   $ccount = $row['count'] ? $row['count'] : 0;
   ob_start();
@@ -72,7 +72,7 @@ $discussion\n
 HTML;
 }
 
-$notes_url = query('', array('s' => 'notes'));
+$notes_url = query('', ['s' => 'notes']);
 print <<<HTML
 <div class="buttons">
   <a class="button" href="$notes_url">Zápis z hodin</a>

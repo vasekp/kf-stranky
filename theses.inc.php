@@ -1,15 +1,15 @@
 <?php
-$types = array(
+$types = [
   'BP' => ($en ? 'Bachelor\'s thesis' : 'bakalářská práce'),
   'VU' => ($en ? 'Research project' : 'výzkumný úkol'),
   'DP' => ($en ? 'Master\'s thesis' : 'diplomová práce'),
   'PhD' => ($en ? 'Doctoral thesis' : 'disertační práce')
-);
+];
 
-$languages = array(
+$languages = [
   'cz' => 'Czech',
   'sk' => 'Slovak'
-);
+];
 
 $title = $en ? 'Project supervision' : 'Školení';
 $curr_header = $en ? 'Current projects' : 'Současní studenti';

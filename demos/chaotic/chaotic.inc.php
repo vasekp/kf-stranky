@@ -1,27 +1,27 @@
 <?php
-array_push($css, 'css/switch.css');
-array_push($css, $demodir . '/chaotic.css');
-array_push($scripts, 'switch.js');
-array_push($scripts, 'demo-helpers.js');
-array_push($scripts, $demodir . '/chaotic.js');
-array_push($files, $demodir . '/pendulum.svg');
+$css[] = 'css/switch.css';
+$css[] = $demodir . '/chaotic.css';
+$scripts[] = 'switch.js';
+$scripts[] = 'demo-helpers.js';
+$scripts[] = $demodir . '/chaotic.js';
+$files[] = $demodir . '/pendulum.svg';
 
 if($en) {
   $desc = 'A simple mechanical system in which a small difference between initial conditions can create completely different trajectories.';
   $try = 'Tips for trying:';
-  $tips = array(
+  $tips = [
     'Use mouse or touch to define the initial conditions of the two pendulums and click Play to evolve them side by side.',
     'If the two conditions were almost equal, the evolution may look indistinguishable for a few seconds.',
     'The most interesting are those cases in which the centre of mass is just above the pivot. Attention, initial momenta are zeroed when manipulating.'
-  );
+  ];
 } else {
   $desc = 'Jednoduchý mechanický systém, ve kterém malý rozdíl počátečních podmínek může vyústit ve zcela odlišné trajektorie.';
   $try = 'Zkuste si:';
-  $tips = array(
+  $tips = [
     'Myší nebo dotykem nastavit levé a pravé kyvadlo do co nejpodobnějšího stavu a spustit časový vývoj.',
     'Jestli se vám povedlo získat téměř stejnou počáteční podmínku, vývoj může po několik sekund vypadat k nerozeznání.',
     'Nejzajímavější jsou případy, kdy kyvadlo začíná s těžištěm nad středním bodem úchytu. Pozor, počáteční rychlosti se při každé změně vynulují.'
-  );
+  ];
 }
 
 $list = [];

@@ -32,7 +32,7 @@ $seealso = $en ? 'See also' : 'Další';
 $more = $en ? 'More details (PDF)' : 'Další informace (PDF)';
 $source = $en ? 'Source code' : 'Zdrojový kód';
 $back = $en ? 'Back to list' : 'Zpět na seznam';
-$backurl = query('demos.php', array());
+$backurl = query('demos.php');
 $something_broken = $en ? 'Something broken?' : 'Něco nefunguje?';
 if($demorow['details'])
   $morerow = '<li><a href="' . $demorow['details'] . '">' . $more . '</a></li>';

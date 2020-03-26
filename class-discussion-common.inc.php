@@ -48,7 +48,7 @@ HTML;
 HTML;
   }
 
-  $url = query('', array('discuss' => $dldid));
+  $url = query('', ['discuss' => $dldid]);
   $attempt = 0;
   if($data !== null && $data['dldid'] == $dldid) {
     $text = htmlspecialchars($data['text']);
@@ -80,21 +80,21 @@ HTML;
 </div>\n
 HTML;
 
-  return array(
+  return [
     'count' => $count,
     'html' => ob_get_clean()
-  );
+  ];
 }
 
 function discussion_submit($post) {
   global $secrets;
   if(!array_key_exists('dld_ID', $post) || !array_key_exists('class_ID', $post) || !array_key_exists('serial', $post))
-    return array('status' => STATUS_FAIL, 'error' => 'Invalid IDs');
+    return ['status' => STATUS_FAIL, 'error' => 'Invalid IDs'];
   $cid = $post['class_ID'];
   $dldid = $post['dld_ID'];
   $serial = $post['serial'];
 
-  $missing = array();
+  $missing = [];
   if(!array_key_exists('text', $post) || trim($post['text']) == '')
     $missing[] = 'text';
   if(!array_key_exists('captcha', $post) || trim($post['captcha']) == '')
@@ -105,12 +105,12 @@ function discussion_submit($post) {
   $attempt = array_key_exists('attempt', $post) ? $post['attempt'] : 0;
 
   /* This will be useful in case we need to refill user-entered data for corrections. */
-  $ret = array(
+  $ret = [
     'dldid' => $dldid,
     'text' => $text,
     'name' => $name,
     'attempt' => $attempt
-  );
+  ];
 
   if(!validate_dldid($cid, $dldid)) {
     $ret['status'] = STATUS_FAIL;
@@ -144,7 +144,7 @@ function discussion_submit($post) {
 
   if(!preg_match("/^$accept_re$/u", mb_strtolower($captcha))) {
     $ret['status'] = STATUS_INCOMPLETE;
-    $ret['missing'] = array('captcha');
+    $ret['missing'] = ['captcha'];
     $attempt = ($attempt + 1) % 3;
     $ret['attempt'] = $attempt;
     if($name != 'VP') {

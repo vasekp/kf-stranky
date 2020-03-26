@@ -23,14 +23,14 @@ if($en) {
   $seclang = 'en';
 }
 
-$stranky = array(
+$stranky = [
   'landing' => $en ? 'Intro' : 'Úvod',
   'classes' => $en ? 'Classes' : 'Výuka',
   'demos' => $en ? 'Demonstrations' : 'Ukázky',
   'theses' => $en ? 'Theses' : 'Školení',
   'pub' => $en ? 'Publications' : 'Publikace',
   'personal' => $en ? 'Personal' : 'Osobní'
-);
+];
 
 if(!array_key_exists($curr, $stranky) && $curr != 'error')
   $curr = key($stranky);

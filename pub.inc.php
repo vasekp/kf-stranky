@@ -1,14 +1,14 @@
 <?php
-array_push($css, 'css/switch.css');
-array_push($scripts, 'switch.js');
-array_push($scripts, 'pub.js');
+$css[] = 'css/switch.css';
+$scripts[] = 'switch.js';
+$scripts[] = 'pub.js';
 
 $title = $en ? 'Publication list' : 'Seznam publikací';
-$filters = array(
+$filters = [
   'selected' => $en ? 'Selected' : 'Vybrané',
   'recent' => $en ? 'Recent' : 'Nedávné',
   'all' => $en ? 'All' : 'Všechny'
-);
+];
 
 $sql = 'select * from publications order by id desc';
 $result = $db->query($sql);
@@ -16,11 +16,11 @@ $counter = 0;
 
 $lines = [];
 while($row = $result->fetch_assoc()) {
-  $classes = array('f-all');
+  $classes = ['f-all'];
   if($counter++ < 5)
-    array_push($classes, 'f-recent');
+    $classes[] = 'f-recent';
   if($row['selected'])
-    array_push($classes, 'f-selected');
+    $classes[] = 'f-selected';
   $lines[] = '<li class="filter ' . join(' ', $classes) . '">';
 
   $lines[] = str_replace('V. Potoček', '<b>V. Potoček</b>', $row['authors']) . '.';

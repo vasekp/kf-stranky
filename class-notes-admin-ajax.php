@@ -36,11 +36,11 @@ if($type == 'insert') {
 }
 
 if($type == 'insert' || $type == 'update') {
-  $response = array(
+  $response = [
     'text' => $text,
     'html' => toHTML($text),
     'id' => $id
-  );
+  ];
   echo json_encode($response);
 }
 ?>

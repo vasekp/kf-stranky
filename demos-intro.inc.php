@@ -11,21 +11,21 @@ $github = 'GitHub';
 
 $sql = "select id, title_$prilang as title from demo_topics order by title";
 $result = $db->query($sql);
-$topics = array();
+$topics = [];
 while($row = $result->fetch_assoc())
-  $topics[$row['id']] = array(
+  $topics[$row['id']] = [
     'title' => $row['title'],
-    'demos' => array()
-  );
+    'demos' => []
+  ];
 
 $sql = "select name, topic_ID as tid, title_$prilang as title from demos order by timestamp";
 $result = $db->query($sql);
 while($row = $result->fetch_assoc()) {
   if(file_exists("demos/{$row['name']}/{$row['name']}.inc.php"))
-    $topics[$row['tid']]['demos'][] = array(
+    $topics[$row['tid']]['demos'][] = [
       'title' => $row['title'],
-      'url' => query('', array('demo' => $row['name']))
-    );
+      'url' => query('', ['demo' => $row['name']])
+    ];
 }
 
 foreach($topics as &$topic) {
