@@ -8,10 +8,10 @@ function downloadParent(elm) {
 
 function bubbleClick(e) {
   e.preventDefault();
-  var id = e.currentTarget.getAttribute('data-id');
-  if(document.getElementById('discussion' + id))
+  var dldid = e.currentTarget.getAttribute('data-dldid');
+  if(document.getElementById('discussion' + dldid))
     return;
-  requestDiscussion(id);
+  requestDiscussion(dldid);
 }
 
 function requestDiscussion(dldid) {
@@ -43,15 +43,25 @@ function discussionReceived(response, dldid) {
   anchor.classList.remove('loading');
   anchor.setAttribute('data-count', response.count);
   elm.getElementsByTagName('text')[0].textContent = response.count ? response.count : '';
+  visualTouches(dldid); // requires content already added to document
+}
 
+function visualTouches(dldid) {
   if(typeof(Storage) === 'undefined')
     return;
 
+  var div = document.getElementById('discussion' + dldid);
   var lsKey = 'discussion-lastSeen-' + dldid;
   var lastSeen = localStorage[lsKey] || 0;
-  localStorage[lsKey] = response.count;
-  for(let i = lastSeen; i < response.count; i++)
-    content.children[i].classList.add('new');
+  var children = div.querySelectorAll('.item:not(.form)');
+  var count = children.length;
+  localStorage[lsKey] = count;
+  for(let i = lastSeen; i < count; i++)
+    children[i].classList.add('new');
+
+  // Edit tools only available with JS & local storage
+  if(count > 0)
+    children[count - 1].getElementsByClassName('edittools')[0].classList.remove('hide');
 }
 
 function onSubmit(e) {
@@ -112,16 +122,12 @@ window.addEventListener('DOMContentLoaded', function(event) {
     if(typeof(Storage) === 'undefined')
       return;
 
-    var id = anchor.getAttribute('data-id');
+    var dldid = anchor.getAttribute('data-dldid');
     var count = anchor.getAttribute('data-count');
-    var lsKey = 'discussion-lastSeen-' + id;
-    if(document.getElementById('discussion' + id)) {
-      var div = document.getElementById('discussion' + id);
-      var lastSeen = localStorage[lsKey] || 0;
-      localStorage[lsKey] = count;
-      for(let i = lastSeen; i < count; i++)
-        div.children[i].classList.add('new');
-    } else {
+    var lsKey = 'discussion-lastSeen-' + dldid;
+    if(document.getElementById('discussion' + dldid))
+      visualTouches(dldid);
+    else {
       var lastSeen = localStorage[lsKey] || 0;
       var newItems = count - lastSeen;
       if(newItems == 0)

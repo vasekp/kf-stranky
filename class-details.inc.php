@@ -56,7 +56,7 @@ while($row = $result->fetch_assoc()) {
     $discussion = '';
 
   print <<<HTML
-<div class="download" id="download$row[id]" data-id="$row[id]">
+<div class="download" id="download$row[id]" data-dldid="$row[id]">
   <div class="icon">
     <a href="download/$row[filename]"><img src="images/download.svg" alt="$row[filename]"/></a>
   </div>
@@ -64,7 +64,7 @@ while($row = $result->fetch_assoc()) {
     <a href="download/$row[filename]">$row[description]</a>
   </div>
   <div class="bubble">\n
-    <a href="$url" id="bubble$row[id]" data-id="$row[id]" data-count="$ccount">
+    <a href="$url" id="bubble$row[id]" data-dldid="$row[id]" data-count="$ccount">
       $bubble
     </a>
   </div>

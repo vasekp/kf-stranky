@@ -21,7 +21,7 @@ function get_discussion($dldid, $data = null) {
   if(!validate_dldid($cid, $dldid))
     return null;
   ob_start();
-  $sql = "select name, text, timestamp from discussion where dld_ID='$dldid' order by timestamp";
+  $sql = "select id, name, text, timestamp from discussion where dld_ID='$dldid' order by timestamp";
   $result = $db->query($sql);
   $count = 0;
 
@@ -40,8 +40,14 @@ HTML;
     $date = date('j.n.Y G:i', strtotime($row['timestamp']));
 
     print <<<HTML
-  <div class="item">
-    <span class="date">$date</span>
+  <div class="item" data-id="$row[id]">
+    <div class="header">
+      $date
+      <span class="edittools hide">
+        <img src="images/edit.svg"/>
+        <img src="images/delete.svg"/>
+      </span>
+    </div>
     $namespan
     $text
   </div>\n
@@ -65,7 +71,7 @@ HTML;
   $challenge = $result->fetch_row()[0];
 
   print <<<HTML
-  <div class="item">
+  <div class="item form">
     <form action="$url" method="post">
       <textarea name="text"$mText id="text">$text</textarea>
       <p>Iniciály (nepovinné): <input name="name" type="text" maxlength="3" value="$name"/></p>
