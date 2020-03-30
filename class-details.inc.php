@@ -1,5 +1,7 @@
 <?php
 $scripts[] = 'shared.js';
+if($admin)
+  $scripts[] = 'shared-admin.js';
 $scripts[] = 'class-discussion.js';
 if($admin) {
   $css[] = 'css/classes-admin.css';
