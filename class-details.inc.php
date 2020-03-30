@@ -37,6 +37,7 @@ $sql = <<<SQL
 select dld.ID as id, filename, description, count(dis.ID) as count
   from download as dld
   left join discussion as dis on dis.dld_ID = dld.ID
+  where class_ID = '$cid'
   group by dld.ID
 SQL;
 if($result->num_rows > 0)
@@ -84,8 +85,8 @@ HTML;
 $sql = <<<SQL
 select coalesce(greatest(c1,c2),c1) from
   (select
-    (select modified from classes) as c1,
-    (select max(timestamp) from download) as c2
+    (select modified from classes where id="$cid") as c1,
+    (select max(timestamp) from download where class_ID="$cid") as c2
   ) as sub
 SQL;
 $result = $db->query($sql);
