@@ -136,6 +136,7 @@
 }
 
 .discussion textarea {
+  box-sizing: border-box;
   display: block;
   width: 100%;
   resize: vertical;
