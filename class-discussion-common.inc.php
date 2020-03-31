@@ -1,6 +1,4 @@
 <?php
-$cid = 'kf19';
-
 const STATUS_OK = 'ok';
 const STATUS_INCOMPLETE = 'incomplete';
 const STATUS_ALERT = 'alert';
@@ -16,9 +14,8 @@ function validate_dldid($cid, $dldid) {
   return $st->fetch(); // bool
 }
 
-function get_discussion($dldid, $data = null) {
+function get_discussion($cid, $dldid, $data = null) {
   global $db;
-  global $cid;
   global $secrets;
   if(!validate_dldid($cid, $dldid))
     return null;

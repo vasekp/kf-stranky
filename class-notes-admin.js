@@ -18,6 +18,7 @@ function notesRequest(data, elm, callback) {
 function createNote(text, elm) {
   var date = document.getElementById('date').getAttribute('data-date');
   var data = {
+    'class_ID': document.getElementById('class_ID').value,
     'type': 'insert',
     'text': text,
     'date': date,
@@ -32,6 +33,7 @@ function createNote(text, elm) {
 
 function updateNote(id, text, elm) {
   var data = {
+    'class_ID': document.getElementById('class_ID').value,
     'type': 'update',
     'id': id,
     'text': text,
@@ -45,6 +47,7 @@ function updateNote(id, text, elm) {
 
 function deleteNote(id, elm) {
   var data = {
+    'class_ID': document.getElementById('class_ID').value,
     'type': 'delete',
     'id': id,
     'pass': adminPass
@@ -162,6 +165,7 @@ function addEvents(elm) {
 
 function commitNotes(e) {
   var data = {
+    'class_ID': document.getElementById('class_ID').value,
     'type': 'commit',
     'pass': adminPass
   };

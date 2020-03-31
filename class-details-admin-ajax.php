@@ -3,16 +3,13 @@ include 'shared.inc.php';
 include 'ajax-common.inc.php';
 
 ajax_setup([
-  'which' => ['intro', 'announces'],
+  'field' => ['intro', 'announces'],
+  'class_ID',
   'text'
 ], true);
 
-$cid = 'kf19';
-
-$which = $_POST['which'];
-$text = $_POST['text'];
-$st = $db->prepare('update classes set ' . $which . ' = ? where ID = ?');
-$st->bind_param('ss', $text, $cid);
+$st = $db->prepare("update classes set $_POST[field] = ? where ID = ?");
+$st->bind_param('ss', $_POST['text'], $_POST['class_ID']);
 $success = $st->execute();
 
 if($success)

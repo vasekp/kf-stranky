@@ -3,15 +3,16 @@ include 'shared.inc.php';
 include 'ajax-common.inc.php';
 include 'class-notes-common.inc.php';
 
-ajax_setup(['type' => [
-  'insert' => ['date', 'text'],
-  'update' => ['text', 'id'],
-  'delete' => ['id'],
-  'commit'
-]], true);
+ajax_setup(['class_ID',
+  'type' => [
+    'insert' => ['date', 'text'],
+    'update' => ['text', 'id'],
+    'delete' => ['id'],
+    'commit'
+  ]
+], true);
 
-$cid = 'kf19';
-
+$cid = $_POST['class_ID'];
 $type = $_POST['type'];
 
 $text = array_key_exists('text', $_POST) ? $_POST['text'] : '';

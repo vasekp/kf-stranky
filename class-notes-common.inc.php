@@ -1,12 +1,20 @@
 <?php
-$cid = 'kf19';
+function validate_cid($cid) {
+  global $db;
+  $sql = 'select ID from classes where ID=?';
+  $st = $db->prepare($sql);
+  $st->bind_param('s', $cid);
+  $st->execute();
+  $st->bind_result($dummy);
+  return $st->fetch(); // bool
+}
 
 function date_valid($date_req) {
   return preg_match('/^\d{4}-\d{1,2}-\d{1,2}$/', $date_req);
 }
 
-function date_valid_nonempty($date_req, $show_hidden) {
-  global $cid, $db;
+function date_valid_nonempty($date_req, $cid, $show_hidden) {
+  global $db;
   if(!date_valid($date_req))
     return false;
   $and_public = $show_hidden ? "" : "and public = 1";
@@ -15,8 +23,8 @@ function date_valid_nonempty($date_req, $show_hidden) {
   return ($result->num_rows > 0);
 }
 
-function date_newest($show_hidden) {
-  global $cid, $db;
+function date_newest($cid, $show_hidden) {
+  global $db;
   $and_public = $show_hidden ? "" : "and public = 1";
   $sql = "select max(date) from class_notes where class_ID = '$cid' $and_public";
   $result = $db->query($sql);
@@ -27,21 +35,24 @@ function date_newest($show_hidden) {
     return $show_hidden ? date('Y-n-j') : null;
 }
 
-function validate_date($date_req, $check_nonempty, $show_hidden) {
+function validate_date($cid, $date_req, $check_nonempty, $show_hidden) {
   if(!$date_req)
     $valid = false;
   else if($check_nonempty)
-    $valid = date_valid_nonempty($date_req, $show_hidden);
+    $valid = date_valid_nonempty($date_req, $cid, $show_hidden);
   else
     $valid = date_valid($date_req);
-  return $valid ? $date_req : date_newest($show_hidden);
+  return $valid ? $date_req : date_newest($cid, $show_hidden);
 }
 
-function get_records($date_req, $newest_if_empty, $show_hidden) {
-  global $cid, $db;
-  $ret = new stdClass;
-  if(!($date = validate_date($date_req, $newest_if_empty, $show_hidden)))
+function get_records($cid, $date_req, $newest_if_empty, $show_hidden) {
+  global $db;
+  if(!validate_cid($cid))
     return null;
+  if(!($date = validate_date($cid, $date_req, $newest_if_empty, $show_hidden)))
+    return null;
+
+  $ret = new stdClass;
   $ret->date = $date;
 
   $sql = "select language from classes where ID = '$cid'";

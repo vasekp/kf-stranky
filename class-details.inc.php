@@ -47,7 +47,7 @@ while($row = $result->fetch_assoc()) {
   include 'images/discussion.svg.php';
   $bubble = ob_get_clean();
   if(array_key_exists('discuss', $_GET) && $_GET['discuss'] == $row['id'])
-    $discussion = get_discussion($row['id'], $data)['html'];
+    $discussion = get_discussion($cid, $row['id'], $data)['html'];
   else
     $discussion = '';
 
@@ -69,7 +69,7 @@ $discussion\n
 HTML;
 }
 
-$notes_url = query('', ['s' => 'notes']);
+$notes_url = query('', ['c' => $cid, 's' => 'notes']);
 print <<<HTML
 <div class="buttons">
   <a class="button" href="$notes_url">Zápis z hodin</a>

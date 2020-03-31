@@ -14,7 +14,8 @@ var detailsAjax = new Ajax('class-details-admin-ajax.php',
 function updateText(elm) {
   var text = elm.innerText.trim();
   var data = {
-    'which': elm.id,
+    'class_ID': document.getElementById('class_ID').value,
+    'field': elm.id,
     'text': text,
     'pass': adminPass
   };

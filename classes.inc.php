@@ -7,7 +7,7 @@ if($admin) {
   $scripts[] = 'classes-admin.js';
 }
 
-$cid = 'kf19';
+$cid = isset($_GET['c']) ? $_GET['c'] : 'kf19';
 
 $sql = 'select language from classes where ID=?';
 $st = $db->prepare($sql);
@@ -35,4 +35,8 @@ if(array_key_exists('s', $_GET) && $_GET['s'] == 'notes')
   include 'class-notes.inc.php';
 else
   include 'class-details.inc.php';
+
+print <<<HTML
+<input type="hidden" id="class_ID" value="$cid"/>
+HTML;
 ?>
