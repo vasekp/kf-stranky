@@ -15,9 +15,12 @@ function bubbleClick(e) {
   e.preventDefault();
   var div = findParent(e.currentTarget, 'download');
   var dldid = div.getAttribute('data-dldid');
-  if(document.getElementById('discussion' + dldid))
-    return;
-  requestDiscussion(dldid);
+  var discussionDiv = document.getElementById('discussion' + dldid);
+  if(discussionDiv) {
+    discussionDiv.remove();
+    history.replaceState(null, '', addToQuery('discuss', ''));
+  } else
+    requestDiscussion(dldid);
 }
 
 function requestDiscussion(dldid, data = {}) {

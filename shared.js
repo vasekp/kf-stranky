@@ -33,7 +33,10 @@ function Ajax(url, onSuccess, onError, timeout) {
 function addToQuery(key, val) {
   var url = new URL(document.URL);
   var sp = new URLSearchParams(url.search);
-  sp.set(key, val);
+  if(val)
+    sp.set(key, val);
+  else
+    sp.delete(key);
   url.search = sp;
   return url;
 }
