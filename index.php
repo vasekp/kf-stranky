@@ -103,7 +103,7 @@ print <<<HTML
         </div>
         <div id="lang">
           <p class="hide"></p>
-          <a href="$seclang_url">
+          <a id="flag" href="$seclang_url">
             <span class="hide">Switch language:</span>
             <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="30" height="20">
               <image href="${addr_prefix}images/$prilang.svg" x="0" y="0" width="100%" height="100%" class="primary"/>

@@ -22,7 +22,7 @@ function bubbleClick(e) {
   var discussionDiv = document.getElementById('discussion' + dldid);
   if(discussionDiv) {
     discussionDiv.remove();
-    history.replaceState(null, '', addToQuery('discuss', ''));
+    updateURL(modifyQuery('discuss', null));
   } else
     requestDiscussion(dldid);
 }
@@ -44,7 +44,7 @@ function requestDiscussion(dldid, data = {}) {
 }
 
 function discussionReceived(response, dldid) {
-  history.replaceState(null, '', addToQuery('discuss', dldid));
+  updateURL(addToQuery('discuss', dldid));
   Array.from(document.getElementsByClassName('discussion')).forEach(function(elm) {
     elm.parentElement.removeChild(elm);
   });

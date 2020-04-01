@@ -30,13 +30,25 @@ function Ajax(url, onSuccess, onError, timeout) {
   };
 }
 
-function addToQuery(key, val) {
+function modifyQuery(key, func) {
   var url = new URL(document.URL);
   var sp = new URLSearchParams(url.search);
-  if(val)
-    sp.set(key, val);
+  if(func)
+    sp.set(key, func(sp.get(key)));
   else
     sp.delete(key);
   url.search = sp;
   return url;
+}
+
+function addToQuery(key, val) {
+  return modifyQuery(key, function() { return val; });
+}
+
+function updateURL(url) {
+  history.replaceState(null, '', url);
+  var otherLang = function(l) {
+    return l === 'en' ? 'cz' : 'en';
+  };
+  document.getElementById('flag').href = modifyQuery('l', otherLang);
 }
