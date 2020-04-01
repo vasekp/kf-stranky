@@ -11,6 +11,10 @@ function findParent(elm, cls) {
   return elm;
 }
 
+function isAdmin() {
+  return typeof(adminPass) !== 'undefined';
+}
+
 function bubbleClick(e) {
   e.preventDefault();
   var div = findParent(e.currentTarget, 'download');
@@ -112,32 +116,51 @@ function localStorageTouches(dldid) {
   } else {
     var children = divDiscuss.querySelectorAll('.item:not(.form)');
     localStorage[lsKey] = count;
-    for(let i = lastSeen; i < count; i++)
+    for(let i = lastSeen; i < children.length; i++)
       children[i].classList.add('new');
 
     // Edit tools only available with JS & local storage
     var keys = authKeys();
-    if(keys && count > 0 && children.length >= count) {
-      let tools = children[count - 1].querySelector('.edittools');
-      if(tools && tools.getAttribute('data-auth') == keys['public']) {
-        tools.classList.remove('hide');
-        tools.querySelector('.a-edit').addEventListener('click', editClick);
-        tools.querySelector('.a-delete').addEventListener('click', deleteClick);
+    if(!keys)
+      return;
+
+    var showEditTools = function(tools) {
+      tools.classList.remove('hide');
+      tools.querySelector('.a-edit').addEventListener('click', editClick);
+      tools.querySelector('.a-delete').addEventListener('click', deleteClick);
+    }
+
+    if(isAdmin()) {
+      Array.from(children).forEach(function(child) {
+        let tools = child.querySelector('.edittools');
+        if(tools)
+          showEditTools(tools);
+      });
+    } else {
+      if(count > 0 && children.length >= count) {
+        let tools = children[count - 1].querySelector('.edittools');
+        if(tools && tools.getAttribute('data-auth') == keys['public'])
+          showEditTools(tools);
       }
     }
 
-    if(keys) {
-      let form = divDiscuss.querySelector('.item.form form');
-      let ref = form.querySelector('#send');
-      let input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = 'auth_private';
-      input.value = keys['private'];
-      form.insertBefore(input, ref);
+    let form = divDiscuss.querySelector('.item.form form');
+    let ref = form.querySelector('#send');
+    let input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'auth_private';
+    input.value = keys['private'];
+    form.insertBefore(input, ref);
+    input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'auth_public';
+    input.value = keys['public'];
+    form.insertBefore(input, ref);
+    if(isAdmin()) {
       input = document.createElement('input');
       input.type = 'hidden';
-      input.name = 'auth_public';
-      input.value = keys['public'];
+      input.name = 'admin_pass';
+      input.value = admin.value;
       form.insertBefore(input, ref);
     }
   }
@@ -147,7 +170,11 @@ function editClick(e) {
   var elm = e.currentTarget;
   var id = findParent(elm, 'item').getAttribute('data-id');
   var dldid = findParent(elm, 'discussion').getAttribute('data-dldid');
-  requestDiscussion(dldid, {'id': id, 'auth_private': localStorage['discussion-auth-private']});
+  requestDiscussion(dldid, {
+    'id': id,
+    'auth_private': localStorage['discussion-auth-private'],
+    'admin_pass': isAdmin() ? admin.value : null
+  });
   e.preventDefault();
 }
 
@@ -161,6 +188,7 @@ function deleteClick(e) {
   var data = {
     'query': 'delete',
     'auth_private': keys['private'],
+    'admin_pass': isAdmin() ? admin.value : null,
     'dld_ID': dldid,
     'ID': id
   };

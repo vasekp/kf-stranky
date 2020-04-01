@@ -19,14 +19,16 @@ function validate_dldid($cid, $dldid) {
 function get_discussion($dldid, $data = null) {
   global $db;
   global $cid;
+  global $secrets;
   if(!validate_dldid($cid, $dldid))
     return null;
   ob_start();
-  $sql = "select id, name, text, auth_public, auth_private, timestamp from discussion where dld_ID='$dldid' order by timestamp";
+  $sql = "select id, name, text, auth_public, auth_private, timestamp from discussion where dld_ID='$dldid' order by id";
   $result = $db->query($sql);
   $count = 0;
   $editing = false;
   $form_url = query('', ['discuss' => $dldid]);
+  $skip_checks = @$data['admin_pass'] == $secrets['adminpw'];
 
   print <<<HTML
 <div class="discussion" id="discussion$dldid" data-dldid="$dldid">\n
@@ -42,7 +44,8 @@ HTML;
       $namespan = '';
     $date = date('j.n.Y G:i', strtotime($row['timestamp']));
 
-    if(@$data['id'] == $row['id'] && @$data['auth_private'] == $row['auth_private']) {
+    if(@$data['id'] == $row['id']
+        && ($skip_checks || @$data['auth_private'] == $row['auth_private'])) {
       $editing = true;
       print <<<HTML
   <div class="item form">
@@ -211,9 +214,12 @@ function discussion_submit_new($post) {
 }
 
 function discussion_submit_edit($post) {
+  global $db, $secrets;
+
   $id = $post['ID'];
   $dldid = $post['dld_ID'];
   $auth = $post['auth_private'];
+  $skip_checks = @$post['admin_pass'] == $secrets['adminpw'];
 
   $missing = [];
   if(!array_key_exists('text', $post) || trim($post['text']) == '')
@@ -228,26 +234,31 @@ function discussion_submit_edit($post) {
     return $ret;
   }
 
-  global $db;
+  if(!$skip_checks) {
+    $sql = 'select not exists(select ID from discussion where ID > ? and dld_ID = ?)';
+    $st = $db->prepare($sql);
+    $st->bind_param('ii', $id, $dldid);
+    $st->execute();
+    $st->bind_result($newest);
+    $st->fetch();
+    $st->close();
 
-  $sql = 'select not exists(select ID from discussion where ID > ? and dld_ID = ?)';
-  $st = $db->prepare($sql);
-  $st->bind_param('ii', $id, $dldid);
-  $st->execute();
-  $st->bind_result($newest);
-  $st->fetch();
-  $st->close();
+    if(!$newest) {
+      $ret['status'] = STATUS_FAIL;
+      $ret['error'] = 'Cannot modify comment that already has reactions.';
+      return $ret;
+    }
 
-  if(!$newest) {
-    $ret['status'] = STATUS_FAIL;
-    $ret['error'] = 'Cannot modify comment that already has reactions.';
-    return $ret;
+    $sql = 'update discussion set text = ?, timestamp = current_timestamp() where ID = ? and auth_private = ?';
+    $st = $db->prepare($sql);
+    $st->bind_param('sis', $text, $id, $auth);
+    $success = $st->execute();
+  } else {
+    $sql = 'update discussion set text = ?, timestamp = current_timestamp() where ID = ?';
+    $st = $db->prepare($sql);
+    $st->bind_param('si', $text, $id);
+    $success = $st->execute();
   }
-
-  $sql = 'update discussion set text = ?, timestamp = current_timestamp() where ID = ? and auth_private = ?';
-  $st = $db->prepare($sql);
-  $st->bind_param('sis', $text, $id, $auth);
-  $success = $st->execute();
 
   if($success && $st->affected_rows != 0) {
     $ret['status'] = STATUS_OK;
@@ -264,32 +275,39 @@ function discussion_submit_edit($post) {
 }
 
 function discussion_submit_delete($post) {
+  global $db, $secrets;
+
   $id = $post['ID'];
   $dldid = $post['dld_ID'];
   $auth = $post['auth_private'];
-
-  global $db;
-
-  $sql = 'select not exists(select ID from discussion where ID > ? and dld_ID = ?)';
-  $st = $db->prepare($sql);
-  $st->bind_param('ii', $id, $dldid);
-  $st->execute();
-  $st->bind_result($newest);
-  $st->fetch();
-  $st->close();
-
+  $skip_checks = @$post['admin_pass'] == $secrets['adminpw'];
   $ret = [];
 
-  if(!$newest) {
-    $ret['status'] = STATUS_FAIL;
-    $ret['error'] = 'Cannot delete comment that already has reactions.';
-    return $ret;
-  }
+  if(!$skip_checks) {
+    $sql = 'select not exists(select ID from discussion where ID > ? and dld_ID = ?)';
+    $st = $db->prepare($sql);
+    $st->bind_param('ii', $id, $dldid);
+    $st->execute();
+    $st->bind_result($newest);
+    $st->fetch();
+    $st->close();
 
-  $sql = 'delete from discussion where ID = ? and auth_private = ?';
-  $st = $db->prepare($sql);
-  $st->bind_param('is', $id, $auth);
-  $success = $st->execute();
+    if(!$newest) {
+      $ret['status'] = STATUS_FAIL;
+      $ret['error'] = 'Cannot delete comment that already has reactions.';
+      return $ret;
+    }
+
+    $sql = 'delete from discussion where ID = ? and auth_private = ?';
+    $st = $db->prepare($sql);
+    $st->bind_param('is', $id, $auth);
+    $success = $st->execute();
+  } else {
+    $sql = 'delete from discussion where ID = ?';
+    $st = $db->prepare($sql);
+    $st->bind_param('i', $id);
+    $success = $st->execute();
+  }
 
   if($success && $st->affected_rows != 0) {
     $ret['status'] = STATUS_OK;
