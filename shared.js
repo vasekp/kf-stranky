@@ -33,7 +33,10 @@ function Ajax(url, onSuccess, onError, timeout) {
 function modifyQuery(key, func) {
   var url = new URL(document.URL);
   var sp = new URLSearchParams(url.search);
-  sp.set(key, func(sp.get(key)));
+  if(func)
+    sp.set(key, func(sp.get(key)));
+  else
+    sp.delete(key);
   url.search = sp;
   return url;
 }

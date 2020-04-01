@@ -20,7 +20,7 @@ function get_records_async(date_sql) {
   ajax.sendRequest({
     'type': 'get',
     'date': date_sql,
-    'hidden': !!document.getElementById('admin')
+    'hidden': typeof(adminPass) !== 'undefined'
   });
 }
 

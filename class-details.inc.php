@@ -1,5 +1,7 @@
 <?php
 $scripts[] = 'shared.js';
+if($admin)
+  $scripts[] = 'shared-admin.js';
 $scripts[] = 'class-discussion.js';
 if($admin) {
   $css[] = 'css/classes-admin.css';
@@ -37,6 +39,7 @@ $sql = <<<SQL
 select dld.ID as id, filename, description, count(dis.ID) as count
   from download as dld
   left join discussion as dis on dis.dld_ID = dld.ID
+  where class_ID = '$cid'
   group by dld.ID
 SQL;
 if($result->num_rows > 0)
@@ -55,7 +58,7 @@ while($row = $result->fetch_assoc()) {
     $discussion = '';
 
   print <<<HTML
-<div class="download" id="download$row[id]" data-id="$row[id]">
+<div class="download" id="download$row[id]" data-dldid="$row[id]" data-count="$ccount">
   <div class="icon">
     <a href="download/$row[filename]"><img src="images/download.svg" alt="$row[filename]"/></a>
   </div>
@@ -63,7 +66,7 @@ while($row = $result->fetch_assoc()) {
     <a href="download/$row[filename]">$row[description]</a>
   </div>
   <div class="bubble">\n
-    <a href="$url" id="bubble$row[id]" data-id="$row[id]" data-count="$ccount">
+    <a href="$url" id="bubble$row[id]">
       $bubble
     </a>
   </div>
@@ -84,8 +87,8 @@ HTML;
 $sql = <<<SQL
 select coalesce(greatest(c1,c2),c1) from
   (select
-    (select modified from classes) as c1,
-    (select max(timestamp) from download) as c2
+    (select modified from classes where id="$cid") as c1,
+    (select max(timestamp) from download where class_ID="$cid") as c2
   ) as sub
 SQL;
 $result = $db->query($sql);

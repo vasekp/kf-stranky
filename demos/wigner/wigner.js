@@ -168,7 +168,7 @@ function reset(e) {
 
 function changeFuncType(elm) {
   var id = elm.getAttribute('data-func');
-  for(p in progs) {
+  for(let p in progs) {
     gl.useProgram(progs[p].program);
     gl.uniform1i(progs[p].uFunc, id);
   }
@@ -188,7 +188,7 @@ function updateUniforms() {
     scale[2], scale[3], 0,
     shift[0], shift[1], 1]);
 
-  for(p in progs) {
+  for(let p in progs) {
     gl.useProgram(progs[p].program);
     gl.uniformMatrix3fv(progs[p].uMatrix, false, mat3);
   }

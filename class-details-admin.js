@@ -1,7 +1,5 @@
 'use strict';
 
-var admin;
-
 var detailsAjax = new Ajax('class-details-admin-ajax.php',
   function(response, elm) {
     elm.innerHTML = elm.innerText.trim();
@@ -18,7 +16,7 @@ function updateText(elm) {
   var data = {
     'which': elm.id,
     'text': text,
-    'pass': admin.value
+    'pass': adminPass
   };
   detailsAjax.sendRequest(data, elm);
 }
@@ -35,7 +33,6 @@ function addEvents(elm) {
 }
 
 window.addEventListener('DOMContentLoaded', function(event) {
-  admin = document.getElementById('admin');
   addEvents(document.getElementById('intro'));
   addEvents(document.getElementById('announces'));
 });
