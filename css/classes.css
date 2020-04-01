@@ -60,7 +60,7 @@
   bottom: -.1rem;
 }
 
-.bubble [data-count="0"] {
+.download[data-count="0"] .bubble {
   opacity: .2;
 }
 
@@ -68,7 +68,7 @@
   color: black;
 }
 
-.download:hover .bubble [data-count="0"] {
+.download:hover[data-count="0"] .bubble {
   opacity: 1;
   transition: opacity .5s;
 }
