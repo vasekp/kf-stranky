@@ -1,6 +1,6 @@
 'use strict';
 
-var admin, empty;
+var empty;
 
 function notesRequest(data, elm, callback) {
   var ajax = new Ajax('class-notes-admin-ajax.php',
@@ -21,7 +21,7 @@ function createNote(text, elm) {
     'type': 'insert',
     'text': text,
     'date': date,
-    'pass': admin.value
+    'pass': adminPass
   };
   notesRequest(data, elm, function(response) {
     elm.setAttribute('data-id', response.id);
@@ -35,7 +35,7 @@ function updateNote(id, text, elm) {
     'type': 'update',
     'id': id,
     'text': text,
-    'pass': admin.value
+    'pass': adminPass
   };
   notesRequest(data, elm, function(response) {
     elm.setAttribute('data-text', response.text);
@@ -47,7 +47,7 @@ function deleteNote(id, elm) {
   var data = {
     'type': 'delete',
     'id': id,
-    'pass': admin.value
+    'pass': adminPass
   };
   notesRequest(data, elm, function() {
     list.removeChild(elm);
@@ -163,14 +163,13 @@ function addEvents(elm) {
 function commitNotes(e) {
   var data = {
     'type': 'commit',
-    'pass': admin.value
+    'pass': adminPass
   };
   notesRequest(data, e.currentTarget, function() { });
   e.preventDefault();
 }
 
 window.addEventListener('DOMContentLoaded', function(event) {
-  admin = document.getElementById('admin');
   Array.from(list.getElementsByTagName('li')).forEach(addEvents);
   empty = list.lastElementChild.cloneNode(true);
   addEventsDate(document.getElementById('date'));
