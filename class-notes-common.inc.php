@@ -43,10 +43,17 @@ function get_records($date_req, $newest_if_empty, $show_hidden) {
     return null;
   $ret->date = $date;
 
-  $date_php = strtotime($date);
-  $ret->date_text = strftime('%a ', $date_php) . date('j. n. Y', $date_php);
+  $sql = "select language from classes where ID = '$cid'";
+  $result = $db->query($sql);
+  $lang = $result->fetch_row()[0];
 
-  $and_public = $show_hidden ? "" : "and public = 1";
+  $date_php = strtotime($date);
+  $weekdays = $lang == 'en'
+    ? ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
+    : ['Ne', 'Po', 'Út', 'St', 'Čt', 'Pá', 'So'];
+  $ret->date_text = $weekdays[idate('w', $date_php)] . date(' j.n.Y', $date_php);
+
+  $and_public = $show_hidden ? '' : 'and public = 1';
 
   $sql = "select max(timestamp) from class_notes where class_ID = '$cid' $and_public";
   if($date_req)
