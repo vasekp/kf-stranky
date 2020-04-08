@@ -1,8 +1,8 @@
 'use strict';
 
-var gl;
-var interaction, progs, texture;
-var fullBuff;
+var interaction = {}, values;
+var gl, progs, texture, fullBuff;
+const baseK = 40;
 
 window.addEventListener('DOMContentLoaded', function() {
   var canvas = document.getElementById('canvas');
@@ -14,11 +14,6 @@ window.addEventListener('DOMContentLoaded', function() {
     alert('WebGL not supported');
     return;
   }
-
-  /*if(gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.HIGH_FLOAT).precision <= 0) {
-    alert('High precision, required for this demo, not supported in this hardware');
-    return;
-  }*/
 
   loadFiles(filesReady);
 });
@@ -51,7 +46,15 @@ function filesReady(files) {
   progs.prepAbove.scissor = scissorAbove;
   progs.prepBelow.scissor = scissorBelow;
 
+  values = {
+    angle: Math.PI/4,
+    ratio: 0.5,
+    width: 1,
+    wavelength: 1.5
+  };
+  updateValues();
   prepare();
+  addPointerListeners(document.getElementById('coords'), pStart, pMove);
   requestAnimationFrame(draw);
 }
 
@@ -61,6 +64,40 @@ function scissorAbove() {
 
 function scissorBelow() {
   gl.scissor(0, 0, gl.canvas.width, gl.canvas.height / 2);
+}
+
+function updateValues() {
+  let kMag = baseK / values.wavelength;
+  let kVec = [kMag * Math.sin(values.angle), kMag * Math.cos(values.angle)];
+  let spread = Math.PI/(values.width * kMag);
+
+  [progs.prepAbove, progs.prepBelow].forEach(function(prog) {
+    gl.useProgram(prog.program);
+    gl.uniform2fv(prog.uK, kVec);
+    gl.uniform1f(prog.uN2N1, Math.pow(values.ratio, 2));
+    gl.uniform1f(prog.uSpread, spread);
+  });
+
+  gl.useProgram(progs.draw.program);
+  gl.uniform2fv(progs.draw.uK, kVec);
+  gl.uniform1i(progs.draw.uSampler, texture);
+
+  function r2d(rad) {
+    return rad / Math.PI * 180;
+  }
+  document.getElementById('incident').setAttribute('transform',
+    'rotate(' + (-90-r2d(values.angle)) + ')');
+  document.getElementById('reflected').setAttribute('transform',
+    'rotate(' + (-90+r2d(values.angle)) + ')');
+  let angleRef = Math.asin(Math.sin(values.angle) / values.ratio);
+  if(!isNaN(angleRef))
+    document.getElementById('refracted').setAttribute('transform',
+      'rotate(' + (90-r2d(angleRef)) + ')');
+  document.getElementById('refracted').classList.toggle('hide', isNaN(angleRef));
+  document.getElementById('width').setAttribute('d',
+    'M 3 ' + -(values.width + .5) + ' V ' + -values.width + ' V ' + values.width + ' v .5');
+  document.getElementById('wavelength').setAttribute('d',
+    'M ' + (values.wavelength - .5) + ' 0 h .5 h .5');
 }
 
 function prepare() {
@@ -74,9 +111,6 @@ function prepare() {
     gl.useProgram(prog.program);
     gl.enableVertexAttribArray(prog.aPos);
     gl.vertexAttribPointer(prog.aPos, 2, gl.FLOAT, false, 0, 0);
-    gl.uniform2f(prog.uK, 25, 20);
-    gl.uniform1f(prog.uN2N1, 0.5);
-    gl.uniform1f(prog.uSpread, .1);
     gl.drawArrays(gl.TRIANGLES, 0, 6);
     gl.disableVertexAttribArray(prog.aPos);
   });
@@ -87,9 +121,7 @@ function prepare() {
 function draw(time) {
   gl.bindBuffer(gl.ARRAY_BUFFER, fullBuff);
   gl.useProgram(progs.draw.program);
-  gl.uniform2f(progs.draw.uK, 25, 20);
-  gl.uniform1f(progs.draw.uTime, time / 1000.0);
-  gl.uniform1i(progs.draw.uSampler, texture);
+  gl.uniform1f(progs.draw.uTime, (time / 1000.0) % (2*Math.PI));
   gl.enableVertexAttribArray(progs.draw.aPos);
   gl.vertexAttribPointer(progs.draw.aPos, 2, gl.FLOAT, false, 0, 0);
   gl.scissor(0, 0, gl.canvas.width, gl.canvas.height / 2);
@@ -100,4 +132,61 @@ function draw(time) {
   gl.drawArrays(gl.TRIANGLES, 0, 6);
   gl.disableVertexAttribArray(progs.draw.aPos);
   requestAnimationFrame(draw);
+}
+
+function pStart(elm, x, y, rect) {
+  var tx = 5*(2*x/rect.width - 1);
+  var ty = -5*(2*y/rect.height - 1);
+  var cc = Math.cos(values.angle);
+  var ss = Math.sin(values.angle);
+  function trf(tx, ty) {
+    return [-ss*tx - cc*ty, -ss*ty + cc*tx];
+  }
+  function dist(tx, ty, mx, my) {
+    let [ux, uy] = trf(tx, ty);
+    return Math.hypot(ux-mx, uy-my);
+  }
+  if(dist(tx, ty, 4.5, 0) < 0.2)
+    interaction.moving = 'rot';
+  else if(dist(tx, ty, 3, values.width) < 0.2)
+    interaction.moving = 'w';
+  else if(dist(tx, ty, 3, -values.width) < 0.2)
+    interaction.moving = 'w';
+  else if(dist(tx, ty, values.wavelength, 0) < 0.2)
+    interaction.moving = 'wl';
+  else
+    interaction.moving = null;
+}
+
+function pMove(elm, x, y, rect) {
+  if(!interaction.moving)
+    return;
+
+  var tx = 5*(2*x/rect.width - 1);
+  var ty = -5*(2*y/rect.height - 1);
+  if(interaction.moving === 'rot') {
+    if(ty > 0)
+      ty = 0;
+    values.angle = Math.atan2(-tx, -ty);
+  } else if(interaction.moving === 'w') {
+    let cc = Math.cos(values.angle);
+    let ss = Math.sin(values.angle);
+    let w = Math.abs(cc*tx - ss*ty);
+    if(w < 0.05)
+      w = 0.05;
+    else if(w > 4)
+      w = 4;
+    values.width = w;
+  } else if(interaction.moving === 'wl') {
+    let cc = Math.cos(values.angle);
+    let ss = Math.sin(values.angle);
+    let d = -(ss*tx + cc*ty);
+    if(d < 0.7)
+      d = 0.7;
+    if(d > 5)
+      d = 5;
+    values.wavelength = d;
+  }
+  updateValues();
+  prepare();
 }

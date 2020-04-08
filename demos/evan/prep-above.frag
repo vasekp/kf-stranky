@@ -12,7 +12,7 @@ vec2 cmul(vec2 a, vec2 b) {
 void main(void) {
   vec2 val = vec2(0.0);
   float div = 0.0;
-  for(float p = -1.0; p < 1.0; p += 0.003) {
+  for(float p = -1.0; p < 1.0; p += 0.005) {
     div += 1.0;
     float kx = uK.x - p*uSpread*uK.y, ky = uK.y + p*uSpread*uK.x;
     float ky2s = uN2N1 * (kx*kx + ky*ky) - kx*kx;
