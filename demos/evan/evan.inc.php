@@ -58,21 +58,17 @@ $tips = join(PHP_EOL, $list);
 print <<<HTML
 <h1>$demotitle</h1>
 <p>$desc</p>
-<table>
-  <tr>
-    <td>$polar:</td>
-    <td>
-      <div class="inline switch" id="polarization">
-        <a href="#" id="s">$polars[s] (<em>s</em>)</a>
-        <a href="#" id="p">$polars[p] (<em>p</em>)</a>
-      </div>
-    </td>
-  </tr>
-  <tr>
-    <td>$ratio:</td>
-    <td><input type="range" min="-1" max="1" value="-0.25" step="any" id="ratio"/>
-  </tr>
-</table>
+<div class="settings">
+  <div>$polar:</div>
+  <div class="inline switch" id="polarization">
+    <a href="#" id="s">$polars[s] (<em>s</em>)</a>
+    <a href="#" id="p">$polars[p] (<em>p</em>)</a>
+  </div>
+  <div>$ratio:</div>
+  <div>
+    <input type="range" min="-1" max="1" value="-0.25" step="any" id="ratio"/>
+  </div>
+</div>
 <div id="container">
   <canvas id="canvas"></canvas>
   <svg id="coords"

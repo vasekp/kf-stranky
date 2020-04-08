@@ -1,16 +1,18 @@
 .switch {
-  display: table;
-  margin: .5rem auto;
+  display: flex;
+  justify-content: center;
+  margin: .5rem 0;
   border-spacing: 0;
 }
 
 .switch.inline {
-  display: inline-table;
+  display: inline-flex;
+  justify-content: flex-start;
   margin: 0;
 }
 
 .switch a, .switch span {
-  display: table-cell;
+  flex: 0 0 content;
   color: black;
   padding: .2rem .5rem;
   border: 1px solid #888;
