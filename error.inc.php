@@ -8,6 +8,8 @@ $please_report_on = $en
 $github = $en ? 'GitHub' : 'GitHubu';
 $url = 'https://github.com/vasekp/kf-stranky/issues';
 
+http_response_code(404);
+
 print <<<HTML
 <div class="warn">
   $page_not_found
