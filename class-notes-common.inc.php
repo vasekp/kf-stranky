@@ -20,10 +20,11 @@ function date_newest($show_hidden) {
   $and_public = $show_hidden ? "" : "and public = 1";
   $sql = "select max(date) from class_notes where class_ID = '$cid' $and_public";
   $result = $db->query($sql);
-  if($result->num_rows > 0)
-    return $result->fetch_row()[0];
+  $ret = $result->fetch_row()[0];
+  if($ret)
+    return $ret;
   else
-    return null;
+    return $show_hidden ? date('Y-n-j') : null;
 }
 
 function validate_date($date_req, $check_nonempty, $show_hidden) {
