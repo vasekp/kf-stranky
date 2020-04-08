@@ -62,14 +62,22 @@ function filesReady(files) {
 }
 
 function updateValues() {
+  // Too narrow beams are unphysical: force Rayleigh length at least 5 (viewport size)
+  if(values.width < Math.sqrt(10*values.wavelength / baseK))
+    values.width = Math.sqrt(10*values.wavelength / baseK);
+
   let kMag = baseK / values.wavelength;
   let kVec = [kMag * Math.sin(values.angle), kMag * Math.cos(values.angle)];
   let spread = Math.PI/(values.width * kMag);
 
+  // Check that our variation of k does not bring us to the wrong half-plane
+  if(kVec[1] - Math.abs(kVec[0])*spread < 0)
+    spread = kVec[1] / Math.abs(kVec[0]);
+
   [progs.prepAbove, progs.prepBelow].forEach(function(prog) {
     gl.useProgram(prog.program);
     gl.uniform2fv(prog.uK, kVec);
-    gl.uniform1f(prog.uN2N1, Math.pow(values.ratio, 2));
+    gl.uniform1f(prog.uRatioSquared, Math.pow(values.ratio, 2));
     gl.uniform1f(prog.uSpread, spread);
     gl.uniform1i(prog.uPpolarized, values.polarization === 'p');
   });

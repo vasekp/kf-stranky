@@ -1,7 +1,7 @@
 precision highp float;
 
 uniform vec2 uK;
-uniform float uN2N1;
+uniform float uRatioSquared;
 uniform float uSpread;
 uniform bool uPpolarized;
 varying vec2 vPos;
@@ -16,8 +16,10 @@ void main(void) {
   for(float p = -1.0; p < 1.0; p += 0.005) {
     div += 1.0;
     float kx = uK.x - p*uSpread*uK.y, ky = uK.y + p*uSpread*uK.x;
-    float ky1 = uPpolarized ? ky*uN2N1 : ky;
-    float ky2s = uN2N1 * (kx*kx + ky*ky) - kx*kx;
+    if(ky < 0.0)
+      continue;
+    float ky1 = uPpolarized ? ky*uRatioSquared : ky;
+    float ky2s = uRatioSquared * (kx*kx + ky*ky) - kx*kx;
     float ky2 = sqrt(abs(ky2s));
     vec2 r;
     if(ky2s > 0.0)
