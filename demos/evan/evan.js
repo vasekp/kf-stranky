@@ -81,15 +81,28 @@ function updateValues() {
   function r2d(rad) {
     return rad / Math.PI * 180;
   }
+
   document.getElementById('incident').setAttribute('transform',
     'rotate(' + (-90-r2d(values.angle)) + ')');
   document.getElementById('reflected').setAttribute('transform',
     'rotate(' + (-90+r2d(values.angle)) + ')');
+
   let angleRef = Math.asin(Math.sin(values.angle) / values.ratio);
   if(!isNaN(angleRef))
     document.getElementById('refracted').setAttribute('transform',
       'rotate(' + (90-r2d(angleRef)) + ')');
   document.getElementById('refracted').classList.toggle('hide', isNaN(angleRef));
+
+  let angleCrit = Math.asin(values.ratio);
+  if(!isNaN(angleCrit)) {
+    document.getElementById('crit1').setAttribute('transform',
+      'rotate(' + (-90+r2d(angleCrit)) + ')');
+    document.getElementById('crit2').setAttribute('transform',
+      'rotate(' + (-90-r2d(angleCrit)) + ')');
+  }
+  document.getElementById('crit1').classList.toggle('hide', isNaN(angleCrit));
+  document.getElementById('crit2').classList.toggle('hide', isNaN(angleCrit));
+
   document.getElementById('width').setAttribute('d',
     'M 3 ' + -(values.width + .5) + ' V ' + -values.width + ' V ' + values.width + ' v .5');
   document.getElementById('wavelength').setAttribute('d',

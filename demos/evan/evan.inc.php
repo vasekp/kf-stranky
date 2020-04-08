@@ -118,6 +118,10 @@ print <<<HTML
         <path d="M 0 0 L 7.1 0" stroke-width=".03" stroke="black" stroke-dasharray=".1 .1"/>
         <path d="M 0 0 L 7.1 0" stroke-width=".03" stroke="white" stroke-dasharray=".1 .1" stroke-dashoffset=".1"/>
       </g>
+      <g id="critical">
+        <path d="M 0 0 L 7.1 0" stroke-width=".03" stroke="red" stroke-dasharray=".1 .1"/>
+        <path d="M 0 0 L 7.1 0" stroke-width=".03" stroke="white" stroke-dasharray=".1 .1" stroke-dashoffset=".1"/>
+      </g>
     </defs>
     <g transform="scale(1, -1)">
       <g id="incident" transform="rotate(-135)">
@@ -128,6 +132,8 @@ print <<<HTML
       </g>
       <use id="reflected" xlink:href="#axis" transform="rotate(-45)"/>
       <use id="refracted" xlink:href="#axis" transform="rotate(45)"/>
+      <use id="crit1" xlink:href="#critical" transform="rotate(-40)"/>
+      <use id="crit2" xlink:href="#critical" transform="rotate(-140)"/>
     </g>
   </svg>
 </div>
