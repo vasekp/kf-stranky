@@ -90,6 +90,7 @@ print <<<HTML
       $nav_links
     </nav>
     <div id="main">
+      $secrets[version]
       <main>
         $content
       </main>
