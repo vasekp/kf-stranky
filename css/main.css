@@ -33,19 +33,19 @@
   src: local('Source Sans Pro Bold'), local('SourceSansPro-Bold'), url('../fonts/SourceSansPro-Bold.woff2') format('woff2');
 }
 
-html {
+:root {
   font-family: 'Source Sans Pro';
   font-size: 13pt;
 }
 
 @media only screen and (max-width: 520pt) {
-  html {
+  :root {
     font-size: 10pt;
   }
 }
 
 @media only screen and (max-width: 400pt) {
-  html {
+  :root {
     font-size: 8pt;
   }
 }
