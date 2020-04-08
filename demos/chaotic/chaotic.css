@@ -21,34 +21,28 @@
   height: .8rem;
 }
 
-#svg1 .fill.red {
-  fill: #f00;
+#svg1 {
+  --color-red: #f00;
+  --color-blue: #00f;
 }
 
-#svg1 .fill.blue {
-  fill: #00f;
+#svg2 {
+  --color-red: #f88;
+  --color-blue: #88f;
 }
 
-#svg1 .stroke.red {
-  stroke: #f00;
+.red {
+  --color: var(--color-red);
 }
 
-#svg1 .stroke.blue {
-  stroke: #00f;
+.blue {
+  --color: var(--color-blue);
 }
 
-#svg2 .fill.red {
-  fill: #f88;
+.fill {
+  fill: var(--color);
 }
 
-#svg2 .fill.blue {
-  fill: #88f;
-}
-
-#svg2 .stroke.red {
-  stroke: #f88;
-}
-
-#svg2 .stroke.blue {
-  stroke: #88f;
+.stroke {
+  stroke: var(--color);
 }

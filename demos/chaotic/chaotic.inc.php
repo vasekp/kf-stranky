@@ -32,7 +32,7 @@ $tips = join(PHP_EOL, $list);
 
 print <<<HTML
 <h1>$demotitle</h1>
-$desc
+<p>$desc</p>
 <div class="switch" id="controls">
   <a href="#" id="play"><img class="inline-img" src="$demodir/play.svg" alt="Play"/></a>
   <a href="#" id="pause"><img class="inline-img" src="$demodir/pause.svg" alt="Pause"/></a>

@@ -33,19 +33,19 @@
   src: local('Source Sans Pro Bold'), local('SourceSansPro-Bold'), url('../fonts/SourceSansPro-Bold.woff2') format('woff2');
 }
 
-html {
+:root {
   font-family: 'Source Sans Pro';
   font-size: 13pt;
 }
 
 @media only screen and (max-width: 520pt) {
-  html {
+  :root {
     font-size: 10pt;
   }
 }
 
 @media only screen and (max-width: 400pt) {
-  html {
+  :root {
     font-size: 8pt;
   }
 }
@@ -58,17 +58,16 @@ body {
 }
 
 nav {
-  display: table;
+  display: flex;
   width: 100%;
   border-radius: 1rem 1rem 0 0;
   margin: 0;
   vertical-align: middle;
   background: #888;
-  table-layout: fixed;
 }
 
 nav a {
-  display: table-cell;
+  flex: 1 0 0;
   padding: .5rem 0;
   text-align: center;
   color: white;
@@ -158,7 +157,7 @@ a {
 }
 
 .warn {
-  display: table-cell;
+  display: inline-block;
   border-radius: 0.8rem;
   background: repeating-linear-gradient(-45deg, #fcc, #fcc 0.2rem, #faa 0.2rem, #faa 0.4rem);
   padding: 0.2rem 0.4rem;
@@ -166,7 +165,7 @@ a {
 }
 
 .error {
-  display: table-cell;
+  display: inline-block;
   border-radius: 0.8rem;
   background: repeating-linear-gradient(-45deg, #f66, #f66 0.2rem, #f88 0.2rem, #f88 0.4rem);
   border: 2px solid #900;

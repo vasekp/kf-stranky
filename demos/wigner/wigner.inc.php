@@ -64,29 +64,19 @@ $plotTypes = join(PHP_EOL, $list);
 print <<<HTML
 <h1>$demotitle</h1>
 <p>$desc</p>
-<table>
-  <tr>
-    <td>$type:</td>
-    <td>
-      <div class="inline switch" id="func">
-        $types
-      </div>
-    </td>
-    <td>
-      <div class="inline switch">
-        <a href="#" id="reset">$reset</a>
-      </div>
-    </td>
-  </tr>
-  <tr>
-    <td>$plotType:</td>
-    <td>
-      <div class="inline switch" id="plotType">
-        $plotTypes
-      </div>
-    </td>
-  </tr>
-</table>
+<div class="settings">
+  <div>$type:</div>
+  <div class="inline switch" id="func">
+    $types
+  </div>
+  <div class="inline switch">
+    <a href="#" id="reset">$reset</a>
+  </div>
+  <div>$plotType:</div>
+  <div class="inline switch" id="plotType">
+    $plotTypes
+  </div>
+</div>
 <div class="switch" id="play-controls">
   <a href="#" id="play"><img class="inline-img" src="$demodir/play.svg" alt="Play"/></a>
   <a href="#" id="pause"><img class="inline-img" src="$demodir/pause.svg" alt="Pause"/></a>

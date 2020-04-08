@@ -12,6 +12,13 @@
   height: 25rem;
 }
 
+.settings {
+  display: inline-grid;
+  grid-template-columns: auto auto;
+  align-items: center;
+  grid-gap: .5rem;
+}
+
 #coords {
   position: absolute;
   left: 0;
