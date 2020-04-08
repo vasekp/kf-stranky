@@ -220,22 +220,18 @@ function pStart(elm, x, y, rect) {
   }
   var tx = 5*(2*x/rect.width - 1);
   var ty = -5*(2*y/rect.height - 1);
-  function dist(tx, ty, mx, my) {
-    return Math.hypot(shift[0] + mx*scale[0] + my*scale[2] - tx,
-      shift[1] + mx*scale[1] + my*scale[3] - ty);
+  function transform(x, y) {
+    return [shift[0] + x*scale[0] + y*scale[2],
+            shift[1] + x*scale[1] + y*scale[3]];
   }
-  if(dist(tx, ty, 0, 0) < 0.2)
-    interaction.moving = 'c';
-  else if(dist(tx, ty, 1, 0) < 0.2)
-    interaction.moving = 'ex';
-  else if(dist(tx, ty, 0, 1) < 0.2)
-    interaction.moving = 'ey';
-  else if(dist(tx, ty, 1, 1) < 0.2)
-    interaction.moving = 'cxy';
-  else if(dist(tx, ty, catSepar, 0) < 0.2)
-    interaction.moving = 's';
-  else
-    interaction.moving = null;
+  var refs = {
+    'c': transform(0, 0),
+    'ex': transform(1, 0),
+    'ey': transform(0, 1),
+    'cxy': transform(1, 1),
+    's': transform(catSepar, 0)
+  };
+  interaction.moving = findNearest([tx, ty], refs, 0.5);
   interaction.lastX = tx;
   interaction.lastY = ty;
 }
