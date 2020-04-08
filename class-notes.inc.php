@@ -1,14 +1,4 @@
 <?php
-$scripts[] = 'shared.js';
-if($admin)
-  $scripts[] = 'shared-admin.js';
-$scripts[] = 'class-notes.js';
-if($admin) {
-  $css[] = 'css/classes-admin.css';
-  $scripts[] = 'classes-admin.js';
-  $scripts[] = 'class-notes-admin.js';
-}
-
 include 'class-notes-common.inc.php';
 
 $r = get_records(array_key_exists('date', $_GET) ? $_GET['date'] : '', !$admin, $admin);
@@ -16,6 +6,10 @@ if(!$r) {
   include 'class-details.inc.php';
   return;
 }
+
+$scripts[] = 'class-notes.js';
+if($admin)
+  $scripts[] = 'class-notes-admin.js';
 
 $prevlink = '<a id="prev"';
 if($r->date_prev) {

@@ -1,13 +1,7 @@
 <?php
-$scripts[] = 'shared.js';
-if($admin)
-  $scripts[] = 'shared-admin.js';
 $scripts[] = 'class-discussion.js';
-if($admin) {
-  $css[] = 'css/classes-admin.css';
-  $scripts[] = 'classes-admin.js';
+if($admin)
   $scripts[] = 'class-details-admin.js';
-}
 
 include 'class-discussion-common.inc.php';
 

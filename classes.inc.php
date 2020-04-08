@@ -1,5 +1,11 @@
 <?php
 $css[] = 'css/classes.css';
+$scripts[] = 'shared.js';
+if($admin) {
+  $css[] = 'css/classes-admin.css';
+  $scripts[] = 'shared-admin.js';
+  $scripts[] = 'classes-admin.js';
+}
 
 $cid = 'kf19';
 
