@@ -9,4 +9,3 @@ void main(void) {
   vTrf = trans(inv(rs), scale * aPos);
   gl_Position = vec4(aPos, 0.0, 1.0);
 }
-

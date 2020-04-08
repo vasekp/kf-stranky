@@ -128,3 +128,17 @@ function addPointerListeners(elm, fStart, fMove, fEnd) {
   elm.addEventListener('pointercancel', function(e) { pointerUp(e, fEnd); } );
   elm.style['touch-action'] = 'none';
 }
+
+function findNearest(point, map, minDistance) {
+  var currentMin = minDistance;
+  var found = null;
+  for(let id in map) {
+    let refPoint = map[id];
+    let dist = Math.hypot(point[0] - refPoint[0], point[1] - refPoint[1]);
+    if(dist < currentMin) {
+      found = id;
+      currentMin = dist;
+    }
+  }
+  return found;
+}

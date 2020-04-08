@@ -57,7 +57,6 @@ foreach($types as $id => $name)
 $types = join(PHP_EOL, $list);
 
 $list = [];
-$count = 0;
 foreach($plotTypes as $id => $name)
   $list[] = '<a href="#" id="' . $id . '">' . $name . '</a>';
 $plotTypes = join(PHP_EOL, $list);

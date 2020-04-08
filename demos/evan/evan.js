@@ -164,23 +164,14 @@ function pStart(elm, x, y, rect) {
   var ty = -5*(2*y/rect.height - 1);
   var cc = Math.cos(values.angle);
   var ss = Math.sin(values.angle);
-  function trf(tx, ty) {
-    return [-ss*tx - cc*ty, -ss*ty + cc*tx];
-  }
-  function dist(tx, ty, mx, my) {
-    let [ux, uy] = trf(tx, ty);
-    return Math.hypot(ux-mx, uy-my);
-  }
-  if(dist(tx, ty, 4.5, 0) < 0.2)
-    interaction.moving = 'rot';
-  else if(dist(tx, ty, 3, values.width) < 0.2)
-    interaction.moving = 'w';
-  else if(dist(tx, ty, 3, -values.width) < 0.2)
-    interaction.moving = 'w';
-  else if(dist(tx, ty, values.wavelength, 0) < 0.2)
-    interaction.moving = 'wl';
-  else
-    interaction.moving = null;
+  var ptTransformed = [-ss*tx - cc*ty, -ss*ty + cc*tx];
+  var refs = {
+    'rot': [4.5, 0],
+    'w+': [3, values.width],
+    'w-': [3, -values.width],
+    'wl': [values.wavelength, 0]
+  };
+  interaction.moving = findNearest(ptTransformed, refs, 0.5);
 }
 
 function pMove(elm, x, y, rect) {
@@ -193,7 +184,7 @@ function pMove(elm, x, y, rect) {
     if(ty > 0)
       ty = 0;
     values.angle = Math.atan2(-tx, -ty);
-  } else if(interaction.moving === 'w') {
+  } else if(interaction.moving === 'w+' || interaction.moving === 'w-') {
     let cc = Math.cos(values.angle);
     let ss = Math.sin(values.angle);
     let w = Math.abs(cc*tx - ss*ty);
