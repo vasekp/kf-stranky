@@ -3,6 +3,7 @@ precision highp float;
 uniform vec2 uK;
 uniform float uN2N1;
 uniform float uSpread;
+uniform bool uPpolarized;
 varying vec2 vPos;
 
 vec2 cmul(vec2 a, vec2 b) {
@@ -15,13 +16,14 @@ void main(void) {
   for(float p = -1.0; p < 1.0; p += 0.005) {
     div += 1.0;
     float kx = uK.x - p*uSpread*uK.y, ky = uK.y + p*uSpread*uK.x;
+    float ky1 = uPpolarized ? ky*uN2N1 : ky;
     float ky2s = uN2N1 * (kx*kx + ky*ky) - kx*kx;
     float ky2 = sqrt(abs(ky2s));
     vec2 r;
     if(ky2s > 0.0)
-      r = vec2((ky - ky2)/(ky + ky2), 0.0);
+      r = vec2((ky1 - ky2)/(ky1 + ky2), 0.0);
     else
-      r = vec2(ky*ky - ky2*ky2, -2.0*ky*ky2)/(ky*ky + ky2*ky2);
+      r = vec2(ky1*ky1 - ky2*ky2, -2.0*ky1*ky2)/(ky1*ky1 + ky2*ky2);
     float phase1 = kx*vPos.x + ky*vPos.y;
     float phase2 = kx*vPos.x - ky*vPos.y;
     vec2 c1 = vec2(cos(phase1), sin(phase1));

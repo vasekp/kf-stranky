@@ -48,22 +48,17 @@ function filesReady(files) {
 
   values = {
     angle: Math.PI/4,
-    ratio: 0.5,
+    ratio: Math.exp(-.25),
     width: 1,
+    polarization: 's',
     wavelength: 1.5
   };
-  updateValues();
-  prepare();
+
+  makeSwitch('polarization', changePolarization, 0);
+  document.getElementById('ratio').addEventListener('change', ratioChanged);
+  document.getElementById('ratio').addEventListener('input', ratioChanged);
   addPointerListeners(document.getElementById('coords'), pStart, pMove);
   requestAnimationFrame(draw);
-}
-
-function scissorAbove() {
-  gl.scissor(0, gl.canvas.height / 2, gl.canvas.width, gl.canvas.height);
-}
-
-function scissorBelow() {
-  gl.scissor(0, 0, gl.canvas.width, gl.canvas.height / 2);
 }
 
 function updateValues() {
@@ -76,6 +71,7 @@ function updateValues() {
     gl.uniform2fv(prog.uK, kVec);
     gl.uniform1f(prog.uN2N1, Math.pow(values.ratio, 2));
     gl.uniform1f(prog.uSpread, spread);
+    gl.uniform1i(prog.uPpolarized, values.polarization === 'p');
   });
 
   gl.useProgram(progs.draw.program);
@@ -98,6 +94,14 @@ function updateValues() {
     'M 3 ' + -(values.width + .5) + ' V ' + -values.width + ' V ' + values.width + ' v .5');
   document.getElementById('wavelength').setAttribute('d',
     'M ' + (values.wavelength - .5) + ' 0 h .5 h .5');
+}
+
+function scissorAbove() {
+  gl.scissor(0, gl.canvas.height / 2, gl.canvas.width, gl.canvas.height);
+}
+
+function scissorBelow() {
+  gl.scissor(0, 0, gl.canvas.width, gl.canvas.height / 2);
 }
 
 function prepare() {
@@ -125,10 +129,10 @@ function draw(time) {
   gl.enableVertexAttribArray(progs.draw.aPos);
   gl.vertexAttribPointer(progs.draw.aPos, 2, gl.FLOAT, false, 0, 0);
   gl.scissor(0, 0, gl.canvas.width, gl.canvas.height / 2);
-  gl.uniform1f(progs.draw.uBackground, 0.7);
+  gl.uniform1f(progs.draw.uBackground, Math.min(values.ratio, 1));
   gl.drawArrays(gl.TRIANGLES, 0, 6);
   gl.scissor(0, gl.canvas.height / 2, gl.canvas.width, gl.canvas.height);
-  gl.uniform1f(progs.draw.uBackground, 1);
+  gl.uniform1f(progs.draw.uBackground, Math.min(1/values.ratio, 1));
   gl.drawArrays(gl.TRIANGLES, 0, 6);
   gl.disableVertexAttribArray(progs.draw.aPos);
   requestAnimationFrame(draw);
@@ -187,6 +191,18 @@ function pMove(elm, x, y, rect) {
       d = 5;
     values.wavelength = d;
   }
+  updateValues();
+  prepare();
+}
+
+function changePolarization(elm) {
+  values.polarization = elm.id;
+  updateValues();
+  prepare();
+}
+
+function ratioChanged(e) {
+  values.ratio = Math.exp(e.currentTarget.value);
   updateValues();
   prepare();
 }

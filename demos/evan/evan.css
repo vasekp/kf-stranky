@@ -47,3 +47,7 @@
 #coords .filled {
   fill: var(--color);
 }
+
+#ratio {
+  width: 100%;
+}

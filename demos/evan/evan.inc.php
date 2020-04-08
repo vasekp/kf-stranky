@@ -11,24 +11,38 @@ $files[] = $demodir . '/draw.vert';
 $files[] = $demodir . '/draw.frag';
 
 if($en) {
-  $desc = 'Evanescent waves';
-  $type = 'Initial state';
-  $types = ['vacuum' => 'Vacuum', 'fock' => '1 photon', 'cat' => '"Cat" state'];
-  $reset = 'Reset';
-  $plotType = 'Plot';
-  $plotTypes = ['prob' => 'Density', 'wave' => 'Wave function'];
+  $desc = <<<END
+The transition from refraction to total internal reflection is not instantaneous for real waves.
+Finite beam width implies the presence of both sub- and supercritical incidence angles.
+Also, waves incident above the critical angle still penetrate several wavelengths into the optically rarer medium in the form of an evanescent wave.
+The plot shows the magnetic field, which for μ<sub>r</sub> = 1 is continuous on a dielectric interface.
+END;
+  $polar = 'Polarization';
+  $polars = ['s' => 'perpendicular', 'p' => 'parallel'];
+  $ratio = 'IOR ratio';
   $try = 'Tips for trying:';
   $tips = [
+    'Set the angle of incidence a little over critical and observe the shape of the reflected and transmitted parts of the wave.',
+    'As the beam width grows, compared to wavelength, the incident wave gets more similar to a plane wave. See how the imperfections disappear but the evanescent wave broadens. In contrast, narrow beams result in strong distortions.',
+    'The small lateral shift with respect to the marked axis of an ideal reflected beam is caused by the fact that the reflection does not happen strictly on the interface plane. This is known as the Goos–Hänchen effect.',
+    'For <em>p</em>-polarized wave there is Brewster\'s angle in which the reflection coefficient drops to zero. Can you find it? What happens with narrow beams?'
   ];
 } else {
-  $desc = 'Evanescentní vlny';
-  $type = 'Výchozí stav';
-  $types = ['vacuum' => 'Vakuum', 'fock' => '1 foton', 'cat' => '"Cat" stav'];
-  $reset = 'Reset';
-  $plotType = 'Vykreslit';
-  $plotTypes = ['prob' => 'Hustota', 'wave' => 'Vlnová funkce'];
+  $desc = <<<END
+Přechod od lomu k totálnímu odrazu není pro reálné paprsky skokový jev.
+Konečná šířka paprsku znamená přítomnost vln s nad- i podkritickými úhly.
+Navíc i za kritickým úhlem vlna stále vstupuje do opticky řidšího prostředí ve formě evanescentní vlny, s typickým dosahem několika násobků vlnové délky.
+Vykreslena je výchylka magnetického pole, která je pro μ<sub>r</sub> = 1 na rozhraní dvou dielektrik spojitá.
+END;
+  $polar = 'Polarizace';
+  $polars = ['s' => 'kolmá', 'p' => 'rovnoběžná'];
+  $ratio = 'Poměr indexů lomu';
   $try = 'Zkuste si:';
   $tips = [
+    'Nastavte úhel dopadu blízko nad kritickou hodnotu a sledujte tvar odražené vlny a prošlé části.',
+    'Jak roste poměr šířky paprsku k vlnové délce, dopadající vlna je stále podobnější rovinné vlně. Všimněte si, jak se nedokonalosti vyhlazují, ale evanescentní oblast rozšiřuje. Naopak pro úzké paprsky jsou obě vlny velmi zkreslené.',
+    'Malá odchylka od vyznačeného středu idealizovaného odraženého paprsku je způsobena tím, že k odrazu nedochází přesně v rovině rozhraní, ale v oblasti evanescentní vlny. Jedná se o tzv. Goos–Hänchenův efekt.',
+    'Pro <em>p</em>-polarizovanou vlnu existuje Brewsterův úhel, při němž koeficient odrazu klesá na nulu. Dokážete jej najít? Co se děje pro úzké paprsky?'
   ];
 }
 
@@ -37,21 +51,24 @@ foreach($tips as $tip)
   $list[] = '<li>' . $tip . '</li>';
 $tips = join(PHP_EOL, $list);
 
-$list = [];
-$count = 0;
-foreach($types as $id => $name)
-  $list[] = '<a href="#" id="' . $id . '" data-func="' . $count++ . '">' . $name . '</a>';
-$types = join(PHP_EOL, $list);
-
-$list = [];
-$count = 0;
-foreach($plotTypes as $id => $name)
-  $list[] = '<a href="#" id="' . $id . '">' . $name . '</a>';
-$plotTypes = join(PHP_EOL, $list);
-
 print <<<HTML
 <h1>$demotitle</h1>
 <p>$desc</p>
+<table>
+  <tr>
+    <td>$polar:</td>
+    <td>
+      <div class="inline switch" id="polarization">
+        <a href="#" id="s">$polars[s] (<em>s</em>)</a>
+        <a href="#" id="p">$polars[p] (<em>p</em>)</a>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td>$ratio:</td>
+    <td><input type="range" min="-1" max="1" value="-0.25" step="any" id="ratio"/>
+  </tr>
+</table>
 <div id="container">
   <canvas id="canvas"></canvas>
   <svg id="coords"
