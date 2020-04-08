@@ -1,18 +1,18 @@
 RewriteBase /
 
-# Direct all whitelisted PHP URLs to index.php
+# Direct all whitelisted PHP URLs to base.php
 RewriteCond $0#%{REQUEST_URI} ([^#]*)#(.*)\1$
-RewriteRule ^(landing|classes|demos|theses|pub|personal|error).php$ %2index.php [QSA,L,END]
+RewriteRule ^(landing|classes|demos|theses|pub|personal|error).php$ %2base.php [QSA,L,END]
 
-# Direct / and index.php itself to landing.php
+# Direct / and index.php to landing.php
 RewriteCond $0#%{REQUEST_URI} ([^#]*)#(.*)\1$
 RewriteRule ^(index.php)?$ %2landing.php [QSA,PT,END]
+
+# Direct hidden files to error.php
+RewriteCond $0#%{REQUEST_URI} ([^#]*)#(.*)\1$
+RewriteRule ^(.*inc.php|base.php)$ %2error.php [QSA,PT,END]
 
 # Direct non-existent files to error.php
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond $0#%{REQUEST_URI} ([^#]*)#(.*)\1$
 RewriteRule .* %2error.php [QSA,PT,END]
-
-# Direct hidden files to error.php
-RewriteCond $0#%{REQUEST_URI} ([^#]*)#(.*)\1$
-RewriteRule .*inc.php$ %2error.php [QSA,PT,END]
