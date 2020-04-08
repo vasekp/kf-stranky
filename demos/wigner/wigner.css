@@ -31,50 +31,39 @@
   width: 25rem;
   height: 25rem;
   opacity: 0.7;
+  --color: black;
 }
 
-#coords .filled {
-  fill: black;
+.c1 {
+  --color: #4c4;
 }
 
-#coords .stroked {
-  stroke: black;
+.c2 {
+  --color: #c44;
+}
+
+.c3 {
+  --color: #44c;
+}
+
+.filled {
+  fill: var(--color);
+}
+
+.stroked {
+  stroke: var(--color);
   stroke-width: 0.03;
   fill: none;
 }
 
-#coords #shape-controls {
+#shape-controls {
   transition: opacity .5s;
 }
 
-#coords .hidden {
+.hidden {
   opacity: 0;
 }
 
-#coords .filled.c1 {
-  fill: #4c4;
-}
-
-#coords .stroked.c1 {
-  stroke: #4c4;
-}
-
-#coords .filled.c2 {
-  fill: #c44;
-}
-
-#coords .stroked.c2 {
-  stroke: #c44;
-}
-
-#coords .filled.c3 {
-  fill: #44c;
-}
-
-#coords .stroked.c3 {
-  stroke: #44c;
-}
-
-#coords .text {
+.text {
   font-size: .4px;
 }
