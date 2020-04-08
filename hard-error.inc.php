@@ -4,6 +4,8 @@ $please_report_on = $en ? 'Please report this error on' : 'Prosím nahlašte chy
 $github = $en ? 'GitHub' : 'GitHubu';
 $url = 'https://github.com/vasekp/kf-stranky/issues';
 
+http_response_code(400);
+
 print <<<HTML
 <div class="error">
   $page_does_not_exist

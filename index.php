@@ -1,16 +1,7 @@
 <?php
 include 'shared.inc.php';
 
-$url = parse_url($_SERVER['REQUEST_URI']);
-$is_error = array_key_exists('REDIRECT_STATUS', $_SERVER) ? $_SERVER['REDIRECT_STATUS'] != 200 : false;
-$addr_prefix = $is_error ? dirname($_SERVER['PHP_SELF']) . '/' : '';
-$curr = $is_error ? 'error' : basename($url['path'], '.php');
-
-if(array_key_exists('query', $url)) {
-  parse_str($url['query'], $search);
-  $en = array_key_exists('l', $search) ? $search['l'] == 'en' : false;
-} else
-  $en = false;
+$en = @$_GET['l'] === 'en';
 $prilang = $en ? 'en' : 'cz';
 $seclang = $en ? 'cz' : 'en';
 $seclang_url = query('', $_GET, ['l' => $seclang]);
@@ -24,9 +15,15 @@ $stranky = [
   'personal' => $en ? 'Personal' : 'Osobní'
 ];
 
-if(!array_key_exists($curr, $stranky) && !$is_error)
-  $curr = key($stranky);
-$title_append = !$is_error ? ' - ' . $stranky[$curr] : '';
+$curr = basename($_SERVER['REDIRECT_URL'], '.php');
+if(array_key_exists($curr, $stranky)) {
+  $title_append = ' - ' . $stranky[$curr];
+  $addr_prefix = '';
+} else {
+  $curr = 'error';
+  $title_append = '';
+  $addr_prefix = dirname($_SERVER['PHP_SELF']) . '/';
+}
 $filename = $curr . '.inc.php';
 
 $admin = (array_key_exists('admin', $_GET) && $_GET['admin'] == $secrets['adminpw']);
