@@ -64,11 +64,15 @@ HTML;
       $namespan = '';
     $date = date('j.n.Y G:i', strtotime($row['timestamp']));
 
-    if(@$data['id'] == $row['id']
-        && ($skip_checks || @$data['auth_private'] == $row['auth_private'])) {
+    if(@$data['id'] == $row['id'] && ($skip_checks || @$data['auth_private'] == $row['auth_private'])) {
       $editing = true;
+      $header = 'Editujete příspěvek'
+        . ($name ? ' od <b>' . $name . '</b> ' : ' ')
+        . 'z ' . $date;
       print <<<HTML
   <div class="item form">
+    <a class="header" href="#" id="cancel"><img src="images/cross.svg"/></a>
+    $header:
     <form method="post">
       <textarea name="text" id="text">$text</textarea>
       <input type="hidden" name="class_ID" value="$cid"/>
@@ -76,8 +80,8 @@ HTML;
       <input type="hidden" name="ID" value="$data[id]"/>
       <input type="hidden" name="auth_private" value="$data[auth_private]"/>
       <input type="hidden" name="query" value="edit"/>
-      <p>&nbsp;</p>
-      <input type="submit" id="send" value="Odeslat"/>
+      <input type="submit" class="float" id="send" value="Odeslat"/>
+      <p class="clearfix">&nbsp;</p>
     </form>
   </div>\n
 HTML;
@@ -88,7 +92,7 @@ HTML;
       $date
       <span class="edittools hide" data-auth="$row[auth_public]">
         <a href="#" class="a-edit"><img src="images/edit.svg"/></a>
-        <a href="#" class="a-delete"><img src="images/delete.svg"/></a>
+        <a href="#" class="a-delete"><img src="images/cross.svg"/></a>
       </span>
     </div>
     $namespan
@@ -120,15 +124,15 @@ HTML;
       <p>Iniciály (nepovinné):
         <input name="name" type="text" maxlength="3" value="$name"/>
       </p>
-      <p>Napište tři chybějící písmena ze slova „<span id="challenge">$challenge</span>“:
-        <input name="captcha" type="text" id="captcha" maxlength="3"$mCaptcha/>
-      </p>
       <input type="hidden" name="class_ID" value="$cid"/>
       <input type="hidden" name="dld_ID" value="$dldid"/>
       <input type="hidden" name="serial" value="$count"/>
       <input type="hidden" name="attempt" id="attempt" value="$attempt"/>
       <input type="hidden" name="query" value="new"/>
-      <input type="submit" id="send" value="Odeslat"/>
+      <input type="submit" class="float" id="send" value="Odeslat"/>
+      <p class="clearfix">Napište tři chybějící písmena ze slova „<span id="challenge">$challenge</span>“:
+        <input name="captcha" type="text" id="captcha" maxlength="3"$mCaptcha/>
+      </p>
     </form>
   </div>\n
 HTML;

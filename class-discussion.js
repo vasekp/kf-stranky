@@ -164,6 +164,10 @@ function localStorageTouches(dldid) {
       input.value = admin.value;
       form.insertBefore(input, ref);
     }
+
+    let cancel = divDiscuss.querySelector('.item.form #cancel');
+    if(cancel)
+      cancel.addEventListener('click', cancelClick);
   }
 }
 
@@ -171,9 +175,12 @@ function editClick(e) {
   var elm = e.currentTarget;
   var id = findParent(elm, 'item').getAttribute('data-id');
   var dldid = findParent(elm, 'discussion').getAttribute('data-dldid');
+  var keys = authKeys();
+  if(!keys)
+    return;
   requestDiscussion(dldid, {
     'id': id,
-    'auth_private': localStorage['discussion-auth-private'],
+    'auth_private': keys['private'],
     'admin_pass': isAdmin() ? admin.value : null
   });
   e.preventDefault();
@@ -199,6 +206,14 @@ function deleteClick(e) {
   elm.classList.add('loading');
   var ajax = new Ajax('class-discussion-ajax.php', submitSuccess, deleteTimeout, 1000);
   ajax.sendRequest(data, elm);
+  e.preventDefault();
+}
+
+function cancelClick(e) {
+  var elm = e.currentTarget;
+  var id = findParent(elm, 'item').getAttribute('data-id');
+  var dldid = findParent(elm, 'discussion').getAttribute('data-dldid');
+  requestDiscussion(dldid);
   e.preventDefault();
 }
 
