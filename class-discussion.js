@@ -18,45 +18,44 @@ function isAdmin() {
 function bubbleClick(e) {
   e.preventDefault();
   var div = findParent(e.currentTarget, 'download');
-  var dldid = div.getAttribute('data-dldid');
-  var discussionDiv = document.getElementById('discussion' + dldid);
+  var tid = div.getAttribute('data-tid');
+  var discussionDiv = document.getElementById('discussion' + tid);
   if(discussionDiv) {
     discussionDiv.remove();
     updateURL(modifyQuery('discuss', null));
   } else
-    requestDiscussion(dldid);
+    requestDiscussion(tid);
 }
 
-function requestDiscussion(dldid, data = {}) {
-  var anchor = document.getElementById('bubble' + dldid);
+function requestDiscussion(tid, data = {}) {
+  var anchor = document.getElementById('bubble' + tid);
   anchor.classList.add('loading');
   anchor.querySelector('.bubble-count').textContent = '...';
   var ajax = new Ajax('class-discussion-ajax.php',
     discussionReceived,
     function() {
-      location.replace(addToQuery('discuss', dldid));
+      location.replace(addToQuery('discuss', tid));
     },
     1000
   );
   data['query'] = 'get';
-  data['class_ID'] = classID;
-  data['dld_ID'] = dldid;
-  ajax.sendRequest(data, dldid);
+  data['thread_ID'] = tid;
+  ajax.sendRequest(data, tid);
 }
 
-function discussionReceived(response, dldid) {
-  updateURL(addToQuery('discuss', dldid));
+function discussionReceived(response, tid) {
+  updateURL(addToQuery('discuss', tid));
   Array.from(document.getElementsByClassName('discussion')).forEach(function(elm) {
     elm.parentElement.removeChild(elm);
   });
   var content = new DOMParser().parseFromString(response.html, 'text/html').querySelector('.discussion');
-  var elm = document.getElementById('download' + dldid);
+  var elm = document.getElementById('download' + tid);
   elm.parentElement.insertBefore(content, elm.nextSibling);
-  var anchor = document.getElementById('bubble' + dldid);
+  var anchor = document.getElementById('bubble' + tid);
   anchor.classList.remove('loading');
   findParent(anchor, 'download').setAttribute('data-count', response.count);
   elm.querySelector('.bubble-count').textContent = response.count;
-  localStorageTouches(dldid);
+  localStorageTouches(tid);
 
   addEventsForm(content.querySelector('form'));
   content.querySelector('textarea').focus();
@@ -86,14 +85,14 @@ function authKeys() {
 // 2) highlights new content if open,
 // 3) shows edit tools where applicable,
 // 4) adds local auth keys to forms.
-function localStorageTouches(dldid) {
+function localStorageTouches(tid) {
   if(typeof(Storage) === 'undefined')
     return;
 
-  var lsKey = 'discussion-lastSeen-' + dldid;
+  var lsKey = 'discussion-lastSeen-' + tid;
   var lastSeen = localStorage[lsKey] || 0;
-  var divDiscuss = document.getElementById('discussion' + dldid);
-  var divDownload = document.getElementById('download' + dldid);
+  var divDiscuss = document.getElementById('discussion' + tid);
+  var divDownload = document.getElementById('download' + tid);
   var count = divDownload.getAttribute('data-count');
   if(!divDiscuss) {
     var newItems = count - lastSeen;
@@ -166,11 +165,11 @@ function localStorageTouches(dldid) {
 function editClick(e) {
   var elm = e.currentTarget;
   var id = findParent(elm, 'item').getAttribute('data-id');
-  var dldid = findParent(elm, 'discussion').getAttribute('data-dldid');
+  var tid = findParent(elm, 'discussion').getAttribute('data-tid');
   var keys = authKeys();
   if(!keys)
     return;
-  requestDiscussion(dldid, {
+  requestDiscussion(tid, {
     'id': id,
     'auth_private': keys['private'],
     'admin_pass': isAdmin() ? admin.value : null
@@ -181,7 +180,7 @@ function editClick(e) {
 function deleteClick(e) {
   var elm = e.currentTarget;
   var id = findParent(elm, 'item').getAttribute('data-id');
-  var dldid = findParent(elm, 'discussion').getAttribute('data-dldid');
+  var tid = findParent(elm, 'discussion').getAttribute('data-tid');
   var keys = authKeys();
   if(!keys)
     return;
@@ -189,11 +188,11 @@ function deleteClick(e) {
     'query': 'delete',
     'auth_private': keys['private'],
     'admin_pass': isAdmin() ? admin.value : null,
-    'dld_ID': dldid,
+    'thread_ID': tid,
     'ID': id
   };
   var deleteTimeout = function() {
-    requestDiscussion(dldid);
+    requestDiscussion(tid);
   };
   elm.classList.add('loading');
   var ajax = new Ajax('class-discussion-ajax.php', submitSuccess, deleteTimeout, 1000);
@@ -204,8 +203,8 @@ function deleteClick(e) {
 function cancelClick(e) {
   var elm = e.currentTarget;
   var id = findParent(elm, 'item').getAttribute('data-id');
-  var dldid = findParent(elm, 'discussion').getAttribute('data-dldid');
-  requestDiscussion(dldid);
+  var tid = findParent(elm, 'discussion').getAttribute('data-tid');
+  requestDiscussion(tid);
   e.preventDefault();
 }
 
@@ -223,10 +222,10 @@ function onSubmit(e) {
 
 function submitSuccess(response, elm) {
   elm.classList.remove('loading');
-  var dldid = findParent(elm, 'discussion').getAttribute('data-dldid');
+  var tid = findParent(elm, 'discussion').getAttribute('data-tid');
   switch(response.status) {
     case STATUS_OK: // Success
-      requestDiscussion(dldid);
+      requestDiscussion(tid);
       break;
     case STATUS_INCOMPLETE: // Missing fields
       response.missing.forEach(function(s) {
@@ -270,8 +269,8 @@ window.addEventListener('DOMContentLoaded', function(event) {
       return;
 
     var div = findParent(elm, 'download');
-    var dldid = div.getAttribute('data-dldid');
-    localStorageTouches(dldid);
+    var tid = div.getAttribute('data-tid');
+    localStorageTouches(tid);
   });
 
   Array.from(document.getElementsByTagName('form')).forEach(function(elm) {

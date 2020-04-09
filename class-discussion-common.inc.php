@@ -4,18 +4,18 @@ const STATUS_INCOMPLETE = 'incomplete';
 const STATUS_ALERT = 'alert';
 const STATUS_FAIL = 'fail';
 
-function validate_dldid($cid, $dldid) {
+function validate_tid($tid) {
   global $db;
-  $sql = 'select id from download where id=? and class_ID=?';
+  $sql = 'select lang from topics where id=?';
   $st = $db->prepare($sql);
-  $st->bind_param('is', $dldid, $cid);
+  $st->bind_param('i', $tid);
   $st->execute();
   $st->bind_result($dummy);
-  return $st->fetch(); // bool
+  return $st->fetch(); //bool
 }
 
-function gen_captcha($dldid, $count, $attempt, $result) {
-  $random = secret_pseudorandom($dldid, $count, $attempt);
+function gen_captcha($tid, $count, $attempt, $result) {
+  $random = secret_pseudorandom($tid, $count, $attempt);
   $result->data_seek($random % $result->num_rows);
   $word = $result->fetch_row()[0];
   $len = mb_strlen($word);
@@ -38,20 +38,21 @@ function gen_captcha($dldid, $count, $attempt, $result) {
   return [$challenge, $response];
 }
 
-function get_discussion($cid, $dldid, $data = null) {
+function get_discussion($tid, $data = null) {
   global $db;
   global $secrets;
-  if(!validate_dldid($cid, $dldid))
+  if(!validate_tid($tid))
     return null;
+
   ob_start();
-  $sql = "select id, name, text, auth_public, auth_private, timestamp from discussion where dld_ID='$dldid' order by id";
+  $sql = "select id, name, text, auth_public, auth_private, timestamp from discussion where thread_ID='$tid' order by id";
   $result = $db->query($sql);
   $count = 0;
   $editing = false;
   $skip_checks = @$data['admin_pass'] == $secrets['adminpw'];
 
   print <<<HTML
-<div class="discussion" id="discussion$dldid" data-dldid="$dldid">\n
+<div class="discussion" id="discussion$tid" data-tid="$tid">\n
 HTML;
 
   while($row = $result->fetch_assoc()) {
@@ -75,8 +76,7 @@ HTML;
     $header:
     <form method="post">
       <textarea name="text" id="text" autofocus>$text</textarea>
-      <input type="hidden" name="class_ID" value="$cid"/>
-      <input type="hidden" name="dld_ID" value="$dldid"/>
+      <input type="hidden" name="thread_ID" value="$tid"/>
       <input type="hidden" name="ID" value="$data[id]"/>
       <input type="hidden" name="auth_private" value="$data[auth_private]"/>
       <input type="hidden" name="query" value="edit"/>
@@ -104,7 +104,7 @@ HTML;
 
   if(!$editing) {
     $attempt = 0;
-    if($data !== null && @$data['dldid'] == $dldid) {
+    if($data !== null && @$data['tid'] == $tid) {
       $name = htmlspecialchars($data['name']);
       $text = nl2br(htmlspecialchars($data['text']));
       $mText = $data['status'] == STATUS_INCOMPLETE && in_array('text', $data['missing']) ? ' class="missing"' : '';
@@ -115,7 +115,7 @@ HTML;
 
     $sql = 'select challenge from captcha order by id';
     $result = $db->query($sql);
-    list($challenge, $response) = gen_captcha($dldid, $count, $attempt, $result);
+    list($challenge, $response) = gen_captcha($tid, $count, $attempt, $result);
 
     print <<<HTML
   <div class="item form">
@@ -124,8 +124,7 @@ HTML;
       <p>Iniciály (nepovinné):
         <input name="name" type="text" maxlength="3" value="$name"/>
       </p>
-      <input type="hidden" name="class_ID" value="$cid"/>
-      <input type="hidden" name="dld_ID" value="$dldid"/>
+      <input type="hidden" name="thread_ID" value="$tid"/>
       <input type="hidden" name="serial" value="$count"/>
       <input type="hidden" name="attempt" id="attempt" value="$attempt"/>
       <input type="hidden" name="query" value="new"/>
@@ -157,10 +156,9 @@ function discussion_submit($post) {
 
 function discussion_submit_new($post) {
   global $secrets;
-  if(!array_key_exists('dld_ID', $post) || !array_key_exists('class_ID', $post) || !array_key_exists('serial', $post))
+  if(!array_key_exists('thread_ID', $post) || !array_key_exists('serial', $post))
     return ['status' => STATUS_FAIL, 'error' => 'Invalid IDs'];
-  $cid = $post['class_ID'];
-  $dldid = $post['dld_ID'];
+  $tid = $post['thread_ID'];
   $serial = $post['serial'];
 
   $missing = [];
@@ -182,7 +180,7 @@ function discussion_submit_new($post) {
     'attempt' => $attempt
   ];
 
-  if(!validate_dldid($cid, $dldid)) {
+  if(!validate_tid($tid)) {
     $ret['status'] = STATUS_FAIL;
     return $ret;
   }
@@ -207,7 +205,7 @@ function discussion_submit_new($post) {
   if($name != 'VP') {
     $sql = 'select challenge from captcha order by id';
     $result = $db->query($sql);
-    list($challenge, $response) = gen_captcha($dldid, $serial, $attempt, $result);
+    list($challenge, $response) = gen_captcha($tid, $serial, $attempt, $result);
     $accept_re = preg_replace('/[^a-z]/u', '.', $response);
   } else
     $accept_re = $secrets['vpcaptcha'];
@@ -218,15 +216,15 @@ function discussion_submit_new($post) {
     $attempt = ($attempt + 1) % 3;
     $ret['attempt'] = $attempt;
     if($name != 'VP') {
-      list($challenge, $response) = gen_captcha($dldid, $serial, $attempt, $result);
+      list($challenge, $response) = gen_captcha($tid, $serial, $attempt, $result);
       $ret['challenge'] = $challenge;
     }
     return $ret;
   }
 
-  $sql = 'insert into discussion (dld_ID, name, text, hash, address, auth_public, auth_private) values (?, ?, ?, ?, ?, ?, ?) on duplicate key update name=name';
+  $sql = 'insert into discussion (dld_ID, thread_ID, name, text, hash, address, auth_public, auth_private) values (?, ?, ?, ?, ?, ?, ?, ?) on duplicate key update name=name';
   $st = $db->prepare($sql);
-  $st->bind_param('ississs', $dldid, $name, $text, $hash, $addr, $auth_public, $auth_private);
+  $st->bind_param('iississs', $tid, $tid, $name, $text, $hash, $addr, $auth_public, $auth_private);
   $success = $st->execute();
 
   if($success) {
@@ -244,7 +242,7 @@ function discussion_submit_edit($post) {
   global $db, $secrets;
 
   $id = $post['ID'];
-  $dldid = $post['dld_ID'];
+  $tid = $post['thread_ID'];
   $auth = $post['auth_private'];
   $skip_checks = @$post['admin_pass'] == $secrets['adminpw'];
 
@@ -262,9 +260,9 @@ function discussion_submit_edit($post) {
   }
 
   if(!$skip_checks) {
-    $sql = 'select not exists(select ID from discussion where ID > ? and dld_ID = ?)';
+    $sql = 'select not exists(select ID from discussion where ID > ? and thread_ID = ?)';
     $st = $db->prepare($sql);
-    $st->bind_param('ii', $id, $dldid);
+    $st->bind_param('ii', $id, $tid);
     $st->execute();
     $st->bind_result($newest);
     $st->fetch();
@@ -305,15 +303,15 @@ function discussion_submit_delete($post) {
   global $db, $secrets;
 
   $id = $post['ID'];
-  $dldid = $post['dld_ID'];
+  $tid = $post['thread_ID'];
   $auth = $post['auth_private'];
   $skip_checks = @$post['admin_pass'] == $secrets['adminpw'];
   $ret = [];
 
   if(!$skip_checks) {
-    $sql = 'select not exists(select ID from discussion where ID > ? and dld_ID = ?)';
+    $sql = 'select not exists(select ID from discussion where ID > ? and thread_ID = ?)';
     $st = $db->prepare($sql);
-    $st->bind_param('ii', $id, $dldid);
+    $st->bind_param('ii', $id, $tid);
     $st->execute();
     $st->bind_result($newest);
     $st->fetch();

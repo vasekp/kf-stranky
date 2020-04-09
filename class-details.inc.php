@@ -35,28 +35,28 @@ if($classInfo['announces'] || $admin) print <<<HTML
 HTML;
 
 $sql = <<<SQL
-select dld.ID as id, filename, description, count(dis.ID) as count
+select dld.thread_ID as tid, filename, description, count(dis.ID) as count
   from download as dld
-  left join discussion as dis on dis.dld_ID = dld.ID
+  left join discussion as dis on dis.thread_ID = dld.thread_ID
   where class_ID = '$cid'
-  group by dld.ID
+  group by dld.thread_ID
 SQL;
 if($result->num_rows > 0)
   echo "<h2>$downloads_title</h2>\n";
 $result = $db->query($sql);
 while($row = $result->fetch_assoc()) {
-  $url = modifyQuery(['discuss' => $row['id']]);
+  $url = modifyQuery(['discuss' => $row['tid']]);
   $count = $row['count'] ? $row['count'] : 0;
   ob_start();
   include 'images/discussion.svg.php';
   $bubble = ob_get_clean();
-  if(array_key_exists('discuss', $_GET) && $_GET['discuss'] == $row['id'])
-    $discussion = get_discussion($cid, $row['id'], $data)['html'];
+  if(array_key_exists('discuss', $_GET) && $_GET['discuss'] == $row['tid'])
+    $discussion = get_discussion($row['tid'], $data)['html'];
   else
     $discussion = '';
 
   print <<<HTML
-<div class="download" id="download$row[id]" data-dldid="$row[id]" data-count="$count">
+<div class="download" id="download$row[tid]" data-tid="$row[tid]" data-count="$count">
   <div class="icon">
     <a href="download/$row[filename]"><img src="images/download.svg" alt="$row[filename]"/></a>
   </div>
@@ -64,7 +64,7 @@ while($row = $result->fetch_assoc()) {
     <a href="download/$row[filename]">$row[description]</a>
   </div>
   <div class="bubble">\n
-    <a href="$url" id="bubble$row[id]">
+    <a href="$url" id="bubble$row[tid]">
       $bubble
     </a>
   </div>
