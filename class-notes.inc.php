@@ -1,5 +1,5 @@
 <?php
-include 'class-notes-common.inc.php';
+include_once 'class-notes-common.inc.php';
 
 $r = get_records($cid, array_key_exists('date', $_GET) ? $_GET['date'] : '', !$admin, $admin);
 if(!$r) {
