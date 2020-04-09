@@ -45,7 +45,7 @@ if($result->num_rows > 0)
   echo "<h2>$downloads_title</h2>\n";
 $result = $db->query($sql);
 while($row = $result->fetch_assoc()) {
-  $url = query('', ['discuss' => $row['id']]);
+  $url = modifyQuery(['discuss' => $row['id']]);
   $count = $row['count'] ? $row['count'] : '';
   $ccount = $row['count'] ? $row['count'] : 0;
   ob_start();
@@ -79,7 +79,7 @@ print <<<HTML
 HTML;
 
 if($admin || get_records($cid, '', true, false)) {
-  $notes_url = query('', ['c' => $cid, 's' => 'notes']);
+  $notes_url = modifyQuery(['s' => 'notes', 'discuss' => null]);
   print <<<HTML
   <a class="button" href="$notes_url">$notes_title</a>
 HTML;

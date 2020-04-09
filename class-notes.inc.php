@@ -19,14 +19,14 @@ $kos = $result->fetch_row()[0];
 
 $prevlink = '<a id="prev"';
 if($r->date_prev) {
-  $prevlink .= ' href="' . query('', ['s' => 'notes', 'c' => $cid, 'date' => $r->date_prev]) . '"';
+  $prevlink .= ' href="' . modifyQuery(['date' => $r->date_prev]) . '"';
   $prevlink .= ' data-date="' . $r->date_prev . '"';
 }
 $prevlink .= '>«</a>';
 
 $nextlink = '<a id="next"';
 if($r->date_next) {
-  $nextlink .= ' href="' . query('', ['s' => 'notes', 'c' => $cid, 'date' => $r->date_next]) . '"';
+  $nextlink .= ' href="' . modifyQuery(['date' => $r->date_next]) . '"';
   $nextlink .= ' data-date="' . $r->date_next . '"';
 }
 $nextlink .= '>»</a>';
