@@ -1,6 +1,8 @@
 <?php
 include_once 'class-notes-common.inc.php';
 
+$title = $classLang == 'en' ? 'Lecture summary for' : 'Poznámky k přednáškám';
+
 $r = get_records($cid, array_key_exists('date', $_GET) ? $_GET['date'] : '', !$admin, $admin);
 if(!$r) {
   include 'class-details.inc.php';
@@ -52,7 +54,7 @@ else
   $commit_button = '';
 
 print <<<HTML
-<h1>Poznámky k přednáškám $kos</h1>
+<h1>$title $kos</h1>
 <div class="switch larger" id="date-buttons">
   $prevlink
   <span id="date" data-date="$r->date">$r->date_text</span>

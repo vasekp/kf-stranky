@@ -14,16 +14,16 @@ $sql = 'select language from classes where ID=?';
 $st = $db->prepare($sql);
 $st->bind_param('s', $cid);
 $st->execute();
-$st->bind_result($language);
+$st->bind_result($classLang);
 if(!$st->fetch()) {
   include 'error.inc.php';
   return;
 }
 $st->close();
 
-if($prilang == 'en' && $language == 'cz')
+if($prilang == 'en' && $classLang == 'cz')
   $warn = 'This class, and all its associated materials, are in Czech.';
-else if($prilang == 'cz' && $language == 'en')
+else if($prilang == 'cz' && $classLang == 'en')
   $warn = 'Tento předmět a všechny příslušné materiály jsou v anglickém jazyce.';
 else
   $warn = '';

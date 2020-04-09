@@ -6,6 +6,11 @@ if($admin)
 include 'class-discussion-common.inc.php';
 include_once 'class-notes-common.inc.php';
 
+$announces_title = $classLang == 'en' ? 'Announcements' : 'Aktuality';
+$downloads_title = $classLang == 'en' ? 'Downloads' : 'Ke stažení';
+$notes_title = $classLang == 'en' ? 'Class notes' : 'Zápis z hodin';
+$tutorials_title = $classLang == 'en' ? 'Tutorials' : 'Stránky cvičení';
+
 if($_SERVER['REQUEST_METHOD'] == 'POST')
   $data = discussion_submit($_POST);
 else
@@ -22,9 +27,8 @@ print <<<HTML
 </div>\n
 HTML;
 
-if($classInfo['announces'] || $admin)
-  print <<<HTML
-<h2>Aktuality</h2>
+if($classInfo['announces'] || $admin) print <<<HTML
+<h2>$announces_title</h2>
 <div id="announces">
   $classInfo[announces]
 </div>\n
@@ -38,7 +42,7 @@ select dld.ID as id, filename, description, count(dis.ID) as count
   group by dld.ID
 SQL;
 if($result->num_rows > 0)
-  echo '<h2>Ke stažení</h2>' . PHP_EOL;
+  echo "<h2>$downloads_title</h2>\n";
 $result = $db->query($sql);
 while($row = $result->fetch_assoc()) {
   $url = query('', ['discuss' => $row['id']]);
@@ -77,13 +81,13 @@ HTML;
 if($admin || get_records($cid, '', true, false)) {
   $notes_url = query('', ['c' => $cid, 's' => 'notes']);
   print <<<HTML
-  <a class="button" href="$notes_url">Zápis z hodin</a>
+  <a class="button" href="$notes_url">$notes_title</a>
 HTML;
 }
 
 if($classInfo['tutorials'])
 print <<<HTML
-  <a class="button" href="$classInfo[tutorials]" target="_blank">Stránky cvičení</a>
+  <a class="button" href="$classInfo[tutorials]" target="_blank">$tutorials_title</a>
 HTML;
 
 print <<<HTML
