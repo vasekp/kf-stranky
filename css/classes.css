@@ -142,7 +142,7 @@
   resize: vertical;
 }
 
-input[name="name"] {
+input[name="name"], input[name="captcha"] {
   text-transform: uppercase;
 }
 
