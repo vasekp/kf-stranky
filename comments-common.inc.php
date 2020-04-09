@@ -6,7 +6,7 @@ const STATUS_FAIL = 'fail';
 
 function validate_tid($tid) {
   global $db;
-  $sql = 'select lang from discussion_threads where id=?';
+  $sql = 'select lang from comment_threads where id=?';
   $st = $db->prepare($sql);
   $st->bind_param('i', $tid);
   $st->execute();
@@ -38,21 +38,21 @@ function gen_captcha($tid, $count, $attempt, $result) {
   return [$challenge, $response];
 }
 
-function get_discussion($tid, $data = null) {
+function get_comments($tid, $data = null) {
   global $db;
   global $secrets;
   if(!validate_tid($tid))
     return null;
 
   ob_start();
-  $sql = "select id, name, text, auth_public, auth_private, timestamp from discussion where thread_ID='$tid' order by id";
+  $sql = "select id, name, text, auth_public, auth_private, timestamp from comments where thread_ID='$tid' order by id";
   $result = $db->query($sql);
   $count = 0;
   $editing = false;
   $skip_checks = @$data['admin_pass'] == $secrets['adminpw'];
 
   print <<<HTML
-<div class="discussion" id="discussion$tid" data-tid="$tid">\n
+<div class="comments" id="comments$tid" data-tid="$tid">\n
 HTML;
 
   while($row = $result->fetch_assoc()) {
@@ -145,16 +145,16 @@ HTML;
   ];
 }
 
-function discussion_submit($post) {
+function comments_submit($post) {
   if($post['query'] == 'edit')
-    return discussion_submit_edit($post);
+    return comments_submit_edit($post);
   if($post['query'] == 'delete')
-    return discussion_submit_delete($post);
+    return comments_submit_delete($post);
   else
-    return discussion_submit_new($post);
+    return comments_submit_new($post);
 }
 
-function discussion_submit_new($post) {
+function comments_submit_new($post) {
   global $secrets;
   if(!array_key_exists('thread_ID', $post) || !array_key_exists('serial', $post))
     return ['status' => STATUS_FAIL, 'error' => 'Invalid IDs'];
@@ -222,9 +222,9 @@ function discussion_submit_new($post) {
     return $ret;
   }
 
-  $sql = 'insert into discussion (dld_ID, thread_ID, name, text, hash, address, auth_public, auth_private) values (?, ?, ?, ?, ?, ?, ?, ?) on duplicate key update name=name';
+  $sql = 'insert into comments (thread_ID, name, text, hash, address, auth_public, auth_private) values (?, ?, ?, ?, ?, ?, ?) on duplicate key update name=name';
   $st = $db->prepare($sql);
-  $st->bind_param('iississs', $tid, $tid, $name, $text, $hash, $addr, $auth_public, $auth_private);
+  $st->bind_param('ississs', $tid, $name, $text, $hash, $addr, $auth_public, $auth_private);
   $success = $st->execute();
 
   if($success) {
@@ -238,7 +238,7 @@ function discussion_submit_new($post) {
   return $ret;
 }
 
-function discussion_submit_edit($post) {
+function comments_submit_edit($post) {
   global $db, $secrets;
 
   $id = $post['ID'];
@@ -260,7 +260,7 @@ function discussion_submit_edit($post) {
   }
 
   if(!$skip_checks) {
-    $sql = 'select not exists(select ID from discussion where ID > ? and thread_ID = ?)';
+    $sql = 'select not exists(select ID from comments where ID > ? and thread_ID = ?)';
     $st = $db->prepare($sql);
     $st->bind_param('ii', $id, $tid);
     $st->execute();
@@ -274,12 +274,12 @@ function discussion_submit_edit($post) {
       return $ret;
     }
 
-    $sql = 'update discussion set text = ?, timestamp = current_timestamp() where ID = ? and auth_private = ?';
+    $sql = 'update comments set text = ?, timestamp = current_timestamp() where ID = ? and auth_private = ?';
     $st = $db->prepare($sql);
     $st->bind_param('sis', $text, $id, $auth);
     $success = $st->execute();
   } else {
-    $sql = 'update discussion set text = ?, timestamp = current_timestamp() where ID = ?';
+    $sql = 'update comments set text = ?, timestamp = current_timestamp() where ID = ?';
     $st = $db->prepare($sql);
     $st->bind_param('si', $text, $id);
     $success = $st->execute();
@@ -299,7 +299,7 @@ function discussion_submit_edit($post) {
   return $ret;
 }
 
-function discussion_submit_delete($post) {
+function comments_submit_delete($post) {
   global $db, $secrets;
 
   $id = $post['ID'];
@@ -309,7 +309,7 @@ function discussion_submit_delete($post) {
   $ret = [];
 
   if(!$skip_checks) {
-    $sql = 'select not exists(select ID from discussion where ID > ? and thread_ID = ?)';
+    $sql = 'select not exists(select ID from comments where ID > ? and thread_ID = ?)';
     $st = $db->prepare($sql);
     $st->bind_param('ii', $id, $tid);
     $st->execute();
@@ -323,12 +323,12 @@ function discussion_submit_delete($post) {
       return $ret;
     }
 
-    $sql = 'delete from discussion where ID = ? and auth_private = ?';
+    $sql = 'delete from comments where ID = ? and auth_private = ?';
     $st = $db->prepare($sql);
     $st->bind_param('is', $id, $auth);
     $success = $st->execute();
   } else {
-    $sql = 'delete from discussion where ID = ?';
+    $sql = 'delete from comments where ID = ?';
     $st = $db->prepare($sql);
     $st->bind_param('i', $id);
     $success = $st->execute();

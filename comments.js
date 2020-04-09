@@ -19,10 +19,10 @@ function bubbleClick(e) {
   e.preventDefault();
   var div = findParent(e.currentTarget, 'download');
   var tid = div.getAttribute('data-tid');
-  var discussionDiv = document.getElementById('discussion' + tid);
-  if(discussionDiv) {
-    discussionDiv.remove();
-    updateURL(modifyQuery('discuss', null));
+  var commentsDiv = document.getElementById('comments' + tid);
+  if(commentsDiv) {
+    commentsDiv.remove();
+    updateURL(modifyQuery('comments', null));
   } else
     requestDiscussion(tid);
 }
@@ -31,10 +31,10 @@ function requestDiscussion(tid, data = {}) {
   var anchor = document.getElementById('bubble' + tid);
   anchor.classList.add('loading');
   anchor.querySelector('.bubble-count').textContent = '...';
-  var ajax = new Ajax('discussion-ajax.php',
-    discussionReceived,
+  var ajax = new Ajax('comments-ajax.php',
+    commentsReceived,
     function() {
-      location.replace(addToQuery('discuss', tid));
+      location.replace(addToQuery('comments', tid));
     },
     1000
   );
@@ -43,12 +43,12 @@ function requestDiscussion(tid, data = {}) {
   ajax.sendRequest(data, tid);
 }
 
-function discussionReceived(response, tid) {
-  updateURL(addToQuery('discuss', tid));
-  Array.from(document.getElementsByClassName('discussion')).forEach(function(elm) {
+function commentsReceived(response, tid) {
+  updateURL(addToQuery('comments', tid));
+  Array.from(document.getElementsByClassName('comments')).forEach(function(elm) {
     elm.parentElement.removeChild(elm);
   });
-  var content = new DOMParser().parseFromString(response.html, 'text/html').querySelector('.discussion');
+  var content = new DOMParser().parseFromString(response.html, 'text/html').querySelector('.comments');
   var elm = document.getElementById('download' + tid);
   elm.parentElement.insertBefore(content, elm.nextSibling);
   var anchor = document.getElementById('bubble' + tid);
@@ -71,17 +71,17 @@ function authKeys() {
       str += String.fromCharCode(97 + Math.floor(26 * Math.random()));
     return str;
   }
-  if(!localStorage['discussion-auth-private']) {
-    localStorage['discussion-auth-private'] = randomString();
-    localStorage['discussion-auth-public'] = randomString();
+  if(!localStorage['comments-auth-private']) {
+    localStorage['comments-auth-private'] = randomString();
+    localStorage['comments-auth-public'] = randomString();
   }
   return {
-    'private': localStorage['discussion-auth-private'],
-    'public': localStorage['discussion-auth-public']
+    'private': localStorage['comments-auth-private'],
+    'public': localStorage['comments-auth-public']
   };
 }
 
-// 1) Updates the bubble text to pull attention to new content if discussion closed,
+// 1) Updates the bubble text to pull attention to new content if comments closed,
 // 2) highlights new content if open,
 // 3) shows edit tools where applicable,
 // 4) adds local auth keys to forms.
@@ -89,9 +89,9 @@ function localStorageTouches(tid) {
   if(typeof(Storage) === 'undefined')
     return;
 
-  var lsKey = 'discussion-lastSeen-' + tid;
+  var lsKey = 'comments-lastSeen-' + tid;
   var lastSeen = localStorage[lsKey] || 0;
-  var divDiscuss = document.getElementById('discussion' + tid);
+  var divDiscuss = document.getElementById('comments' + tid);
   var divDownload = document.getElementById('download' + tid);
   var count = divDownload.getAttribute('data-count');
   if(!divDiscuss) {
@@ -165,7 +165,7 @@ function localStorageTouches(tid) {
 function editClick(e) {
   var elm = e.currentTarget;
   var id = findParent(elm, 'item').getAttribute('data-id');
-  var tid = findParent(elm, 'discussion').getAttribute('data-tid');
+  var tid = findParent(elm, 'comments').getAttribute('data-tid');
   var keys = authKeys();
   if(!keys)
     return;
@@ -180,7 +180,7 @@ function editClick(e) {
 function deleteClick(e) {
   var elm = e.currentTarget;
   var id = findParent(elm, 'item').getAttribute('data-id');
-  var tid = findParent(elm, 'discussion').getAttribute('data-tid');
+  var tid = findParent(elm, 'comments').getAttribute('data-tid');
   var keys = authKeys();
   if(!keys)
     return;
@@ -195,7 +195,7 @@ function deleteClick(e) {
     requestDiscussion(tid);
   };
   elm.classList.add('loading');
-  var ajax = new Ajax('discussion-ajax.php', submitSuccess, deleteTimeout, 1000);
+  var ajax = new Ajax('comments-ajax.php', submitSuccess, deleteTimeout, 1000);
   ajax.sendRequest(data, elm);
   e.preventDefault();
 }
@@ -203,7 +203,7 @@ function deleteClick(e) {
 function cancelClick(e) {
   var elm = e.currentTarget;
   var id = findParent(elm, 'item').getAttribute('data-id');
-  var tid = findParent(elm, 'discussion').getAttribute('data-tid');
+  var tid = findParent(elm, 'comments').getAttribute('data-tid');
   requestDiscussion(tid);
   e.preventDefault();
 }
@@ -216,13 +216,13 @@ function onSubmit(e) {
     data[e.name] = e.value;
   });
   elm.classList.add('loading');
-  var ajax = new Ajax('discussion-ajax.php', submitSuccess, submitTimeout, 1000);
+  var ajax = new Ajax('comments-ajax.php', submitSuccess, submitTimeout, 1000);
   ajax.sendRequest(data, elm);
 }
 
 function submitSuccess(response, elm) {
   elm.classList.remove('loading');
-  var tid = findParent(elm, 'discussion').getAttribute('data-tid');
+  var tid = findParent(elm, 'comments').getAttribute('data-tid');
   switch(response.status) {
     case STATUS_OK: // Success
       requestDiscussion(tid);

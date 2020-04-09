@@ -1,31 +1,31 @@
-.discuss-host .bubble {
+.comments-host .bubble {
   height: 1.2rem;
   position: relative;
   bottom: -.1rem;
 }
 
-.discuss-host[data-count="0"] .bubble {
+.comments-host[data-count="0"] .bubble {
   opacity: .2;
 }
 
-.discuss-host:hover[data-count="0"] .bubble {
+.comments-host:hover[data-count="0"] .bubble {
   opacity: 1;
   transition: opacity .5s;
 }
 
-.discuss-host[data-count="0"] .bubble-count {
+.comments-host[data-count="0"] .bubble-count {
   visibility: hidden;
 }
 
-.discuss-host a {
+.comments-host a {
   color: black;
 }
 
-.discuss-container {
+.comments-container {
   margin: 0 2.5rem 0 1.5rem;
 }
 
-.discuss-container .item {
+.comments-container .item {
   border: 1px solid #888;
   border-bottom: none;
   background: #eee;
@@ -33,20 +33,20 @@
   position: relative;
 }
 
-.discuss-container .item:first-of-type {
+.comments-container .item:first-of-type {
   border-radius: .5rem .5rem 0 0;
 }
 
-.discuss-container .item:last-of-type {
+.comments-container .item:last-of-type {
   border-radius: 0 0 .5rem .5rem;
   border-bottom: 1px solid #888;
 }
 
-.discuss-container .item:only-of-type {
+.comments-container .item:only-of-type {
   border-radius: .5rem;
 }
 
-.discuss-container .header {
+.comments-container .header {
   float: right;
   display: inline-block;
   font-size: 80%;
@@ -56,34 +56,34 @@
   top: -.5rem;
 }
 
-.discuss-container .header img {
+.comments-container .header img {
   height: 1em;
 }
 
-.discuss-container .name {
+.comments-container .name {
   font-weight: 600;
 }
 
-.discuss-container .name.vp {
+.comments-container .name.vp {
   color: #00c;
 }
 
-.discuss-container form >p:last-of-type {
+.comments-container form >p:last-of-type {
   margin-bottom: 0;
 }
 
-.discuss-container input, .discuss-container textarea {
+.comments-container input, .comments-container textarea {
   border: 1pt solid #888;
   font-size: inherit;
   font-family: inherit;
   border-radius: .2rem;
 }
 
-.discuss-container input {
+.comments-container input {
   max-width: 5em;
 }
 
-.discuss-container textarea {
+.comments-container textarea {
   box-sizing: border-box;
   display: block;
   width: 100%;
@@ -91,26 +91,26 @@
   margin-bottom: .5rem;
 }
 
-.discuss-container input[name="name"], input[name="captcha"] {
+.comments-container input[name="name"], input[name="captcha"] {
   text-transform: uppercase;
 }
 
-.discuss-container .float {
+.comments-container .float {
   background: inherit;
   float: right;
   margin-left: .5rem;
 }
 
-.discuss-container .clearfix::after {
+.comments-container .clearfix::after {
   content: "";
   clear: both;
   display: table;
 }
 
-.discuss-container .missing {
+.comments-container .missing {
   box-shadow: 0 0 2px red;
 }
 
-.discuss-container .new {
+.comments-container .new {
   box-shadow: 0 0 3px yellow;
 }

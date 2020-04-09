@@ -1,20 +1,20 @@
 <?php
-$css[] = 'css/discussion.css';
-$scripts[] = 'discussion.js';
+$css[] = 'css/comments.css';
+$scripts[] = 'comments.js';
 if($admin)
   $scripts[] = 'class-details-admin.js';
 
-include 'discussion-common.inc.php';
+include 'comments-common.inc.php';
 include_once 'class-notes-common.inc.php';
 
 $announces_title = $classLang == 'en' ? 'Announcements' : 'Aktuality';
 $downloads_title = $classLang == 'en' ? 'Downloads' : 'Ke stažení';
 $notes_title = $classLang == 'en' ? 'Class notes' : 'Zápis z hodin';
 $tutorials_title = $classLang == 'en' ? 'Tutorials' : 'Stránky cvičení';
-$discuss_title = $classLang == 'en' ? 'Discussion' : 'Diskuze';
+$comments_title = $classLang == 'en' ? 'Comments' : 'Diskuze';
 
 if($_SERVER['REQUEST_METHOD'] == 'POST')
-  $data = discussion_submit($_POST);
+  $data = comments_submit($_POST);
 else
   $data = null;
 
@@ -37,9 +37,9 @@ if($classInfo['announces'] || $admin) print <<<HTML
 HTML;
 
 $sql = <<<SQL
-select dld.thread_ID as tid, filename, description, count(dis.ID) as count
+select dld.thread_ID as tid, filename, description, count(comm.ID) as count
   from download as dld
-  left join discussion as dis on dis.thread_ID = dld.thread_ID
+  left join comments as comm on comm.thread_ID = dld.thread_ID
   where class_ID = '$cid'
   group by dld.thread_ID
 SQL;
@@ -47,18 +47,15 @@ if($result->num_rows > 0)
   echo "<h2>$downloads_title</h2>\n";
 $result = $db->query($sql);
 while($row = $result->fetch_assoc()) {
-  $url = modifyQuery(['discuss' => $row['tid']]);
+  $url = modifyQuery(['comments' => $row['tid']]);
   $count = $row['count'] ? $row['count'] : 0;
-  ob_start();
-  include 'images/discussion.svg.php';
-  $bubble = ob_get_clean();
-  if(array_key_exists('discuss', $_GET) && $_GET['discuss'] == $row['tid'])
-    $discussion = get_discussion($row['tid'], $data)['html'];
+  if(array_key_exists('comments', $_GET) && $_GET['comments'] == $row['tid'])
+    $comments = get_comments($row['tid'], $data)['html'];
   else
-    $discussion = '';
+    $comments = '';
 
   print <<<HTML
-<div class="discuss-host" data-tid="$row[tid]" data-count="$count">
+<div class="comments-host" data-tid="$row[tid]" data-count="$count">
   <div class="download">
     <div class="icon">
       <a href="download/$row[filename]"><img src="images/download.svg" alt="$row[filename]"/></a>
@@ -66,14 +63,14 @@ while($row = $result->fetch_assoc()) {
     <div class="text">
       <a href="download/$row[filename]">$row[description]</a>
     </div>
-    <div class="discuss-enter">
+    <div class="comments-enter">
       <a href="$url">
-        $discuss_title ($count)
+        $comments_title ($count)
       </a>
     </div>
   </div>
-  <div class="discuss-container">
-    $discussion
+  <div class="comments-container">
+    $comments
   </div>
 </div>\n
 HTML;
@@ -84,7 +81,7 @@ print <<<HTML
 HTML;
 
 if($admin || get_records($cid, '', true, false)) {
-  $notes_url = modifyQuery(['s' => 'notes', 'discuss' => null]);
+  $notes_url = modifyQuery(['s' => 'notes', 'comments' => null]);
   print <<<HTML
   <a class="button" href="$notes_url">$notes_title</a>
 HTML;
