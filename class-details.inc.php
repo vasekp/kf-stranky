@@ -1,15 +1,17 @@
 <?php
-$scripts[] = 'class-discussion.js';
+$css[] = 'css/discussion.css';
+$scripts[] = 'discussion.js';
 if($admin)
   $scripts[] = 'class-details-admin.js';
 
-include 'class-discussion-common.inc.php';
+include 'discussion-common.inc.php';
 include_once 'class-notes-common.inc.php';
 
 $announces_title = $classLang == 'en' ? 'Announcements' : 'Aktuality';
 $downloads_title = $classLang == 'en' ? 'Downloads' : 'Ke stažení';
 $notes_title = $classLang == 'en' ? 'Class notes' : 'Zápis z hodin';
 $tutorials_title = $classLang == 'en' ? 'Tutorials' : 'Stránky cvičení';
+$discuss_title = $classLang == 'en' ? 'Discussion' : 'Diskuze';
 
 if($_SERVER['REQUEST_METHOD'] == 'POST')
   $data = discussion_submit($_POST);
@@ -56,20 +58,24 @@ while($row = $result->fetch_assoc()) {
     $discussion = '';
 
   print <<<HTML
-<div class="download" id="download$row[tid]" data-tid="$row[tid]" data-count="$count">
-  <div class="icon">
-    <a href="download/$row[filename]"><img src="images/download.svg" alt="$row[filename]"/></a>
+<div class="discuss-host" data-tid="$row[tid]" data-count="$count">
+  <div class="download">
+    <div class="icon">
+      <a href="download/$row[filename]"><img src="images/download.svg" alt="$row[filename]"/></a>
+    </div>
+    <div class="text">
+      <a href="download/$row[filename]">$row[description]</a>
+    </div>
+    <div class="discuss-enter">
+      <a href="$url">
+        $discuss_title ($count)
+      </a>
+    </div>
   </div>
-  <div class="text">
-    <a href="download/$row[filename]">$row[description]</a>
+  <div class="discuss-container">
+    $discussion
   </div>
-  <div class="bubble">\n
-    <a href="$url" id="bubble$row[tid]">
-      $bubble
-    </a>
-  </div>
-</div>
-$discussion\n
+</div>\n
 HTML;
 }
 

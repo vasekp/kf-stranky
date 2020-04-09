@@ -29,7 +29,7 @@
   margin: .2rem 0;
 }
 
-.icon, .bubble {
+.icon, .discuss-enter {
   flex-basis: 1.5rem;
   text-align: center;
   flex-grow: 0;
@@ -40,8 +40,8 @@
   flex-basis: 1.5rem;
 }
 
-.bubble {
-  flex-basis: 2.5rem;
+.discuss-enter {
+  flex: 0 0 content;
 }
 
 .text {
@@ -52,121 +52,4 @@
   height: 1.2rem;
   position: relative;
   bottom: -.1rem;
-}
-
-.bubble svg {
-  height: 1.2rem;
-  position: relative;
-  bottom: -.1rem;
-}
-
-.download[data-count="0"] .bubble {
-  opacity: .2;
-}
-
-.download[data-count="0"] .bubble text {
-  visibility: hidden;
-}
-
-.download a {
-  color: black;
-}
-
-.download:hover[data-count="0"] .bubble {
-  opacity: 1;
-  transition: opacity .5s;
-}
-
-.discussion {
-  margin: 0 2.5rem 0 1.5rem;
-}
-
-.discussion .item {
-  border: 1px solid #888;
-  border-bottom: none;
-  background: #eee;
-  padding: .5rem;
-  position: relative;
-}
-
-.discussion .item:first-of-type {
-  border-radius: .5rem .5rem 0 0;
-}
-
-.discussion .item:last-of-type {
-  border-radius: 0 0 .5rem .5rem;
-  border-bottom: 1px solid #888;
-}
-
-.discussion .item:only-of-type {
-  border-radius: .5rem;
-}
-
-.discussion .header {
-  float: right;
-  display: inline-block;
-  font-size: 80%;
-  color: #888;
-  position: relative;
-  right: -.2rem;
-  top: -.5rem;
-}
-
-.discussion .header img {
-  height: 1em;
-}
-
-.discussion .name {
-  font-weight: 600;
-}
-
-.discussion .name.vp {
-  color: #00c;
-}
-
-.discussion form >p:last-of-type {
-  margin-bottom: 0;
-}
-
-.discussion input, .discussion button, .discussion textarea {
-  border: 1pt solid #888;
-  font-size: inherit;
-  font-family: inherit;
-  border-radius: .2rem;
-}
-
-.discussion input {
-  max-width: 5em;
-}
-
-.discussion textarea {
-  box-sizing: border-box;
-  display: block;
-  width: 100%;
-  resize: vertical;
-  margin-bottom: .5rem;
-}
-
-input[name="name"], input[name="captcha"] {
-  text-transform: uppercase;
-}
-
-.float {
-  background: inherit;
-  float: right;
-  margin-left: .5rem;
-}
-
-.clearfix::after {
-  content: "";
-  clear: both;
-  display: table;
-}
-
-.missing {
-  box-shadow: 0 0 2px red;
-}
-
-.new {
-  box-shadow: 0 0 3px yellow;
 }

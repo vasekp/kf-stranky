@@ -1,0 +1,116 @@
+.discuss-host .bubble {
+  height: 1.2rem;
+  position: relative;
+  bottom: -.1rem;
+}
+
+.discuss-host[data-count="0"] .bubble {
+  opacity: .2;
+}
+
+.discuss-host:hover[data-count="0"] .bubble {
+  opacity: 1;
+  transition: opacity .5s;
+}
+
+.discuss-host[data-count="0"] .bubble-count {
+  visibility: hidden;
+}
+
+.discuss-host a {
+  color: black;
+}
+
+.discuss-container {
+  margin: 0 2.5rem 0 1.5rem;
+}
+
+.discuss-container .item {
+  border: 1px solid #888;
+  border-bottom: none;
+  background: #eee;
+  padding: .5rem;
+  position: relative;
+}
+
+.discuss-container .item:first-of-type {
+  border-radius: .5rem .5rem 0 0;
+}
+
+.discuss-container .item:last-of-type {
+  border-radius: 0 0 .5rem .5rem;
+  border-bottom: 1px solid #888;
+}
+
+.discuss-container .item:only-of-type {
+  border-radius: .5rem;
+}
+
+.discuss-container .header {
+  float: right;
+  display: inline-block;
+  font-size: 80%;
+  color: #888;
+  position: relative;
+  right: -.2rem;
+  top: -.5rem;
+}
+
+.discuss-container .header img {
+  height: 1em;
+}
+
+.discuss-container .name {
+  font-weight: 600;
+}
+
+.discuss-container .name.vp {
+  color: #00c;
+}
+
+.discuss-container form >p:last-of-type {
+  margin-bottom: 0;
+}
+
+.discuss-container input, .discuss-container textarea {
+  border: 1pt solid #888;
+  font-size: inherit;
+  font-family: inherit;
+  border-radius: .2rem;
+}
+
+.discuss-container input {
+  max-width: 5em;
+}
+
+.discuss-container textarea {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  resize: vertical;
+  margin-bottom: .5rem;
+}
+
+.discuss-container input[name="name"], input[name="captcha"] {
+  text-transform: uppercase;
+}
+
+.discuss-container .float {
+  background: inherit;
+  float: right;
+  margin-left: .5rem;
+}
+
+.discuss-container .clearfix::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+.discuss-container .missing {
+  box-shadow: 0 0 2px red;
+}
+
+.discuss-container .new {
+  box-shadow: 0 0 3px yellow;
+}

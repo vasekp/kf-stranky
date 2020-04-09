@@ -1,7 +1,7 @@
 <?php
 include 'shared.inc.php';
 include 'ajax-common.inc.php';
-include 'class-discussion-common.inc.php';
+include 'discussion-common.inc.php';
 
 ajax_setup(['query' => [
   'get' => ['thread_ID'],

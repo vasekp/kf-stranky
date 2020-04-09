@@ -31,7 +31,7 @@ function requestDiscussion(tid, data = {}) {
   var anchor = document.getElementById('bubble' + tid);
   anchor.classList.add('loading');
   anchor.querySelector('.bubble-count').textContent = '...';
-  var ajax = new Ajax('class-discussion-ajax.php',
+  var ajax = new Ajax('discussion-ajax.php',
     discussionReceived,
     function() {
       location.replace(addToQuery('discuss', tid));
@@ -195,7 +195,7 @@ function deleteClick(e) {
     requestDiscussion(tid);
   };
   elm.classList.add('loading');
-  var ajax = new Ajax('class-discussion-ajax.php', submitSuccess, deleteTimeout, 1000);
+  var ajax = new Ajax('discussion-ajax.php', submitSuccess, deleteTimeout, 1000);
   ajax.sendRequest(data, elm);
   e.preventDefault();
 }
@@ -216,7 +216,7 @@ function onSubmit(e) {
     data[e.name] = e.value;
   });
   elm.classList.add('loading');
-  var ajax = new Ajax('class-discussion-ajax.php', submitSuccess, submitTimeout, 1000);
+  var ajax = new Ajax('discussion-ajax.php', submitSuccess, submitTimeout, 1000);
   ajax.sendRequest(data, elm);
 }
 

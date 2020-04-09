@@ -6,7 +6,7 @@ const STATUS_FAIL = 'fail';
 
 function validate_tid($tid) {
   global $db;
-  $sql = 'select lang from topics where id=?';
+  $sql = 'select lang from discussion_threads where id=?';
   $st = $db->prepare($sql);
   $st->bind_param('i', $tid);
   $st->execute();
