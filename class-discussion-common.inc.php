@@ -113,7 +113,7 @@ HTML;
     } else
       $text = $name = $mText = $mCaptcha = '';
 
-    $sql = 'select challenge from captcha2 order by id';
+    $sql = 'select challenge from captcha order by id';
     $result = $db->query($sql);
     list($challenge, $response) = gen_captcha($dldid, $count, $attempt, $result);
 
@@ -205,7 +205,7 @@ function discussion_submit_new($post) {
 
   global $db;
   if($name != 'VP') {
-    $sql = 'select challenge from captcha2 order by id';
+    $sql = 'select challenge from captcha order by id';
     $result = $db->query($sql);
     list($challenge, $response) = gen_captcha($dldid, $serial, $attempt, $result);
     $accept_re = preg_replace('/[^a-z]/u', '.', $response);
