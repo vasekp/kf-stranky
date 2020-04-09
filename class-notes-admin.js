@@ -12,6 +12,8 @@ function notesRequest(data, elm, callback) {
       elm.classList.add('warn');
     }
   );
+  data['class_ID'] = classID;
+  data['pass'] = adminPass;
   ajax.sendRequest(data, elm);
 }
 
@@ -20,8 +22,7 @@ function createNote(text, elm) {
   var data = {
     'type': 'insert',
     'text': text,
-    'date': date,
-    'pass': adminPass
+    'date': date
   };
   notesRequest(data, elm, function(response) {
     elm.setAttribute('data-id', response.id);
@@ -34,8 +35,7 @@ function updateNote(id, text, elm) {
   var data = {
     'type': 'update',
     'id': id,
-    'text': text,
-    'pass': adminPass
+    'text': text
   };
   notesRequest(data, elm, function(response) {
     elm.setAttribute('data-text', response.text);
@@ -46,8 +46,7 @@ function updateNote(id, text, elm) {
 function deleteNote(id, elm) {
   var data = {
     'type': 'delete',
-    'id': id,
-    'pass': adminPass
+    'id': id
   };
   notesRequest(data, elm, function() {
     list.removeChild(elm);
@@ -162,8 +161,7 @@ function addEvents(elm) {
 
 function commitNotes(e) {
   var data = {
-    'type': 'commit',
-    'pass': adminPass
+    'type': 'commit'
   };
   notesRequest(data, e.currentTarget, function() { });
   e.preventDefault();

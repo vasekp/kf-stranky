@@ -20,6 +20,7 @@ function get_records_async(date_sql) {
   ajax.sendRequest({
     'type': 'get',
     'date': date_sql,
+    'class_ID': classID,
     'hidden': typeof(adminPass) !== 'undefined'
   });
 }

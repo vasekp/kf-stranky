@@ -24,7 +24,7 @@ while($row = $result->fetch_assoc()) {
   if(file_exists("demos/$row[name]/$row[name].inc.php"))
     $topics[$row['tid']]['demos'][] = [
       'title' => $row['title'],
-      'url' => query('', ['demo' => $row['name']])
+      'url' => modifyQuery(['demo' => $row['name']])
     ];
 }
 

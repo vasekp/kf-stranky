@@ -1,6 +1,4 @@
 <?php
-$cid = 'kf19';
-
 const STATUS_OK = 'ok';
 const STATUS_INCOMPLETE = 'incomplete';
 const STATUS_ALERT = 'alert';
@@ -16,9 +14,8 @@ function validate_dldid($cid, $dldid) {
   return $st->fetch(); // bool
 }
 
-function get_discussion($dldid, $data = null) {
+function get_discussion($cid, $dldid, $data = null) {
   global $db;
-  global $cid;
   global $secrets;
   if(!validate_dldid($cid, $dldid))
     return null;
@@ -27,7 +24,6 @@ function get_discussion($dldid, $data = null) {
   $result = $db->query($sql);
   $count = 0;
   $editing = false;
-  $form_url = query('', ['discuss' => $dldid]);
   $skip_checks = @$data['admin_pass'] == $secrets['adminpw'];
 
   print <<<HTML
@@ -49,7 +45,7 @@ HTML;
       $editing = true;
       print <<<HTML
   <div class="item form">
-    <form action="$form_url" method="post">
+    <form method="post">
       <textarea name="text" id="text">$text</textarea>
       <input type="hidden" name="class_ID" value="$cid"/>
       <input type="hidden" name="dld_ID" value="$dldid"/>
@@ -96,7 +92,7 @@ HTML;
 
     print <<<HTML
   <div class="item form">
-    <form action="$form_url" method="post">
+    <form method="post">
       <textarea name="text"$mText id="text">$text</textarea>
       <p>Iniciály (nepovinné): <input name="name" type="text" maxlength="3" value="$name"/></p>
       <p>Opište první slovo ze strany <span id="challenge">$challenge</span>: <input name="captcha" id="captcha" type="text"$mCaptcha/></p>

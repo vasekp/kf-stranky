@@ -38,8 +38,11 @@ function requestDiscussion(dldid, data = {}) {
     },
     1000
   );
-  data['query'] = 'get';
-  data['dld_ID'] = dldid;
+  data = {
+    'query': 'get',
+    'class_ID': classID,
+    'dld_ID': dldid
+  };
   ajax.sendRequest(data, dldid);
 }
 

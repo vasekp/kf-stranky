@@ -1,37 +1,36 @@
 <?php
-$scripts[] = 'shared.js';
-if($admin)
-  $scripts[] = 'shared-admin.js';
 $scripts[] = 'class-discussion.js';
-if($admin) {
-  $css[] = 'css/classes-admin.css';
-  $scripts[] = 'classes-admin.js';
+if($admin)
   $scripts[] = 'class-details-admin.js';
-}
 
 include 'class-discussion-common.inc.php';
+include_once 'class-notes-common.inc.php';
+
+$announces_title = $classLang == 'en' ? 'Announcements' : 'Aktuality';
+$downloads_title = $classLang == 'en' ? 'Downloads' : 'Ke stažení';
+$notes_title = $classLang == 'en' ? 'Class notes' : 'Zápis z hodin';
+$tutorials_title = $classLang == 'en' ? 'Tutorials' : 'Stránky cvičení';
 
 if($_SERVER['REQUEST_METHOD'] == 'POST')
   $data = discussion_submit($_POST);
 else
   $data = null;
 
-$sql = "select title, KOS, intro, announces from classes where ID='$cid'";
+$sql = "select title, KOS, intro, announces, tutorials from classes where ID='$cid'";
 $result = $db->query($sql);
-$row = $result->fetch_assoc();
+$classInfo = $result->fetch_assoc();
 
 print <<<HTML
-<h1>$row[title] <span class="smaller">($row[KOS])</span></h1>
+<h1>$classInfo[title] <span class="smaller">($classInfo[KOS])</span></h1>
 <div id="intro">
-  $row[intro]
+  $classInfo[intro]
 </div>\n
 HTML;
 
-if($row['announces'] || $admin)
-  print <<<HTML
-<h2>Aktuality</h2>
+if($classInfo['announces'] || $admin) print <<<HTML
+<h2>$announces_title</h2>
 <div id="announces">
-  $row[announces]
+  $classInfo[announces]
 </div>\n
 HTML;
 
@@ -43,17 +42,17 @@ select dld.ID as id, filename, description, count(dis.ID) as count
   group by dld.ID
 SQL;
 if($result->num_rows > 0)
-  echo '<h2>Ke stažení</h2>' . PHP_EOL;
+  echo "<h2>$downloads_title</h2>\n";
 $result = $db->query($sql);
 while($row = $result->fetch_assoc()) {
-  $url = query('', ['discuss' => $row['id']]);
+  $url = modifyQuery(['discuss' => $row['id']]);
   $count = $row['count'] ? $row['count'] : '';
   $ccount = $row['count'] ? $row['count'] : 0;
   ob_start();
   include 'images/discussion.svg.php';
   $bubble = ob_get_clean();
   if(array_key_exists('discuss', $_GET) && $_GET['discuss'] == $row['id'])
-    $discussion = get_discussion($row['id'], $data)['html'];
+    $discussion = get_discussion($cid, $row['id'], $data)['html'];
   else
     $discussion = '';
 
@@ -75,11 +74,23 @@ $discussion\n
 HTML;
 }
 
-$notes_url = query('', ['s' => 'notes']);
 print <<<HTML
 <div class="buttons">
-  <a class="button" href="$notes_url">Zápis z hodin</a>
-  <a class="button" href="https://physics.fjfi.cvut.cz/studium/predmety/292-02kfa" target="_blank">Stránky cvičení</a>
+HTML;
+
+if($admin || get_records($cid, '', true, false)) {
+  $notes_url = modifyQuery(['s' => 'notes', 'discuss' => null]);
+  print <<<HTML
+  <a class="button" href="$notes_url">$notes_title</a>
+HTML;
+}
+
+if($classInfo['tutorials'])
+print <<<HTML
+  <a class="button" href="$classInfo[tutorials]" target="_blank">$tutorials_title</a>
+HTML;
+
+print <<<HTML
 </div>
 $admin_row
 HTML;

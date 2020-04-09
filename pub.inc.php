@@ -15,7 +15,7 @@ $filter = array_key_exists('filter', $_GET) && in_array($_GET['filter'], array_k
 
 $list = [];
 foreach($filters as $key => $name) {
-  $href = query('', ['filter' => $key]);
+  $href = modifyQuery(['filter' => $key]);
   $selected = $key == $filter ? ' class="selected"' : '';
   $list[] = <<<HTML
 <a id="$key" href="$href"$selected>$name</a>

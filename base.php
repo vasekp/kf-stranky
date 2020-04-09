@@ -1,10 +1,10 @@
 <?php
 include 'shared.inc.php';
+include 'indent.inc.php';
 
 $en = @$_GET['l'] === 'en';
 $prilang = $en ? 'en' : 'cz';
 $seclang = $en ? 'cz' : 'en';
-$seclang_url = query('', $_GET, ['l' => $seclang]);
 
 $stranky = [
   'landing' => $en ? 'Intro' : 'Úvod',
@@ -15,24 +15,35 @@ $stranky = [
   'personal' => $en ? 'Personal' : 'Osobní'
 ];
 
-$curr = basename($_SERVER['REDIRECT_URL'], '.php');
-if(array_key_exists($curr, $stranky)) {
-  $title_append = ' - ' . $stranky[$curr];
+$base = basename($_SERVER['REDIRECT_URL'], '.php');
+if(array_key_exists($base, $stranky)) {
+  $title_append = ' - ' . $stranky[$base];
   $addr_prefix = '';
 } else {
-  $curr = 'error';
+  $base = 'error';
   $title_append = '';
   $addr_prefix = dirname($_SERVER['PHP_SELF']) . '/';
 }
-$filename = $curr . '.inc.php';
+$filename = $base . '.inc.php';
+
+function modifyQuery($array) {
+  global $base;
+  $get = array_filter(array_merge($_GET, $array), 'strlen');
+  if(!empty($get))
+    return '?' . http_build_query($get, '', '&amp;');
+  else
+    return $base . '.php';
+}
 
 $admin = (array_key_exists('admin', $_GET) && $_GET['admin'] == $secrets['adminpw']);
 $admin_row = $admin ? '<input type="hidden" id="admin" value="' . $_GET['admin'] . '"/>' : '';
 
+$seclang_url = modifyQuery(['l' => $en ? null : 'en']);
+
 $nav_links = [];
 foreach($stranky as $name => $text) {
-  $url = query($name . '.php');
-  $emph = $name==$curr ? ' class="emph"' : '';
+  $url = $name . '.php' . ($en ? '?l=en' : '');
+  $emph = $name==$base ? ' class="emph"' : '';
   $nav_links[] = <<<HTML
 <span class="hide">[</span>
 <a href="$addr_prefix$url"$emph>$text</a>
