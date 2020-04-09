@@ -115,7 +115,7 @@ HTML;
 
     $sql = 'select challenge from captcha2 order by id';
     $result = $db->query($sql);
-    [$challenge, $response] = gen_captcha($dldid, $count, $attempt, $result);
+    list($challenge, $response) = gen_captcha($dldid, $count, $attempt, $result);
 
     print <<<HTML
   <div class="item form">
@@ -207,7 +207,7 @@ function discussion_submit_new($post) {
   if($name != 'VP') {
     $sql = 'select challenge from captcha2 order by id';
     $result = $db->query($sql);
-    [$challenge, $response] = gen_captcha($dldid, $serial, $attempt, $result);
+    list($challenge, $response) = gen_captcha($dldid, $serial, $attempt, $result);
     $accept_re = preg_replace('/[^a-z]/u', '.', $response);
   } else
     $accept_re = $secrets['vpcaptcha'];
@@ -218,7 +218,7 @@ function discussion_submit_new($post) {
     $attempt = ($attempt + 1) % 3;
     $ret['attempt'] = $attempt;
     if($name != 'VP') {
-      [$challenge, $response] = gen_captcha($dldid, $serial, $attempt, $result);
+      list($challenge, $response) = gen_captcha($dldid, $serial, $attempt, $result);
       $ret['challenge'] = $challenge;
     }
     return $ret;
