@@ -30,7 +30,7 @@ function bubbleClick(e) {
 function requestDiscussion(dldid, data = {}) {
   var anchor = document.getElementById('bubble' + dldid);
   anchor.classList.add('loading');
-  anchor.querySelector('text').textContent = '...';
+  anchor.querySelector('.bubble-count').textContent = '...';
   var ajax = new Ajax('class-discussion-ajax.php',
     discussionReceived,
     function() {
@@ -55,7 +55,7 @@ function discussionReceived(response, dldid) {
   var anchor = document.getElementById('bubble' + dldid);
   anchor.classList.remove('loading');
   findParent(anchor, 'download').setAttribute('data-count', response.count);
-  elm.querySelector('text').textContent = response.count ? response.count : '';
+  elm.querySelector('.bubble-count').textContent = response.count;
   localStorageTouches(dldid);
 
   addEventsForm(content.querySelector('form'));
@@ -103,16 +103,8 @@ function localStorageTouches(dldid) {
       localStorage[lsKey] = count; // silently adjust
       return;
     }
-
-    const xmlns = 'http://www.w3.org/2000/svg';
-    var textElm = divDownload.querySelector('.bubble text');
-    textElm.textContent = textElm.textContent.trim();
-    if(!textElm.textContent)
-      return;
-    var newChild = document.createElementNS(xmlns, 'tspan');
-    newChild.setAttributeNS(null, 'fill', 'red');
-    newChild.appendChild(document.createTextNode('/+' + newItems));
-    textElm.appendChild(newChild, textElm);
+    var plus = divDownload.querySelector('.bubble-count-plus');
+    plus.textContent = '/+' + newItems;
     return;
   } else {
     var children = divDiscuss.querySelectorAll('.item:not(.form)');

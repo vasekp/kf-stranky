@@ -7,5 +7,5 @@
   </defs>
   <path stroke="black" stroke-width="0.5" stroke-linejoin="round" fill="url(#page)"
     d="M 5 12 L 5 10 H 2 q -2 0 -2 -2 V 2 q 0 -2 2 -2 H 18 q 2 0 2 2 V 8 q 0 2 -2 2 H 8 z"/>
-  <text x="10" y="7.5" text-anchor="middle" font-family="Source Sans Pro" font-weight="600" font-size="8"><?php echo $count; ?></text>
+  <text class="bubble-count" x="10" y="7.5" text-anchor="middle" font-family="Source Sans Pro" font-weight="600" font-size="8"><?php echo $count; ?><tspan class="bubble-count-plus" fill="red"></tspan></text>
 </svg>

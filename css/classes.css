@@ -64,6 +64,10 @@
   opacity: .2;
 }
 
+.download[data-count="0"] .bubble text {
+  visibility: hidden;
+}
+
 .download a {
   color: black;
 }
