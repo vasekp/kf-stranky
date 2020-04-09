@@ -14,6 +14,30 @@ function validate_dldid($cid, $dldid) {
   return $st->fetch(); // bool
 }
 
+function gen_captcha($dldid, $count, $attempt, $result) {
+  $random = secret_pseudorandom($dldid, $count, $attempt);
+  $result->data_seek($random % $result->num_rows);
+  $word = $result->fetch_row()[0];
+  $len = mb_strlen($word);
+  $i1 = ($random % ($len - 2)) + 1;
+  $i2 = ($random % ($len - 3)) + 1;
+  $i3 = ($random % ($len - 4)) + 1;
+  if($i2 >= $i1) $i2++;
+  if($i3 >= min($i1, $i2)) $i3++;
+  if($i3 >= max($i1, $i2)) $i3++;
+  //Assertion: $i1, $i2, $i3 three different indices from [1, length-1)
+  $indices = [$i1, $i2, $i3];
+  sort($indices);
+  $letters = preg_split('//u', $word, null, PREG_SPLIT_NO_EMPTY);
+  $response = '';
+  foreach($indices as $i) {
+    $response .= $letters[$i];
+    $letters[$i] = '?';
+  }
+  $challenge = join($letters);
+  return [$challenge, $response];
+}
+
 function get_discussion($cid, $dldid, $data = null) {
   global $db;
   global $secrets;
@@ -40,20 +64,24 @@ HTML;
       $namespan = '';
     $date = date('j.n.Y G:i', strtotime($row['timestamp']));
 
-    if(@$data['id'] == $row['id']
-        && ($skip_checks || @$data['auth_private'] == $row['auth_private'])) {
+    if(@$data['id'] == $row['id'] && ($skip_checks || @$data['auth_private'] == $row['auth_private'])) {
       $editing = true;
+      $header = 'Editujete příspěvek'
+        . ($name ? ' od <b>' . $name . '</b> ' : ' ')
+        . 'z ' . $date;
       print <<<HTML
   <div class="item form">
+    <a class="header" href="#" id="cancel"><img src="images/cross.svg"/></a>
+    $header:
     <form method="post">
-      <textarea name="text" id="text">$text</textarea>
+      <textarea name="text" id="text" autofocus>$text</textarea>
       <input type="hidden" name="class_ID" value="$cid"/>
       <input type="hidden" name="dld_ID" value="$dldid"/>
       <input type="hidden" name="ID" value="$data[id]"/>
       <input type="hidden" name="auth_private" value="$data[auth_private]"/>
       <input type="hidden" name="query" value="edit"/>
-      <p>&nbsp;</p>
-      <input type="submit" id="send" value="Odeslat"/>
+      <input type="submit" class="float" id="send" value="Odeslat"/>
+      <p class="clearfix">&nbsp;</p>
     </form>
   </div>\n
 HTML;
@@ -64,7 +92,7 @@ HTML;
       $date
       <span class="edittools hide" data-auth="$row[auth_public]">
         <a href="#" class="a-edit"><img src="images/edit.svg"/></a>
-        <a href="#" class="a-delete"><img src="images/delete.svg"/></a>
+        <a href="#" class="a-delete"><img src="images/cross.svg"/></a>
       </span>
     </div>
     $namespan
@@ -85,23 +113,26 @@ HTML;
     } else
       $text = $name = $mText = $mCaptcha = '';
 
-    $sql = "select challenge from captcha where class_ID='$cid' order by id";
+    $sql = 'select challenge from captcha2 order by id';
     $result = $db->query($sql);
-    $result->data_seek(gen_captcha($dldid, $count, $attempt, $result->num_rows));
-    $challenge = $result->fetch_row()[0];
+    [$challenge, $response] = gen_captcha($dldid, $count, $attempt, $result);
 
     print <<<HTML
   <div class="item form">
     <form method="post">
-      <textarea name="text"$mText id="text">$text</textarea>
-      <p>Iniciály (nepovinné): <input name="name" type="text" maxlength="3" value="$name"/></p>
-      <p>Opište první slovo ze strany <span id="challenge">$challenge</span>: <input name="captcha" id="captcha" type="text"$mCaptcha/></p>
+      <textarea name="text"$mText id="text" autofocus>$text</textarea>
+      <p>Iniciály (nepovinné):
+        <input name="name" type="text" maxlength="3" value="$name"/>
+      </p>
       <input type="hidden" name="class_ID" value="$cid"/>
       <input type="hidden" name="dld_ID" value="$dldid"/>
       <input type="hidden" name="serial" value="$count"/>
       <input type="hidden" name="attempt" id="attempt" value="$attempt"/>
       <input type="hidden" name="query" value="new"/>
-      <input type="submit" id="send" value="Odeslat"/>
+      <input type="submit" class="float" id="send" value="Odeslat"/>
+      <p class="clearfix">Napište tři chybějící písmena ze slova „<span id="challenge">$challenge</span>“:
+        <input name="captcha" type="text" id="captcha" maxlength="3"$mCaptcha/>
+      </p>
     </form>
   </div>\n
 HTML;
@@ -174,10 +205,10 @@ function discussion_submit_new($post) {
 
   global $db;
   if($name != 'VP') {
-    $sql = "select challenge, response from captcha where class_ID='$cid' order by id";
+    $sql = 'select challenge from captcha2 order by id';
     $result = $db->query($sql);
-    $result->data_seek(gen_captcha($dldid, $serial, $attempt, $result->num_rows));
-    $accept_re = preg_replace('/[^a-z]/u', '.', mb_strtolower($result->fetch_row()[1]));
+    [$challenge, $response] = gen_captcha($dldid, $serial, $attempt, $result);
+    $accept_re = preg_replace('/[^a-z]/u', '.', $response);
   } else
     $accept_re = $secrets['vpcaptcha'];
 
@@ -187,8 +218,8 @@ function discussion_submit_new($post) {
     $attempt = ($attempt + 1) % 3;
     $ret['attempt'] = $attempt;
     if($name != 'VP') {
-      $result->data_seek(gen_captcha($dldid, $serial, $attempt, $result->num_rows));
-      $ret['challenge'] = $result->fetch_row()[0];
+      [$challenge, $response] = gen_captcha($dldid, $serial, $attempt, $result);
+      $ret['challenge'] = $challenge;
     }
     return $ret;
   }

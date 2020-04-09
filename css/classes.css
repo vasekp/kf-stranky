@@ -64,6 +64,10 @@
   opacity: .2;
 }
 
+.download[data-count="0"] .bubble text {
+  visibility: hidden;
+}
+
 .download a {
   color: black;
 }
@@ -140,17 +144,23 @@
   display: block;
   width: 100%;
   resize: vertical;
+  margin-bottom: .5rem;
 }
 
-input[name="name"] {
+input[name="name"], input[name="captcha"] {
   text-transform: uppercase;
 }
 
-#send {
+.float {
   background: inherit;
-  position: absolute;
-  right: .5rem;
-  bottom: .5rem;
+  float: right;
+  margin-left: .5rem;
+}
+
+.clearfix::after {
+  content: "";
+  clear: both;
+  display: table;
 }
 
 .missing {

@@ -46,8 +46,7 @@ if($result->num_rows > 0)
 $result = $db->query($sql);
 while($row = $result->fetch_assoc()) {
   $url = modifyQuery(['discuss' => $row['id']]);
-  $count = $row['count'] ? $row['count'] : '';
-  $ccount = $row['count'] ? $row['count'] : 0;
+  $count = $row['count'] ? $row['count'] : 0;
   ob_start();
   include 'images/discussion.svg.php';
   $bubble = ob_get_clean();
@@ -57,7 +56,7 @@ while($row = $result->fetch_assoc()) {
     $discussion = '';
 
   print <<<HTML
-<div class="download" id="download$row[id]" data-dldid="$row[id]" data-count="$ccount">
+<div class="download" id="download$row[id]" data-dldid="$row[id]" data-count="$count">
   <div class="icon">
     <a href="download/$row[filename]"><img src="images/download.svg" alt="$row[filename]"/></a>
   </div>
