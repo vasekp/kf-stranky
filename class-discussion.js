@@ -50,9 +50,6 @@ function discussionReceived(response, dldid) {
     elm.parentElement.removeChild(elm);
   });
   var content = new DOMParser().parseFromString(response.html, 'text/html').querySelector('.discussion');
-
-  addEventsForm(content.querySelector('form'));
-
   var elm = document.getElementById('download' + dldid);
   elm.parentElement.insertBefore(content, elm.nextSibling);
   var anchor = document.getElementById('bubble' + dldid);
@@ -60,6 +57,9 @@ function discussionReceived(response, dldid) {
   findParent(anchor, 'download').setAttribute('data-count', response.count);
   elm.querySelector('text').textContent = response.count ? response.count : '';
   localStorageTouches(dldid);
+
+  addEventsForm(content.querySelector('form'));
+  content.querySelector('textarea').focus();
 }
 
 function authKeys() {

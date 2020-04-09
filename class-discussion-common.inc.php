@@ -74,7 +74,7 @@ HTML;
     <a class="header" href="#" id="cancel"><img src="images/cross.svg"/></a>
     $header:
     <form method="post">
-      <textarea name="text" id="text">$text</textarea>
+      <textarea name="text" id="text" autofocus>$text</textarea>
       <input type="hidden" name="class_ID" value="$cid"/>
       <input type="hidden" name="dld_ID" value="$dldid"/>
       <input type="hidden" name="ID" value="$data[id]"/>
@@ -120,7 +120,7 @@ HTML;
     print <<<HTML
   <div class="item form">
     <form method="post">
-      <textarea name="text"$mText id="text">$text</textarea>
+      <textarea name="text"$mText id="text" autofocus>$text</textarea>
       <p>Iniciály (nepovinné):
         <input name="name" type="text" maxlength="3" value="$name"/>
       </p>
