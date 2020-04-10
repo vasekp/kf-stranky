@@ -6,13 +6,19 @@ const STATUS_FAIL = 'fail';
 
 function validate_tid($tid) {
   return is_numeric($tid);
-  /*global $db;
+}
+
+function validate_tid_get_lang($tid) {
+  global $db;
   $sql = 'select lang from comment_threads where id=?';
   $st = $db->prepare($sql);
   $st->bind_param('i', $tid);
   $st->execute();
-  $st->bind_result($dummy);
-  return $st->fetch(); //bool*/
+  $st->bind_result($lang);
+  if(!$st->fetch())
+    return null;
+  else
+    return $lang;
 }
 
 function gen_captcha($tid, $count, $attempt, $result) {
@@ -41,7 +47,8 @@ function gen_captcha($tid, $count, $attempt, $result) {
 
 function get_comments($tid, $dataPOST = null) {
   global $db, $secrets;
-  if(!validate_tid($tid))
+  $lang = validate_tid_get_lang($tid);
+  if(!$lang)
     return null;
 
   $ret = '';
@@ -66,9 +73,9 @@ function get_comments($tid, $dataPOST = null) {
     if(@$dataPOST['edit_id'] == $row['id']
         && ($skip_checks || @$dataPOST['auth_private'] == $row['auth_private'])) {
       $editing = true;
-      $ret .= format_comment_edit($dataHTML);
+      $ret .= format_comment_edit($dataHTML, $lang);
     } else
-      $ret .= format_comment_item($dataHTML);
+      $ret .= format_comment_item($dataHTML, $lang);
   }
 
   if(!$editing) {
@@ -81,11 +88,11 @@ function get_comments($tid, $dataPOST = null) {
       'serial' => $count,
       'tid' => $tid
     ];
-    $sql = 'select challenge from captcha order by id';
+    $sql = "select challenge from captcha where lang='$lang' order by id";
     $result = $db->query($sql);
     list($challenge, $response) = gen_captcha($tid, $count, $attempt, $result);
     $dataHTML['captcha'] = $challenge;
-    $ret .= format_comment_new($dataHTML);
+    $ret .= format_comment_new($dataHTML, $lang);
   }
 
   return [
@@ -125,7 +132,7 @@ HTML;
   ];
 }
 
-function format_comment_item($data) {
+function format_comment_item($data, $lang) {
   if($data['name'])
     $namespan = '<span class="name' . ($data['name'] == 'VP' ? ' vp' : '') . '">'
         . $data['name'] . ':</span>';
@@ -148,10 +155,21 @@ HTML;
   return ob_get_clean();
 }
 
-function format_comment_edit($data) {
-  $header = 'Editujete příspěvek'
-    . ($data['name'] ? ' od <b>' . $data['name'] . '</b> ' : ' ')
-    . 'z ' . $data['date'];
+function format_comment_edit($data, $lang) {
+  if($lang == 'en') {
+    $editing = 'Editing comment';
+    $by = 'by';
+    $from = 'from';
+    $submit = 'Submit';
+  } else {
+    $editing = 'Editujete příspěvek';
+    $by = 'od';
+    $from = 'z';
+    $submit = 'Odeslat';
+  }
+  $header = $editing
+    . ($data['name'] ? " $by <b>$data[name]</b>" : '')
+    . " $from $data[date]";
   ob_start();
   print <<<HTML
 <div class="item form">
@@ -163,7 +181,7 @@ function format_comment_edit($data) {
     <input type="hidden" name="ID" value="$data[id]"/>
     <input type="hidden" name="auth_private" value="$data[auth_private]"/>
     <input type="hidden" name="query" value="edit"/>
-    <input type="submit" class="float" id="send" value="Odeslat"/>
+    <input type="submit" class="float" id="send" value="$submit"/>
     <p class="clearfix">&nbsp;</p>
   </form>
 </div>\n
@@ -171,7 +189,18 @@ HTML;
   return ob_get_clean();
 }
 
-function format_comment_new($data) {
+function format_comment_new($data, $lang) {
+  if($lang == 'en') {
+    $initials = 'Initials (optional)';
+    $submit = 'Submit';
+    $challengePre = 'Enter the three missing letters from “';
+    $challengePost = '”';
+  } else {
+    $initials = 'Iniciály (nepovinné)';
+    $submit = 'Odeslat';
+    $challengePre = 'Napište tři chybějící písmena ze slova „';
+    $challengePost = '“';
+  }
   $mText = @in_array('text', $data['missing']) ? ' class="missing"' : '';
   $mCaptcha = @in_array('captcha', $data['missing']) ? ' class="missing"' : '';
   ob_start();
@@ -179,15 +208,15 @@ function format_comment_new($data) {
 <div class="item form">
   <form method="post">
     <textarea name="text"$mText id="text" autofocus>$data[text]</textarea>
-    <p>Iniciály (nepovinné):
+    <p>$initials:
       <input name="name" type="text" maxlength="3" value="$data[name]"/>
     </p>
     <input type="hidden" name="thread_ID" value="$data[tid]"/>
     <input type="hidden" name="serial" value="$data[serial]"/>
     <input type="hidden" name="attempt" id="attempt" value="$data[attempt]"/>
     <input type="hidden" name="query" value="new"/>
-    <input type="submit" class="float" id="send" value="Odeslat"/>
-    <p class="clearfix">Napište tři chybějící písmena ze slova „<span id="challenge">$data[captcha]</span>“:
+    <input type="submit" class="float" id="send" value="$submit"/>
+    <p class="clearfix">$challengePre<span id="challenge">$data[captcha]</span>$challengePost:
       <input name="captcha" type="text" id="captcha" maxlength="3"$mCaptcha/>
     </p>
   </form>
@@ -231,8 +260,10 @@ function comments_submit_new($post) {
     'attempt' => $attempt
   ];
 
-  if(!validate_tid($tid)) {
+  $lang = validate_tid_get_lang($tid);
+  if(!$lang) {
     $ret['status'] = STATUS_FAIL;
+    $ret['error'] = 'Nonexistent thread_ID';
     return $ret;
   }
 
@@ -254,7 +285,7 @@ function comments_submit_new($post) {
 
   global $db;
   if($name != 'VP') {
-    $sql = 'select challenge from captcha order by id';
+    $sql = "select challenge from captcha where lang='$lang' order by id";
     $result = $db->query($sql);
     list($challenge, $response) = gen_captcha($tid, $serial, $attempt, $result);
     $accept_re = preg_replace('/[^a-z]/u', '.', $response);
