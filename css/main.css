@@ -116,6 +116,7 @@ main>:last-child {
 a {
   text-decoration: none;
   outline: 0;
+  color: inherit;
 }
 
 #lastmod {
@@ -200,11 +201,11 @@ b, .emph {
   font-size: 110%;
 }
 
-main a {
+a[href^=http], a[href^=mailto], a.classic {
   color: #008;
 }
 
-main a:hover {
+a[href^=http]:hover, a[href^=mailto]:hover, a.classic:hover {
   color: #44c;
 }
 

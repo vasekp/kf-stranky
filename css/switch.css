@@ -13,7 +13,6 @@
 
 .switch a, .switch span {
   flex: 0 0 content;
-  color: black;
   padding: .2rem .5rem;
   border: 1px solid #888;
   border-right: none;
@@ -44,10 +43,6 @@
 
 .switch a:only-of-type {
   border-radius: 1rem;
-}
-
-.switch a:hover {
-  color: black;
 }
 
 @media (hover: hover) {
