@@ -29,8 +29,8 @@
   margin: .2rem 0;
 }
 
-.download a {
-  color: black;
+.download .text:hover a {
+  color: #44c;
 }
 
 .icon {

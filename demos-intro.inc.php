@@ -31,7 +31,7 @@ while($row = $result->fetch_assoc()) {
 foreach($topics as &$topic) {
   $list = [];
   foreach($topic['demos'] as $demo)
-    $list[] = '<li><a href="' . $demo['url'] . '">' . $demo['title'] . '</a></li>';
+    $list[] = '<li><a href="' . $demo['url'] . '" class="classic">' . $demo['title'] . '</a></li>';
   $topic['list'] = join(PHP_EOL, $list);
 }
 
