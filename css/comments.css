@@ -1,24 +1,34 @@
-.comments-host .bubble {
-  height: 1.2rem;
+.comments-bubble a {
+  display: block;
   position: relative;
   bottom: -.1rem;
+  width: 2rem;
+  height: 1.2rem;
+  background-image: url(../images/bubble.svg);
+  background-size: contain;
+  background-repeat: no-repeat;
+  text-align: center;
+  font-size: 80%;
+  font-weight: 600;
+  line-height: 1.1rem;
+  color: black;
 }
 
-.comments-host[data-count="0"] .bubble {
+.comments-bubble a:hover {
+  color: inherit;
+}
+
+.comments-host[data-count="0"] .comments-bubble {
   opacity: .2;
 }
 
-.comments-host:hover[data-count="0"] .bubble {
+.comments-host:hover[data-count="0"] .comments-bubble {
   opacity: 1;
   transition: opacity .5s;
 }
 
-.comments-host[data-count="0"] .bubble-count {
-  visibility: hidden;
-}
-
-.comments-host a {
-  color: black;
+.comments-host[data-count="0"] .comments-bubble a {
+  color: transparent;
 }
 
 .comments-container {

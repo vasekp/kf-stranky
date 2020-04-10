@@ -29,27 +29,28 @@
   margin: .2rem 0;
 }
 
-.icon, .discuss-enter {
-  flex-basis: 1.5rem;
-  text-align: center;
-  flex-grow: 0;
-  flex-shrink: 0;
+.download a {
+  color: black;
 }
 
 .icon {
   flex-basis: 1.5rem;
-}
-
-.discuss-enter {
-  flex: 0 0 content;
-}
-
-.text {
-  flex-grow: 1;
+  text-align: center;
+  flex-grow: 0;
+  flex-shrink: 0;
+  flex-basis: 1.5rem;
 }
 
 .icon img {
   height: 1.2rem;
   position: relative;
   bottom: -.1rem;
+}
+
+.text {
+  flex-grow: 1;
+}
+
+.comments-bubble {
+  flex: 0 0 content;
 }

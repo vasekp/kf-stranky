@@ -11,7 +11,6 @@ $announces_title = $classLang == 'en' ? 'Announcements' : 'Aktuality';
 $downloads_title = $classLang == 'en' ? 'Downloads' : 'Ke stažení';
 $notes_title = $classLang == 'en' ? 'Class notes' : 'Zápis z hodin';
 $tutorials_title = $classLang == 'en' ? 'Tutorials' : 'Stránky cvičení';
-$comments_title = $classLang == 'en' ? 'Comments' : 'Diskuze';
 
 if($_SERVER['REQUEST_METHOD'] == 'POST')
   $data = comments_submit($_POST);
@@ -63,9 +62,9 @@ while($row = $result->fetch_assoc()) {
     <div class="text">
       <a href="download/$row[filename]">$row[description]</a>
     </div>
-    <div class="comments-enter">
+    <div class="comments-bubble">
       <a href="$url">
-        $comments_title ($count)
+        $count
       </a>
     </div>
   </div>
