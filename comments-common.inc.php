@@ -181,8 +181,7 @@ function format_comment_edit($data, $lang) {
     <input type="hidden" name="ID" value="$data[id]"/>
     <input type="hidden" name="auth_private" value="$data[auth_private]"/>
     <input type="hidden" name="query" value="edit"/>
-    <input type="submit" class="float" id="send" value="$submit"/>
-    <p class="clearfix">&nbsp;</p>
+    <input type="submit" class="nofloat" id="send" value="$submit"/>
   </form>
 </div>\n
 HTML;
@@ -215,10 +214,10 @@ function format_comment_new($data, $lang) {
     <input type="hidden" name="serial" value="$data[serial]"/>
     <input type="hidden" name="attempt" id="attempt" value="$data[attempt]"/>
     <input type="hidden" name="query" value="new"/>
-    <input type="submit" class="float" id="send" value="$submit"/>
     <p class="clearfix">$challengePre<span id="challenge">$data[captcha]</span>$challengePost:
       <input name="captcha" type="text" id="captcha" maxlength="3"$mCaptcha/>
     </p>
+    <input type="submit" class="float" id="send" value="$submit"/>
   </form>
 </div>\n
 HTML;

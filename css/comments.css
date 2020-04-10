@@ -111,8 +111,16 @@
 
 .comments-container .float {
   background: inherit;
-  float: right;
-  margin-left: .5rem;
+  position: absolute;
+  right: .5rem;
+  bottom: .5rem;
+}
+
+.comments-container .nofloat {
+  display: block;
+  background: inherit;
+  margin-left: auto;
+  margin-right: 0;
 }
 
 .comments-container .clearfix::after {
