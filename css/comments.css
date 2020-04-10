@@ -1,0 +1,138 @@
+.comments-bubble a {
+  display: block;
+  position: relative;
+  bottom: -.1rem;
+  width: 2rem;
+  height: 1.2rem;
+  background-image: url(../images/bubble.svg);
+  background-size: contain;
+  background-repeat: no-repeat;
+  text-align: center;
+  font-size: 80%;
+  font-weight: 600;
+  line-height: 1rem;
+  color: black;
+}
+
+.comments-bubble a:hover {
+  color: inherit;
+}
+
+.bubble-count-plus {
+  color: red;
+}
+
+.comments-host[data-count="0"] .comments-bubble {
+  opacity: .2;
+}
+
+.comments-host:hover[data-count="0"] .comments-bubble {
+  opacity: 1;
+  transition: opacity .5s;
+}
+
+.comments-host[data-count="0"] .comments-bubble a {
+  color: transparent;
+}
+
+.comments-container {
+  margin: 0 2.5rem 0 1.5rem;
+}
+
+.comments-container .item {
+  border: 1px solid #888;
+  border-bottom: none;
+  background: #eee;
+  padding: .5rem;
+  position: relative;
+}
+
+.comments-container .item:first-of-type {
+  border-radius: .5rem .5rem 0 0;
+}
+
+.comments-container .item:last-of-type {
+  border-radius: 0 0 .5rem .5rem;
+  border-bottom: 1px solid #888;
+}
+
+.comments-container .item:only-of-type {
+  border-radius: .5rem;
+}
+
+.comments-container .header {
+  float: right;
+  display: inline-block;
+  font-size: 80%;
+  color: #888;
+  position: relative;
+  right: -.2rem;
+  top: -.5rem;
+}
+
+.comments-container .header img {
+  height: 1em;
+}
+
+.comments-container .name {
+  font-weight: 600;
+}
+
+.comments-container .name.vp {
+  color: #00c;
+}
+
+.comments-container form >p:last-of-type {
+  margin-bottom: 0;
+}
+
+.comments-container input, .comments-container textarea {
+  border: 1pt solid #888;
+  font-size: inherit;
+  font-family: inherit;
+  border-radius: .2rem;
+}
+
+.comments-container input {
+  max-width: 5em;
+}
+
+.comments-container textarea {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  resize: vertical;
+  margin-bottom: .5rem;
+}
+
+.comments-container input[name="name"], input[name="captcha"] {
+  text-transform: uppercase;
+}
+
+.comments-container .float {
+  background: inherit;
+  position: absolute;
+  right: .5rem;
+  bottom: .5rem;
+}
+
+.comments-container .nofloat {
+  display: block;
+  background: inherit;
+  margin-left: auto;
+  margin-right: 0;
+}
+
+.comments-container .clearfix::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+.comments-container .missing {
+  box-shadow: 0 0 2px red;
+}
+
+.comments-container .new {
+  box-shadow: 0 0 3px yellow;
+}

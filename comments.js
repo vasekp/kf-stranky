@@ -11,55 +11,79 @@ function findParent(elm, cls) {
   return elm;
 }
 
+function findHost(elm) {
+  return findParent(elm, 'comments-host');
+}
+
+function findContainer(elm) {
+  return findHost(elm).querySelector('.comments-container');
+}
+
+function getID(elm) {
+  return findParent(elm, 'item').getAttribute('data-id');
+}
+
+function getTID(elm) {
+  return findHost(elm).getAttribute('data-tid');
+}
+
 function isAdmin() {
   return typeof(adminPass) !== 'undefined';
 }
 
 function bubbleClick(e) {
   e.preventDefault();
-  var div = findParent(e.currentTarget, 'download');
-  var dldid = div.getAttribute('data-dldid');
-  var discussionDiv = document.getElementById('discussion' + dldid);
-  if(discussionDiv) {
-    discussionDiv.remove();
-    updateURL(modifyQuery('discuss', null));
+  var elm = e.currentTarget;
+  var cont = findContainer(elm);
+  if(cont.children.length > 0) {
+    while(cont.firstChild)
+      cont.removeChild(cont.firstChild);
+    updateURL(modifyQuery('comments', null));
   } else
-    requestDiscussion(dldid);
+    requestDiscussion(getTID(elm));
 }
 
-function requestDiscussion(dldid, data = {}) {
-  var anchor = document.getElementById('bubble' + dldid);
-  anchor.classList.add('loading');
-  anchor.querySelector('.bubble-count').textContent = '...';
-  var ajax = new Ajax('class-discussion-ajax.php',
-    discussionReceived,
+function requestDiscussion(tid, data = {}) {
+  var host = document.querySelector('.comments-host[data-tid="' + tid + '"]');
+  var bubble = host.querySelector('.comments-bubble');
+  bubble.classList.add('loading');
+  bubble.querySelector('.bubble-count').textContent = '...';
+  bubble.querySelector('.bubble-count-plus').textContent = '';
+  host.setAttribute('data-count', '');
+  var ajax = new Ajax('comments-ajax.php',
+    commentsReceived,
     function() {
-      location.replace(addToQuery('discuss', dldid));
+      location.replace(addToQuery('comments', tid));
     },
     1000
   );
   data['query'] = 'get';
-  data['class_ID'] = classID;
-  data['dld_ID'] = dldid;
-  ajax.sendRequest(data, dldid);
+  data['thread_ID'] = tid;
+  ajax.sendRequest(data, tid);
 }
 
-function discussionReceived(response, dldid) {
-  updateURL(addToQuery('discuss', dldid));
-  Array.from(document.getElementsByClassName('discussion')).forEach(function(elm) {
-    elm.parentElement.removeChild(elm);
+function commentsReceived(response, tid) {
+  updateURL(addToQuery('comments', tid));
+  Array.from(document.getElementsByClassName('comments-container')).forEach(function(elm) {
+    while(elm.firstChild)
+      elm.removeChild(elm.firstChild);
   });
-  var content = new DOMParser().parseFromString(response.html, 'text/html').querySelector('.discussion');
-  var elm = document.getElementById('download' + dldid);
-  elm.parentElement.insertBefore(content, elm.nextSibling);
-  var anchor = document.getElementById('bubble' + dldid);
-  anchor.classList.remove('loading');
-  findParent(anchor, 'download').setAttribute('data-count', response.count);
-  elm.querySelector('.bubble-count').textContent = response.count;
-  localStorageTouches(dldid);
+  var host = document.querySelector('.comments-host[data-tid="' + tid + '"]');
+  var content = new DOMParser().parseFromString(response.html, 'text/html').body;
+  var container = host.querySelector('.comments-container');
+  while(content.firstChild) {
+    var child = content.firstChild;
+    content.removeChild(child);
+    container.appendChild(child);
+  }
+  var bubble = host.querySelector('.comments-bubble');
+  bubble.classList.remove('loading');
+  bubble.querySelector('.bubble-count').textContent = response.count;
+  host.setAttribute('data-count', response.count);
+  localStorageTouches(host);
 
-  addEventsForm(content.querySelector('form'));
-  content.querySelector('textarea').focus();
+  addEventsForm(container.querySelector('form'));
+  container.querySelector('textarea').focus();
 }
 
 function authKeys() {
@@ -72,30 +96,31 @@ function authKeys() {
       str += String.fromCharCode(97 + Math.floor(26 * Math.random()));
     return str;
   }
-  if(!localStorage['discussion-auth-private']) {
-    localStorage['discussion-auth-private'] = randomString();
-    localStorage['discussion-auth-public'] = randomString();
+  if(!localStorage['comments-auth-private']) {
+    localStorage['comments-auth-private'] = randomString();
+    localStorage['comments-auth-public'] = randomString();
   }
   return {
-    'private': localStorage['discussion-auth-private'],
-    'public': localStorage['discussion-auth-public']
+    'private': localStorage['comments-auth-private'],
+    'public': localStorage['comments-auth-public']
   };
 }
 
-// 1) Updates the bubble text to pull attention to new content if discussion closed,
+// 1) Updates the bubble text to pull attention to new content if comments closed,
 // 2) highlights new content if open,
 // 3) shows edit tools where applicable,
 // 4) adds local auth keys to forms.
-function localStorageTouches(dldid) {
+function localStorageTouches(host) {
   if(typeof(Storage) === 'undefined')
     return;
 
-  var lsKey = 'discussion-lastSeen-' + dldid;
-  var lastSeen = localStorage[lsKey] || 0;
-  var divDiscuss = document.getElementById('discussion' + dldid);
-  var divDownload = document.getElementById('download' + dldid);
-  var count = divDownload.getAttribute('data-count');
-  if(!divDiscuss) {
+  var tid = host.getAttribute('data-tid');
+  var lsKey = 'comments-lastSeen-' + tid;
+  var lsKeyOld = 'discussion-lastSeen-' + tid;
+  var lastSeen = localStorage[lsKey] || localStorage[lsKeyOld] || 0;
+  var count = host.getAttribute('data-count');
+  var container = host.querySelector('.comments-container');
+  if(container.children.length == 0) {
     var newItems = count - lastSeen;
     if(newItems == 0)
       return;
@@ -103,16 +128,14 @@ function localStorageTouches(dldid) {
       localStorage[lsKey] = count; // silently adjust
       return;
     }
-    var plus = divDownload.querySelector('.bubble-count-plus');
+    var plus = host.querySelector('.bubble-count-plus');
     plus.textContent = '/+' + newItems;
-    return;
   } else {
-    var children = divDiscuss.querySelectorAll('.item:not(.form)');
+    var children = container.querySelectorAll('.item:not(.form)');
     localStorage[lsKey] = count;
     for(let i = lastSeen; i < children.length; i++)
       children[i].classList.add('new');
 
-    // Edit tools only available with JS & local storage
     var keys = authKeys();
     if(!keys)
       return;
@@ -137,7 +160,7 @@ function localStorageTouches(dldid) {
       }
     }
 
-    let form = divDiscuss.querySelector('.item.form form');
+    let form = container.querySelector('form');
     let ref = form.querySelector('#send');
     let input = document.createElement('input');
     input.type = 'hidden';
@@ -156,8 +179,7 @@ function localStorageTouches(dldid) {
       input.value = admin.value;
       form.insertBefore(input, ref);
     }
-
-    let cancel = divDiscuss.querySelector('.item.form #cancel');
+    let cancel = form.querySelector('#cancel');
     if(cancel)
       cancel.addEventListener('click', cancelClick);
   }
@@ -165,13 +187,11 @@ function localStorageTouches(dldid) {
 
 function editClick(e) {
   var elm = e.currentTarget;
-  var id = findParent(elm, 'item').getAttribute('data-id');
-  var dldid = findParent(elm, 'discussion').getAttribute('data-dldid');
   var keys = authKeys();
   if(!keys)
     return;
-  requestDiscussion(dldid, {
-    'id': id,
+  requestDiscussion(getTID(elm), {
+    'edit_id': getID(elm),
     'auth_private': keys['private'],
     'admin_pass': isAdmin() ? admin.value : null
   });
@@ -180,8 +200,7 @@ function editClick(e) {
 
 function deleteClick(e) {
   var elm = e.currentTarget;
-  var id = findParent(elm, 'item').getAttribute('data-id');
-  var dldid = findParent(elm, 'discussion').getAttribute('data-dldid');
+  var tid = getTID(elm);
   var keys = authKeys();
   if(!keys)
     return;
@@ -189,23 +208,21 @@ function deleteClick(e) {
     'query': 'delete',
     'auth_private': keys['private'],
     'admin_pass': isAdmin() ? admin.value : null,
-    'dld_ID': dldid,
-    'ID': id
+    'thread_ID': tid,
+    'ID': getID(elm)
   };
   var deleteTimeout = function() {
-    requestDiscussion(dldid);
+    requestDiscussion(tid);
   };
   elm.classList.add('loading');
-  var ajax = new Ajax('class-discussion-ajax.php', submitSuccess, deleteTimeout, 1000);
+  var ajax = new Ajax('comments-ajax.php', submitSuccess, deleteTimeout, 1000);
   ajax.sendRequest(data, elm);
   e.preventDefault();
 }
 
 function cancelClick(e) {
   var elm = e.currentTarget;
-  var id = findParent(elm, 'item').getAttribute('data-id');
-  var dldid = findParent(elm, 'discussion').getAttribute('data-dldid');
-  requestDiscussion(dldid);
+  requestDiscussion(getTID(elm));
   e.preventDefault();
 }
 
@@ -217,16 +234,15 @@ function onSubmit(e) {
     data[e.name] = e.value;
   });
   elm.classList.add('loading');
-  var ajax = new Ajax('class-discussion-ajax.php', submitSuccess, submitTimeout, 1000);
+  var ajax = new Ajax('comments-ajax.php', submitSuccess, submitTimeout, 1000);
   ajax.sendRequest(data, elm);
 }
 
 function submitSuccess(response, elm) {
   elm.classList.remove('loading');
-  var dldid = findParent(elm, 'discussion').getAttribute('data-dldid');
   switch(response.status) {
     case STATUS_OK: // Success
-      requestDiscussion(dldid);
+      requestDiscussion(getTID(elm));
       break;
     case STATUS_INCOMPLETE: // Missing fields
       response.missing.forEach(function(s) {
@@ -262,16 +278,9 @@ function addEventsForm(elm) {
 }
 
 window.addEventListener('DOMContentLoaded', function(event) {
-  Array.from(document.getElementsByClassName('bubble')).forEach(function(elm) {
-    var anchor = elm.querySelector('a');
-    anchor.addEventListener('click', bubbleClick);
-
-    if(typeof(Storage) === 'undefined')
-      return;
-
-    var div = findParent(elm, 'download');
-    var dldid = div.getAttribute('data-dldid');
-    localStorageTouches(dldid);
+  Array.from(document.getElementsByClassName('comments-bubble')).forEach(function(elm) {
+    elm.querySelector('a').addEventListener('click', bubbleClick);
+    localStorageTouches(findHost(elm));
   });
 
   Array.from(document.getElementsByTagName('form')).forEach(function(elm) {

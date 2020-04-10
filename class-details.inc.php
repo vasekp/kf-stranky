@@ -1,9 +1,10 @@
 <?php
-$scripts[] = 'class-discussion.js';
+$css[] = 'css/comments.css';
+$scripts[] = 'comments.js';
 if($admin)
   $scripts[] = 'class-details-admin.js';
 
-include 'class-discussion-common.inc.php';
+include 'comments-common.inc.php';
 include_once 'class-notes-common.inc.php';
 
 $announces_title = $classLang == 'en' ? 'Announcements' : 'Aktuality';
@@ -12,9 +13,9 @@ $notes_title = $classLang == 'en' ? 'Class notes' : 'Zápis z hodin';
 $tutorials_title = $classLang == 'en' ? 'Tutorials' : 'Stránky cvičení';
 
 if($_SERVER['REQUEST_METHOD'] == 'POST')
-  $data = discussion_submit($_POST);
+  $postProcessed = comments_submit($_POST);
 else
-  $data = null;
+  $postProcessed = null;
 
 $sql = "select title, KOS, intro, announces, tutorials from classes where ID='$cid'";
 $result = $db->query($sql);
@@ -34,42 +35,29 @@ if($classInfo['announces'] || $admin) print <<<HTML
 </div>\n
 HTML;
 
-$sql = <<<SQL
-select dld.ID as id, filename, description, count(dis.ID) as count
-  from download as dld
-  left join discussion as dis on dis.dld_ID = dld.ID
-  where class_ID = '$cid'
-  group by dld.ID
-SQL;
+$sql = "select thread_ID, filename, description from download where class_ID = '$cid'";
+$result = $db->query($sql);
 if($result->num_rows > 0)
   echo "<h2>$downloads_title</h2>\n";
-$result = $db->query($sql);
 while($row = $result->fetch_assoc()) {
-  $url = modifyQuery(['discuss' => $row['id']]);
-  $count = $row['count'] ? $row['count'] : 0;
-  ob_start();
-  include 'images/discussion.svg.php';
-  $bubble = ob_get_clean();
-  if(array_key_exists('discuss', $_GET) && $_GET['discuss'] == $row['id'])
-    $discussion = get_discussion($cid, $row['id'], $data)['html'];
-  else
-    $discussion = '';
-
+  $data = get_comments_static($row['thread_ID'], $postProcessed, $row['thread_ID'] === @$_GET['comments']);
   print <<<HTML
-<div class="download" id="download$row[id]" data-dldid="$row[id]" data-count="$count">
-  <div class="icon">
-    <a href="download/$row[filename]"><img src="images/download.svg" alt="$row[filename]"/></a>
+<div class="comments-host" data-tid="$row[thread_ID]" data-count="$data[count]">
+  <div class="download">
+    <div class="icon">
+      <a href="download/$row[filename]"><img src="images/download.svg" alt="$row[filename]"/></a>
+    </div>
+    <div class="text">
+      <a href="download/$row[filename]">$row[description]</a>
+    </div>
+    <div class="comments-bubble">
+      $data[bubble]
+    </div>
   </div>
-  <div class="text">
-    <a href="download/$row[filename]">$row[description]</a>
+  <div class="comments-container">
+    $data[comments]
   </div>
-  <div class="bubble">\n
-    <a href="$url" id="bubble$row[id]">
-      $bubble
-    </a>
-  </div>
-</div>
-$discussion\n
+</div>\n
 HTML;
 }
 
@@ -78,7 +66,7 @@ print <<<HTML
 HTML;
 
 if($admin || get_records($cid, '', true, false)) {
-  $notes_url = modifyQuery(['s' => 'notes', 'discuss' => null]);
+  $notes_url = modifyQuery(['s' => 'notes', 'comments' => null]);
   print <<<HTML
   <a class="button" href="$notes_url">$notes_title</a>
 HTML;
