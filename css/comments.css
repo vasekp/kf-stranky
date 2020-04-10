@@ -10,12 +10,16 @@
   text-align: center;
   font-size: 80%;
   font-weight: 600;
-  line-height: 1.1rem;
+  line-height: 1rem;
   color: black;
 }
 
 .comments-bubble a:hover {
   color: inherit;
+}
+
+.bubble-count-plus {
+  color: red;
 }
 
 .comments-host[data-count="0"] .comments-bubble {

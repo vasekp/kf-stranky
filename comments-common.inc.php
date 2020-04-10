@@ -120,7 +120,7 @@ function get_comments_static($tid, $post, $open) {
   ob_start();
   print <<<HTML
 <a href="$url">
-  $count
+  <span class="bubble-count">$count</span><span class="bubble-count-plus"></span>
 </a>
 HTML;
   $bubble = ob_get_clean();
@@ -173,9 +173,9 @@ function format_comment_edit($data, $lang) {
   ob_start();
   print <<<HTML
 <div class="item form">
-  <a class="header" href="#" id="cancel"><img src="images/cross.svg"/></a>
-  $header:
   <form method="post">
+    <a class="header" href="#" id="cancel"><img src="images/cross.svg"/></a>
+    $header:
     <textarea name="text" id="text" autofocus>$data[text]</textarea>
     <input type="hidden" name="thread_ID" value="$data[tid]"/>
     <input type="hidden" name="ID" value="$data[id]"/>
