@@ -13,9 +13,9 @@ $notes_title = $classLang == 'en' ? 'Class notes' : 'Zápis z hodin';
 $tutorials_title = $classLang == 'en' ? 'Tutorials' : 'Stránky cvičení';
 
 if($_SERVER['REQUEST_METHOD'] == 'POST')
-  $data = comments_submit($_POST);
+  $postProcessed = comments_submit($_POST);
 else
-  $data = null;
+  $postProcessed = null;
 
 $sql = "select title, KOS, intro, announces, tutorials from classes where ID='$cid'";
 $result = $db->query($sql);
@@ -35,26 +35,14 @@ if($classInfo['announces'] || $admin) print <<<HTML
 </div>\n
 HTML;
 
-$sql = <<<SQL
-select dld.thread_ID as tid, filename, description, count(comm.ID) as count
-  from download as dld
-  left join comments as comm on comm.thread_ID = dld.thread_ID
-  where class_ID = '$cid'
-  group by dld.thread_ID
-SQL;
+$sql = "select thread_ID, filename, description from download where class_ID = '$cid'";
+$result = $db->query($sql);
 if($result->num_rows > 0)
   echo "<h2>$downloads_title</h2>\n";
-$result = $db->query($sql);
 while($row = $result->fetch_assoc()) {
-  $url = modifyQuery(['comments' => $row['tid']]);
-  $count = $row['count'] ? $row['count'] : 0;
-  if(array_key_exists('comments', $_GET) && $_GET['comments'] == $row['tid'])
-    $comments = get_comments($row['tid'], $data)['html'];
-  else
-    $comments = '';
-
+  $data = get_comments_static($row['thread_ID'], $postProcessed, $row['thread_ID'] === @$_GET['comments']);
   print <<<HTML
-<div class="comments-host" data-tid="$row[tid]" data-count="$count">
+<div class="comments-host" data-tid="$row[thread_ID]" data-count="$data[count]">
   <div class="download">
     <div class="icon">
       <a href="download/$row[filename]"><img src="images/download.svg" alt="$row[filename]"/></a>
@@ -63,13 +51,11 @@ while($row = $result->fetch_assoc()) {
       <a href="download/$row[filename]">$row[description]</a>
     </div>
     <div class="comments-bubble">
-      <a href="$url">
-        $count
-      </a>
+      $data[bubble]
     </div>
   </div>
   <div class="comments-container">
-    $comments
+    $data[comments]
   </div>
 </div>\n
 HTML;

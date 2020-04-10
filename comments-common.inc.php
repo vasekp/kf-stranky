@@ -94,6 +94,37 @@ function get_comments($tid, $dataPOST = null) {
   ];
 }
 
+function get_comments_static($tid, $post, $open) {
+  global $db;
+  if($open) {
+    $ret = get_comments($tid, $post); // contains validation
+    $comments = $ret['html'];
+    $count = $ret['count'];
+  } else {
+    if(!validate_tid($tid))
+      return null;
+    $sql = "select count(*) from comments where thread_ID=$tid";
+    $result = $db->query($sql);
+    $count = $result->fetch_row()[0];
+    $comments = '';
+  }
+
+  $url = buildQuery($_SERVER['REQUEST_URI'], ['comments' => $open ? null : $tid]);
+  ob_start();
+  print <<<HTML
+<a href="$url">
+  $count
+</a>
+HTML;
+  $bubble = ob_get_clean();
+
+  return [
+    'count' => $count,
+    'comments' => $comments,
+    'bubble' => $bubble
+  ];
+}
+
 function format_comment_item($data) {
   if($data['name'])
     $namespan = '<span class="name' . ($data['name'] == 'VP' ? ' vp' : '') . '">'

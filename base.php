@@ -26,15 +26,6 @@ if(array_key_exists($base, $stranky)) {
 }
 $filename = $base . '.inc.php';
 
-function modifyQuery($array) {
-  global $base;
-  $get = array_filter(array_merge($_GET, $array), 'strlen');
-  if(!empty($get))
-    return '?' . http_build_query($get, '', '&amp;');
-  else
-    return $base . '.php';
-}
-
 $admin = (array_key_exists('admin', $_GET) && $_GET['admin'] == $secrets['adminpw']);
 $admin_row = $admin ? '<input type="hidden" id="admin" value="' . $_GET['admin'] . '"/>' : '';
 
@@ -42,7 +33,7 @@ $seclang_url = modifyQuery(['l' => $en ? null : 'en']);
 
 $nav_links = [];
 foreach($stranky as $name => $text) {
-  $url = $name . '.php' . ($en ? '?l=en' : '');
+  $url = buildQuery($name . '.php', ['l' => $en ? 'en' : null]);
   $emph = $name==$base ? ' class="emph"' : '';
   $nav_links[] = <<<HTML
 <span class="hide">[</span>

@@ -14,4 +14,19 @@ function open_db() {
   $conn->set_charset('utf8');
   return $conn;
 }
+
+function buildQuery($baseURL, $array) {
+  $url = parse_url($baseURL);
+  $basename = basename($url['path']);
+  parse_str(@$url['query'], $search);
+  $get = array_filter(array_merge($search, $array), 'strlen');
+  if(!empty($get))
+    return $basename . '?' . http_build_query($get, '', '&amp;');
+  else
+    return $basename;
+}
+
+function modifyQuery($array) {
+  return buildQuery($_SERVER['REQUEST_URI'], $array);
+}
 ?>
