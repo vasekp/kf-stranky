@@ -5,13 +5,14 @@ const STATUS_ALERT = 'alert';
 const STATUS_FAIL = 'fail';
 
 function validate_tid($tid) {
-  global $db;
+  return is_numeric($tid);
+  /*global $db;
   $sql = 'select lang from comment_threads where id=?';
   $st = $db->prepare($sql);
   $st->bind_param('i', $tid);
   $st->execute();
   $st->bind_result($dummy);
-  return $st->fetch(); //bool
+  return $st->fetch(); //bool*/
 }
 
 function gen_captcha($tid, $count, $attempt, $result) {
@@ -38,111 +39,130 @@ function gen_captcha($tid, $count, $attempt, $result) {
   return [$challenge, $response];
 }
 
-function get_comments($tid, $data = null) {
-  global $db;
-  global $secrets;
+function get_comments($tid, $dataPOST = null) {
+  global $db, $secrets;
   if(!validate_tid($tid))
     return null;
 
-  ob_start();
-  $sql = "select id, name, text, auth_public, auth_private, timestamp from comments where thread_ID='$tid' order by id";
+  $ret = '';
+  $sql = "select id, name, text, auth_public, auth_private, timestamp from comments where thread_ID=$tid order by id";
   $result = $db->query($sql);
   $count = 0;
   $editing = false;
-  $skip_checks = @$data['admin_pass'] == $secrets['adminpw'];
-
-  print <<<HTML
-<div class="comments" id="comments$tid" data-tid="$tid">\n
-HTML;
+  $skip_checks = @$dataPOST['admin_pass'] == $secrets['adminpw'];
 
   while($row = $result->fetch_assoc()) {
     $count++;
-    $name = htmlspecialchars($row['name']);
-    $text = nl2br(htmlspecialchars($row['text']));
-    if($name)
-      $namespan = '<span class="name' . ($name == 'VP' ? ' vp' : '') . '">' . $name . ':</span>';
-    else
-      $namespan = '';
-    $date = date('j.n.Y G:i', strtotime($row['timestamp']));
+    $dataHTML = [
+      'name' => htmlspecialchars($row['name']),
+      'text' => nl2br(htmlspecialchars($row['text'])),
+      'date' => date('j.n.Y G:i', strtotime($row['timestamp'])),
+      'auth_private' => $row['auth_private'],
+      'auth_public' => $row['auth_public'],
+      'id' => $row['id'],
+      'tid' => $tid
+    ];
 
-    if(@$data['id'] == $row['id'] && ($skip_checks || @$data['auth_private'] == $row['auth_private'])) {
+    if(@$dataPOST['edit_id'] == $row['id']
+        && ($skip_checks || @$dataPOST['auth_private'] == $row['auth_private'])) {
       $editing = true;
-      $header = 'Editujete příspěvek'
-        . ($name ? ' od <b>' . $name . '</b> ' : ' ')
-        . 'z ' . $date;
-      print <<<HTML
-  <div class="item form">
-    <a class="header" href="#" id="cancel"><img src="images/cross.svg"/></a>
-    $header:
-    <form method="post">
-      <textarea name="text" id="text" autofocus>$text</textarea>
-      <input type="hidden" name="thread_ID" value="$tid"/>
-      <input type="hidden" name="ID" value="$data[id]"/>
-      <input type="hidden" name="auth_private" value="$data[auth_private]"/>
-      <input type="hidden" name="query" value="edit"/>
-      <input type="submit" class="float" id="send" value="Odeslat"/>
-      <p class="clearfix">&nbsp;</p>
-    </form>
-  </div>\n
-HTML;
-    } else {
-      print <<<HTML
-  <div class="item" data-id="$row[id]">
-    <div class="header">
-      $date
-      <span class="edittools hide" data-auth="$row[auth_public]">
-        <a href="#" class="a-edit"><img src="images/edit.svg"/></a>
-        <a href="#" class="a-delete"><img src="images/cross.svg"/></a>
-      </span>
-    </div>
-    $namespan
-    $text
-  </div>\n
-HTML;
-    }
+      $ret .= format_comment_edit($dataHTML);
+    } else
+      $ret .= format_comment_item($dataHTML);
   }
 
   if(!$editing) {
-    $attempt = 0;
-    if($data !== null && @$data['tid'] == $tid) {
-      $name = htmlspecialchars($data['name']);
-      $text = nl2br(htmlspecialchars($data['text']));
-      $mText = $data['status'] == STATUS_INCOMPLETE && in_array('text', $data['missing']) ? ' class="missing"' : '';
-      $mCaptcha = $data['status'] == STATUS_INCOMPLETE && in_array('captcha', $data['missing']) ? ' class="missing"' : '';
-      $attempt = $data['attempt'];
-    } else
-      $text = $name = $mText = $mCaptcha = '';
-
+    $attempt = isset($dataPOST['attempt']) ? $dataPOST['attempt'] : 0;
+    $dataHTML = [
+      'name' => htmlspecialchars(@$dataPOST['name']),
+      'text' => nl2br(htmlspecialchars(@$dataPOST['text'])),
+      'missing' => @$dataPOST['missing'],
+      'attempt' => $attempt,
+      'serial' => $count,
+      'tid' => $tid
+    ];
     $sql = 'select challenge from captcha order by id';
     $result = $db->query($sql);
     list($challenge, $response) = gen_captcha($tid, $count, $attempt, $result);
-
-    print <<<HTML
-  <div class="item form">
-    <form method="post">
-      <textarea name="text"$mText id="text" autofocus>$text</textarea>
-      <p>Iniciály (nepovinné):
-        <input name="name" type="text" maxlength="3" value="$name"/>
-      </p>
-      <input type="hidden" name="thread_ID" value="$tid"/>
-      <input type="hidden" name="serial" value="$count"/>
-      <input type="hidden" name="attempt" id="attempt" value="$attempt"/>
-      <input type="hidden" name="query" value="new"/>
-      <input type="submit" class="float" id="send" value="Odeslat"/>
-      <p class="clearfix">Napište tři chybějící písmena ze slova „<span id="challenge">$challenge</span>“:
-        <input name="captcha" type="text" id="captcha" maxlength="3"$mCaptcha/>
-      </p>
-    </form>
-  </div>\n
-HTML;
+    $dataHTML['captcha'] = $challenge;
+    $ret .= format_comment_new($dataHTML);
   }
-
-  print "</div>\n";
 
   return [
     'count' => $count,
-    'html' => ob_get_clean()
+    'html' => $ret
   ];
+}
+
+function format_comment_item($data) {
+  if($data['name'])
+    $namespan = '<span class="name' . ($data['name'] == 'VP' ? ' vp' : '') . '">'
+        . $data['name'] . ':</span>';
+  else
+    $namespan = '';
+  ob_start();
+  print <<<HTML
+<div class="item" data-id="$data[id]">
+  <div class="header">
+    $data[date]
+    <span class="edittools hide" data-auth="$data[auth_public]">
+      <a href="#" class="a-edit"><img src="images/edit.svg"/></a>
+      <a href="#" class="a-delete"><img src="images/cross.svg"/></a>
+    </span>
+  </div>
+  $namespan
+  $data[text]
+</div>\n
+HTML;
+  return ob_get_clean();
+}
+
+function format_comment_edit($data) {
+  $header = 'Editujete příspěvek'
+    . ($data['name'] ? ' od <b>' . $data['name'] . '</b> ' : ' ')
+    . 'z ' . $data['date'];
+  ob_start();
+  print <<<HTML
+<div class="item form">
+  <a class="header" href="#" id="cancel"><img src="images/cross.svg"/></a>
+  $header:
+  <form method="post">
+    <textarea name="text" id="text" autofocus>$data[text]</textarea>
+    <input type="hidden" name="thread_ID" value="$data[tid]"/>
+    <input type="hidden" name="ID" value="$data[id]"/>
+    <input type="hidden" name="auth_private" value="$data[auth_private]"/>
+    <input type="hidden" name="query" value="edit"/>
+    <input type="submit" class="float" id="send" value="Odeslat"/>
+    <p class="clearfix">&nbsp;</p>
+  </form>
+</div>\n
+HTML;
+  return ob_get_clean();
+}
+
+function format_comment_new($data) {
+  $mText = @in_array('text', $data['missing']) ? ' class="missing"' : '';
+  $mCaptcha = @in_array('captcha', $data['missing']) ? ' class="missing"' : '';
+  ob_start();
+  print <<<HTML
+<div class="item form">
+  <form method="post">
+    <textarea name="text"$mText id="text" autofocus>$data[text]</textarea>
+    <p>Iniciály (nepovinné):
+      <input name="name" type="text" maxlength="3" value="$data[name]"/>
+    </p>
+    <input type="hidden" name="thread_ID" value="$data[tid]"/>
+    <input type="hidden" name="serial" value="$data[serial]"/>
+    <input type="hidden" name="attempt" id="attempt" value="$data[attempt]"/>
+    <input type="hidden" name="query" value="new"/>
+    <input type="submit" class="float" id="send" value="Odeslat"/>
+    <p class="clearfix">Napište tři chybějící písmena ze slova „<span id="challenge">$data[captcha]</span>“:
+      <input name="captcha" type="text" id="captcha" maxlength="3"$mCaptcha/>
+    </p>
+  </form>
+</div>\n
+HTML;
+  return ob_get_clean();
 }
 
 function comments_submit($post) {
