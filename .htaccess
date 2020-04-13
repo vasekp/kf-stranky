@@ -1,3 +1,4 @@
+RewriteEngine on
 RewriteBase /
 
 # Direct all whitelisted PHP URLs to base.php

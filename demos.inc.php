@@ -45,7 +45,7 @@ print <<<HTML
   $morerow
   <li><a href="https://github.com/vasekp/kf-stranky/tree/master/demos/$demo" target="_blank">$source</a></li>
   <li><a href="https://github.com/vasekp/kf-stranky/issues/new" target="_blank">$something_broken</a></li>
-  <li><a href="$backurl">$back</a></li>
+  <li><a href="$backurl" class="classic">$back</a></li>
 </ul>
 HTML;
 ?>
