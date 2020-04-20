@@ -44,20 +44,12 @@ li.warn {
   padding: 0;
 }
 
-.download form {
-  display: contents;
-}
-
 .download input {
   border: 1pt solid #888;
   font-size: inherit;
   font-family: inherit;
   border-radius: .2rem;
-}
-
-.download input.text {
-  box-sizing: border-box;
-  margin-right: .5rem;
+  transform: translateY(-.1rem);
 }
 
 .download img.empty {
