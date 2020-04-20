@@ -283,7 +283,7 @@ window.addEventListener('DOMContentLoaded', function(event) {
     localStorageTouches(findHost(elm));
   });
 
-  Array.from(document.getElementsByTagName('form')).forEach(function(elm) {
+  Array.from(document.getElementsByTagName('comments-container form')).forEach(function(elm) {
     addEventsForm(elm);
   });
 });

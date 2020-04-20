@@ -37,7 +37,20 @@
   color: #44c;
 }
 
-.icon img {
+.download button {
+  font-family: inherit;
+  font-size: inherit;
+  border: 0;
+  padding: 0;
+  background: none;
+}
+
+.download button img {
+  height: 1rem;
+  vertical-align: -5%;
+}
+
+img.icon {
   height: 1.2rem;
   vertical-align: -15%;
 }
