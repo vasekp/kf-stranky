@@ -33,7 +33,13 @@ function addEvents(elm) {
   makeEditable(elm, onEnter, onLeaveUnchanged, updateText, null, null);
 }
 
+function fileSelected() {
+  document.getElementById('upload-icon').classList.remove('empty');
+  document.getElementById('upload-submit').disabled = false;
+}
+
 window.addEventListener('DOMContentLoaded', function(event) {
   addEvents(document.getElementById('intro'));
   addEvents(document.getElementById('announces'));
+  document.getElementById('file').addEventListener('input', fileSelected);
 });

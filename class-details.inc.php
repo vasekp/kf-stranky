@@ -5,6 +5,7 @@ if($admin)
   $scripts[] = 'class-details-admin.js';
 
 include 'comments-common.inc.php';
+include 'class-upload.inc.php';
 include_once 'class-notes-common.inc.php';
 
 $announces_title = $classLang == 'en' ? 'Announcements' : 'Aktuality';
@@ -12,10 +13,13 @@ $downloads_title = $classLang == 'en' ? 'Downloads' : 'Ke stažení';
 $notes_title = $classLang == 'en' ? 'Class notes' : 'Zápis z hodin';
 $tutorials_title = $classLang == 'en' ? 'Tutorials' : 'Stránky cvičení';
 
-if($_SERVER['REQUEST_METHOD'] == 'POST')
-  $postProcessed = comments_submit($_POST);
-else
-  $postProcessed = null;
+$postProcessed = null;
+if($_SERVER['REQUEST_METHOD'] == 'POST' && @$_POST['query']) {
+  if(@$_POST['query'] == 'upload')
+    process_upload();
+  else
+    $postProcessed = comments_submit($_POST);
+}
 
 $sql = "select title, KOS, intro, announces, tutorials from classes where ID='$cid'";
 $result = $db->query($sql);
@@ -28,7 +32,8 @@ print <<<HTML
 </div>\n
 HTML;
 
-if($classInfo['announces'] || $admin) print <<<HTML
+if($classInfo['announces'] || $admin)
+  print <<<HTML
 <h2>$announces_title</h2>
 <div id="announces">
   $classInfo[announces]
@@ -61,6 +66,27 @@ while($row = $result->fetch_assoc()) {
 HTML;
 }
 
+if($admin)
+  print <<<HTML
+<div class="download">
+  <form method="post" enctype="multipart/form-data">
+    <div class="icon">
+      <label for="file">
+        <img class="empty" src="images/upload.svg" id="upload-icon" alt="Upload"/>
+      </label>
+      <input class="hide" type="file" name="file" id="file" accept=".pdf"/>
+    </div>
+    <input class="text" type="text" name="desc"/>
+    <input type="hidden" name="query" value="upload"/>
+    <input type="hidden" name="admin_pass" value="$_GET[admin]"/>
+    <input type="hidden" name="class_ID" value="$cid"/>
+    <input type="hidden" name="lang" value="$classLang"/>
+    <input type="submit" id="upload-submit" value="Upload" disabled/>
+  </form>
+</div>
+HTML;
+
+
 print <<<HTML
 <div class="buttons">
 HTML;
@@ -73,7 +99,7 @@ HTML;
 }
 
 if($classInfo['tutorials'])
-print <<<HTML
+  print <<<HTML
   <a class="button" href="$classInfo[tutorials]" target="_blank">$tutorials_title</a>
 HTML;
 
