@@ -33,7 +33,18 @@ function addEvents(elm) {
   makeEditable(elm, onEnter, onLeaveUnchanged, updateText, null, null);
 }
 
+function fileSelected(e) {
+  var elm = e.currentTarget;
+  elm.labels[0].firstElementChild.classList.remove('empty');
+  var button = elm.form.querySelector('#upload-submit');
+  if(button)
+    button.disabled = false;
+}
+
 window.addEventListener('DOMContentLoaded', function(event) {
   addEvents(document.getElementById('intro'));
   addEvents(document.getElementById('announces'));
+  Array.from(document.querySelectorAll('input[type="file"]')).forEach(function(elm) {
+    elm.addEventListener('input', fileSelected);
+  });
 });

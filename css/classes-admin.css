@@ -43,3 +43,15 @@ li.warn {
   display: list-item;
   padding: 0;
 }
+
+.download input {
+  border: 1pt solid #888;
+  font-size: inherit;
+  font-family: inherit;
+  border-radius: .2rem;
+  transform: translateY(-.1rem);
+}
+
+.download img.empty {
+  opacity: .5;
+}

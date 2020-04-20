@@ -29,28 +29,32 @@
   margin: .2rem 0;
 }
 
+.download > * {
+  margin: 0 .2rem;
+}
+
 .download .text:hover a {
   color: #44c;
 }
 
-.icon {
-  flex-basis: 1.5rem;
-  text-align: center;
-  flex-grow: 0;
-  flex-shrink: 0;
-  flex-basis: 1.5rem;
+.download button {
+  font-family: inherit;
+  font-size: inherit;
+  border: 0;
+  padding: 0;
+  background: none;
 }
 
-.icon img {
+.download button img {
+  height: 1rem;
+  vertical-align: -5%;
+}
+
+img.icon {
   height: 1.2rem;
-  position: relative;
-  bottom: -.1rem;
+  vertical-align: -15%;
 }
 
 .text {
   flex-grow: 1;
-}
-
-.comments-bubble {
-  flex: 0 0 content;
 }
