@@ -39,9 +39,7 @@ function modifyQuery(key, func) {
   var queryArray = [];
   for(key in params)
     queryArray.push(key + '=' + params[key]);
-  return split.base + (queryArray.length > 0
-    ? '?' + queryArray.join('&')
-    : '');
+  return '?' + queryArray.join('&');
 }
 
 function addToQuery(key, val) {
