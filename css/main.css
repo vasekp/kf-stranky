@@ -67,7 +67,7 @@ nav {
 }
 
 nav a {
-  flex: 1 0 0;
+  flex: 1 0 0px;
   padding: .5rem 0;
   text-align: center;
   color: white;
