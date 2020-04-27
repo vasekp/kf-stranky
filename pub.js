@@ -2,8 +2,18 @@
 
 function applyFilter(filter) {
   forEach(document.getElementById('list').children, function(e) {
-    var show = filter == 'all' || e.getAttribute('data-sets').split(' ').includes(filter);
-    e.classList.toggle('hide', !show);
+    if(filter === 'all')
+      e.classList.remove('hide');
+    else {
+      var show = false;
+      var sets = e.getAttribute('data-sets').split(' ');
+      for(let i = 0; i < sets.length; i++)
+        if(sets[i] === filter) {
+          show = true;
+          break;
+        }
+      e.classList.toggle('hide', !show);
+    }
   });
 };
 
