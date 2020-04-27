@@ -99,7 +99,7 @@ function updateValues() {
   if(!isNaN(angleRef))
     document.getElementById('refracted').setAttribute('transform',
       'rotate(' + (90-r2d(angleRef)) + ')');
-  document.getElementById('refracted').classList.toggle('hide', isNaN(angleRef));
+  toggleClass(document.getElementById('refracted').classList, 'hide', isNaN(angleRef));
 
   let angleCrit = Math.asin(values.ratio);
   if(!isNaN(angleCrit)) {
@@ -108,8 +108,8 @@ function updateValues() {
     document.getElementById('crit2').setAttribute('transform',
       'rotate(' + (-90-r2d(angleCrit)) + ')');
   }
-  document.getElementById('crit1').classList.toggle('hide', isNaN(angleCrit));
-  document.getElementById('crit2').classList.toggle('hide', isNaN(angleCrit));
+  toggleClass(document.getElementById('crit1').classList, 'hide', isNaN(angleCrit));
+  toggleClass(document.getElementById('crit2').classList, 'hide', isNaN(angleCrit));
 
   document.getElementById('width').setAttribute('d',
     'M 3 ' + -(values.width + .5) + ' V ' + -values.width + ' V ' + values.width + ' v .5');

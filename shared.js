@@ -74,3 +74,10 @@ function forEach(iterable, fn) {
   for(let i = 0; i < iterable.length; i++)
     fn(iterable[i]);
 }
+
+function toggleClass(classList, cls, force) {
+  if(force)
+    classList.add(cls);
+  else
+    classList.remove(cls);
+}

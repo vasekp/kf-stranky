@@ -5,14 +5,13 @@ function applyFilter(filter) {
     if(filter === 'all')
       e.classList.remove('hide');
     else {
-      var show = false;
+      e.classList.add('hide');
       var sets = e.getAttribute('data-sets').split(' ');
       for(let i = 0; i < sets.length; i++)
         if(sets[i] === filter) {
-          show = true;
+          e.classList.remove('hide');
           break;
         }
-      e.classList.toggle('hide', !show);
     }
   });
 };
