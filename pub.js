@@ -8,7 +8,6 @@ function applyFilter(filter) {
 };
 
 window.addEventListener('DOMContentLoaded', function(event) {
-  var url = new URL(document.URL);
-  var sp = new URLSearchParams(url.search);
-  makeSwitch('pub-filter', function(elm) { applyFilter(elm.id); }, sp.get('filter') || 'selected');
+  var filter = splitQuery().params.filter || 'selected';
+  makeSwitch('pub-filter', function(elm) { applyFilter(elm.id); }, filter);
 });

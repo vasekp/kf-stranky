@@ -31,18 +31,38 @@ function Ajax(url, onSuccess, onError, timeout) {
 }
 
 function modifyQuery(key, func) {
-  var url = new URL(document.URL);
-  var sp = new URLSearchParams(url.search);
+  var split = splitQuery();
+  var params = split.params;
   if(func)
-    sp.set(key, func(sp.get(key)));
+    params[key] = func(params[key]);
   else
-    sp.delete(key);
-  url.search = sp;
-  return url;
+    delete params.key;
+  var queryArray = [];
+  for(key in params)
+    queryArray.push(key + '=' + params[key]);
+  return split.base + (queryArray.length > 0
+    ? '?' + queryArray.join('&')
+    : '');
 }
 
 function addToQuery(key, val) {
   return modifyQuery(key, function() { return val; });
+}
+
+function splitQuery() {
+  var querySplit = document.URL.split('?');
+  var params = {};
+  if(querySplit.length > 1) {
+    var queryParts = querySplit[1].split('&');
+    for(let i = 0; i < queryParts.length; i++) {
+      let keyVal = queryParts[i].split('=');
+      params[keyVal[0]] = keyVal[1];
+    }
+  }
+  return {
+    'base': querySplit[0],
+    'params': params
+  };
 }
 
 function updateURL(url) {
