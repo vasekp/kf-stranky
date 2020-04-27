@@ -13,14 +13,13 @@ function Ajax(url, onSuccess, onError, timeout) {
     var xhrData = new FormData();
     for(let item in requestData)
       xhrData.append(item, requestData[item]);
-    xhr.responseType = 'json';
     xhr.onload = function() {
       if(xhr.readyState != 4 || xhr.status !== 200) {
         if(this.onError)
           this.onError(callbackData);
         return;
       }
-      this.onSuccess(xhr.response, callbackData);
+      this.onSuccess(JSON.parse(xhr.response), callbackData);
     }.bind(this);
     xhr.timeout = this.timeout;
     xhr.ontimeout = function() {
