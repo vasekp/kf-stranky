@@ -43,7 +43,9 @@ function bubbleClick(e) {
     requestDiscussion(getTID(elm));
 }
 
-function requestDiscussion(tid, data = {}) {
+function requestDiscussion(tid, data) {
+  if(typeof data === 'undefined')
+    data = {};
   var host = document.querySelector('.comments-host[data-tid="' + tid + '"]');
   var bubble = host.querySelector('.comments-bubble');
   bubble.classList.add('loading');
@@ -64,7 +66,7 @@ function requestDiscussion(tid, data = {}) {
 
 function commentsReceived(response, tid) {
   updateURL(addToQuery('comments', tid));
-  Array.from(document.getElementsByClassName('comments-container')).forEach(function(elm) {
+  forEach(document.getElementsByClassName('comments-container'), function(elm) {
     while(elm.firstChild)
       elm.removeChild(elm.firstChild);
   });
@@ -147,7 +149,7 @@ function localStorageTouches(host) {
     }
 
     if(isAdmin()) {
-      Array.from(children).forEach(function(child) {
+      forEach(children, function(child) {
         let tools = child.querySelector('.edittools');
         if(tools)
           showEditTools(tools);
@@ -230,7 +232,7 @@ function onSubmit(e) {
   var elm = e.currentTarget;
   e.preventDefault();
   var data = {};
-  Array.from(elm.querySelectorAll('input, textarea')).forEach(function(e) {
+  forEach(elm.querySelectorAll('input, textarea'), function(e) {
     data[e.name] = e.value;
   });
   elm.classList.add('loading');
@@ -245,7 +247,7 @@ function submitSuccess(response, elm) {
       requestDiscussion(getTID(elm));
       break;
     case STATUS_INCOMPLETE: // Missing fields
-      response.missing.forEach(function(s) {
+      forEach(response.missing, function(s) {
         document.getElementById(s).classList.add('missing');
       });
       if(response.attempt)
@@ -272,18 +274,18 @@ function addEventsForm(elm) {
     e.currentTarget.classList.remove('missing');
   }
   elm.addEventListener('submit', onSubmit);
-  Array.from(elm.querySelectorAll('input, textarea')).forEach(function(e) {
+  forEach(elm.querySelectorAll('input, textarea'), function(e) {
     e.addEventListener('focus', removeMissing);
   });
 }
 
 window.addEventListener('DOMContentLoaded', function(event) {
-  Array.from(document.getElementsByClassName('comments-bubble')).forEach(function(elm) {
+  forEach(document.getElementsByClassName('comments-bubble'), function(elm) {
     elm.querySelector('a').addEventListener('click', bubbleClick);
     localStorageTouches(findHost(elm));
   });
 
-  Array.from(document.getElementsByTagName('comments-container form')).forEach(function(elm) {
+  forEach(document.getElementsByTagName('comments-container form'), function(elm) {
     addEventsForm(elm);
   });
 });

@@ -168,7 +168,7 @@ function commitNotes(e) {
 }
 
 window.addEventListener('DOMContentLoaded', function(event) {
-  Array.from(list.getElementsByTagName('li')).forEach(addEvents);
+  forEach(list.getElementsByTagName('li'), addEvents);
   empty = list.lastElementChild.cloneNode(true);
   addEventsDate(document.getElementById('date'));
   document.getElementById('commit').addEventListener('click', commitNotes);

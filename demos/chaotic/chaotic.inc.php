@@ -1,6 +1,7 @@
 <?php
 $css[] = 'css/switch.css';
 $css[] = $demodir . '/chaotic.css';
+$scripts[] = 'shared.js';
 $scripts[] = 'switch.js';
 $scripts[] = 'demo-helpers.js';
 $scripts[] = $demodir . '/chaotic.js';

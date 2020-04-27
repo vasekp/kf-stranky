@@ -173,7 +173,7 @@ function changeFuncType(elm) {
     gl.uniform1i(progs[p].uFunc, id);
   }
   resetAngle();
-  document.getElementById('separ').classList.toggle('hidden', elm.id != 'cat');
+  toggleClass(document.getElementById('separ').classList, 'hidden', elm.id != 'cat');
   requestAnimationFrame(draw);
 }
 

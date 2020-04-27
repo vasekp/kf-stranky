@@ -1,14 +1,22 @@
 'use strict';
 
 function applyFilter(filter) {
-  Array.from(document.getElementById('list').children).forEach(function(e) {
-    var show = filter == 'all' || e.getAttribute('data-sets').split(' ').includes(filter);
-    e.classList.toggle('hide', !show);
+  forEach(document.getElementById('list').children, function(e) {
+    if(filter === 'all')
+      e.classList.remove('hide');
+    else {
+      e.classList.add('hide');
+      var sets = e.getAttribute('data-sets').split(' ');
+      for(let i = 0; i < sets.length; i++)
+        if(sets[i] === filter) {
+          e.classList.remove('hide');
+          break;
+        }
+    }
   });
 };
 
 window.addEventListener('DOMContentLoaded', function(event) {
-  var url = new URL(document.URL);
-  var sp = new URLSearchParams(url.search);
-  makeSwitch('pub-filter', function(elm) { applyFilter(elm.id); }, sp.get('filter') || 'selected');
+  var filter = splitQuery().params.filter || 'selected';
+  makeSwitch('pub-filter', function(elm) { applyFilter(elm.id); }, filter);
 });

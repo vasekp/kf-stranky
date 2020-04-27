@@ -1,8 +1,8 @@
 'use strict';
 
 function makeSwitch(id, callback, defaultChoice) {
-  var children = Array.from(document.getElementById(id).getElementsByTagName('a'));
-  children.forEach(function(child) {
+  var children = document.getElementById(id).getElementsByTagName('a');
+  forEach(children, function(child) {
     child.addEventListener('click', function(e) { switchClick(e.currentTarget, callback); e.preventDefault(); }); });
   var active;
   if(!isNaN(defaultChoice))
@@ -14,7 +14,7 @@ function makeSwitch(id, callback, defaultChoice) {
 }
 
 function switchClick(element, callback) {
-  Array.from(element.parentNode.getElementsByTagName('a')).forEach(function(child) {
+  forEach(element.parentNode.getElementsByTagName('a'), function(child) {
     child.classList.remove('selected');
   });
   element.classList.add('selected');

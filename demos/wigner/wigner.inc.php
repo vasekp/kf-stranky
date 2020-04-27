@@ -1,6 +1,7 @@
 <?php
 $css[] = 'css/switch.css';
 $css[] = $demodir . '/wigner.css';
+$scripts[] = 'shared.js';
 $scripts[] = 'demo-helpers.js';
 $scripts[] = 'switch.js';
 $scripts[] = $demodir . '/wigner.js';
