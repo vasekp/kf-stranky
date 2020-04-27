@@ -8,15 +8,16 @@ function basename(url) {
 
 function loadFiles(func) {
   var files = {};
-  var links = document.querySelectorAll('link[rel=preload]');
+  var links = document.querySelectorAll('link[rel="preload"]');
   var loaded = 0;
   for(let i = 0; i < links.length; i++) {
     let xhr = new XMLHttpRequest();
     let url = links[i].href;
+    let iForIE = i;
     xhr.open('GET', url, true);
     xhr.onload = function() {
       if(xhr.status === 200) {
-        let id = links[i].id || basename(url);
+        let id = links[iForIE].id || basename(url);
         files[id] = xhr.responseText;
         if(++loaded == links.length)
           func(files);
