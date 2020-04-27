@@ -44,7 +44,7 @@ function fileSelected(e) {
 window.addEventListener('DOMContentLoaded', function(event) {
   addEvents(document.getElementById('intro'));
   addEvents(document.getElementById('announces'));
-  Array.from(document.querySelectorAll('input[type="file"]')).forEach(function(elm) {
+  forEach(document.querySelectorAll('input[type="file"]'), function(elm) {
     elm.addEventListener('input', fileSelected);
   });
 });

@@ -52,3 +52,8 @@ function updateURL(url) {
   };
   document.getElementById('flag').href = modifyQuery('l', otherLang);
 }
+
+function forEach(iterable, fn) {
+  for(let i = 0; i < iterable.length; i++)
+    fn(iterable[i]);
+}

@@ -1,6 +1,7 @@
 <?php
 $css[] = $demodir . '/ylm.css';
 $css[] = 'css/switch.css';
+$scripts[] = 'shared.js';
 $scripts[] = 'switch.js';
 $scripts[] = 'demo-helpers.js';
 $scripts[] = $demodir . '/ylm.js';

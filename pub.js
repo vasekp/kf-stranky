@@ -1,7 +1,7 @@
 'use strict';
 
 function applyFilter(filter) {
-  Array.from(document.getElementById('list').children).forEach(function(e) {
+  forEach(document.getElementById('list').children, function(e) {
     var show = filter == 'all' || e.getAttribute('data-sets').split(' ').includes(filter);
     e.classList.toggle('hide', !show);
   });
