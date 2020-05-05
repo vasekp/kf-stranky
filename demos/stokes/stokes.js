@@ -13,7 +13,7 @@ window.addEventListener('DOMContentLoaded', function() {
   canvas.width = canvas.clientWidth * ratio;
   canvas.height = canvas.clientHeight * ratio;
   c2d = canvas.getContext('2d');
-  c2d.setTransform(canvas.width/2.5, 0, 0, -canvas.height/2.5, canvas.width/2, canvas.height/2);
+  c2d.setTransform(canvas.width/3, 0, 0, -canvas.height/3, canvas.width/2, canvas.height/2);
   c2d.lineWidth = 0.05;
   c2d.lineCap = 'round';
 
@@ -30,7 +30,8 @@ window.addEventListener('DOMContentLoaded', function() {
     angle: -.8,
     theta: 1,
     phi: 1,
-    state: new State(2, -.5, 1.3)
+    state: new State(2, -.5, 1.3),
+    changed: true
   };
   interaction = {};
   updateQView();
@@ -124,24 +125,27 @@ function filesReady(files) {
   progs.solid.axes.colorsSat[1] = new Float32Array([0, 1, 0]);
   progs.solid.axes.colorsSat[2] = new Float32Array([1, 0, 0]);
 
-  cx = new GraphicsComplex(divArrow * 3 + 1, 6, function(xy) {
-    return Array.isArray(xy) ? (xy[0] % divArrow) * 3 + xy[1] : divArrow * 3 + xy;
+  cx = new GraphicsComplex(divArrow * 4 + 1, 6, function(xy) {
+    return Array.isArray(xy) ? (xy[0] % divArrow) * 4 + xy[1] : divArrow * 4 + xy;
   });
   const rIn = 0.03;
   const rOut = 0.06;
-  const zTip = 1.2;
+  const zTip = 1.02;
   cx.put(0, [0, 0, zTip,  0, 0, 0]);
   for(let x = 0; x < divArrow; x++) {
     let phi = 2*Math.PI * x / divArrow;
     let c = Math.cos(phi), s = Math.sin(phi);
     cx.put([x, 0], [rIn * c, rIn * s, 0,    c, s, 0]);
     cx.put([x, 1], [rIn * c, rIn * s, 1,    c, s, 0]);
-    cx.put([x, 2], [rOut * c, rOut * s, 1,  (zTip - 1) * c, (zTip - 1) * s, rOut]);
+    cx.put([x, 2], [rOut * c, rOut * s, 1,  0, 0, -1]);
+    cx.put([x, 3], [rOut * c, rOut * s, zTip,  0, 0, 1]);
     cx.simplex([x, 0], [x+1, 0], [x, 1]);
     cx.simplex([x+1, 1], [x, 1], [x+1, 0]);
     cx.simplex([x, 1], [x+1, 1], [x, 2]);
     cx.simplex([x+1, 2], [x, 2], [x+1, 1]);
-    cx.simplex([x, 2], [x+1, 2], 0);
+    cx.simplex([x, 2], [x+1, 2], [x, 3]);
+    cx.simplex([x+1, 3], [x, 3], [x+1, 2]);
+    cx.simplex([x, 3], [x+1, 3], 0);
   }
 
   progs.solid.arrow = {};
@@ -177,6 +181,22 @@ function filesReady(files) {
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, cx.indices(), gl.STATIC_DRAW);
   progs.flat.disk.length = cx.length();
 
+  progs.line = new Program(gl, files['line.vert'], files['flat.frag']);
+
+  progs.line.bFactor = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, progs.line.bFactor);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+      1, 1, 1, 1, 1, 0,
+      1, 1, 1, 1, 0, 1,
+      1, 1, 1, 0, 1, 1,
+      1, 1, 0, 1, 0, 0,
+      1, 1, 0, 0, 1, 0,
+      1, 0, 1, 1, 0, 0,
+      1, 0, 1, 0, 0, 1,
+      0, 1, 1, 0, 1, 0,
+      0, 1, 1, 0, 0, 1
+    ]), gl.STATIC_DRAW);
+
   texture = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, texture);
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.canvas.width, gl.canvas.height, 0, gl.RGB, gl.UNSIGNED_BYTE, null);
@@ -202,89 +222,105 @@ function filesReady(files) {
 
 function draw(time) {
   if(interaction.lastTime) {
-    if(interaction.pick > 0)
+    if(interaction.pick > 0) {
       model.state.rotAxis(interaction.pick, (time - interaction.lastTime) * 0.0003);
+      model.changed = true;
+    }
     model.state.evolve((time - interaction.lastTime) * 0.01);
   }
   interaction.lastTime = time;
 
-  gl.disable(gl.DEPTH_TEST);
-  gl.useProgram(progs.bkg.program);
-  gl.enableVertexAttribArray(progs.bkg.aPos);
-  gl.bindBuffer(gl.ARRAY_BUFFER, progs.bkg.bPos);
-  gl.vertexAttribPointer(progs.bkg.aPos, 2, gl.FLOAT, false, 0, 0);
-  gl.drawArrays(gl.TRIANGLES, 0, 6);
-  gl.disableVertexAttribArray(progs.bkg.aPos);
+  if(model.changed) {
+    gl.disable(gl.DEPTH_TEST);
+    gl.useProgram(progs.bkg.program);
+    gl.enableVertexAttribArray(progs.bkg.aPos);
+    gl.bindBuffer(gl.ARRAY_BUFFER, progs.bkg.bPos);
+    gl.vertexAttribPointer(progs.bkg.aPos, 2, gl.FLOAT, false, 0, 0);
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    gl.disableVertexAttribArray(progs.bkg.aPos);
 
-  gl.enable(gl.DEPTH_TEST);
-  gl.clear(gl.DEPTH_BUFFER_BIT);
-  gl.useProgram(progs.solid.program);
-  gl.enableVertexAttribArray(progs.solid.aPos);
-  gl.enableVertexAttribArray(progs.solid.aNormal);
-  gl.bindBuffer(gl.ARRAY_BUFFER, progs.solid.axes.bAttrib);
-  gl.vertexAttribPointer(progs.solid.aPos, 3, gl.FLOAT, false, 6*4, 0);
-  gl.vertexAttribPointer(progs.solid.aNormal, 3, gl.FLOAT, false, 6*4, 3*4);
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, progs.solid.axes.bIx);
-  gl.uniform4fv(progs.solid.uQView, model.qView);
-  for(let i = 0; i < 3; i++) {
-    gl.uniform4fv(progs.solid.uQModel, progs.solid.axes.quats[i]);
-    gl.uniform3fv(progs.solid.uColor, progs.solid.axes.colors[i]);
-    gl.drawElements(gl.TRIANGLES, progs.solid.axes.length, gl.UNSIGNED_SHORT, 0);
-  }
-  gl.bindBuffer(gl.ARRAY_BUFFER, progs.solid.arrow.bAttrib);
-  gl.vertexAttribPointer(progs.solid.aPos, 3, gl.FLOAT, false, 6*4, 0);
-  gl.vertexAttribPointer(progs.solid.aNormal, 3, gl.FLOAT, false, 6*4, 3*4);
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, progs.solid.arrow.bIx);
-  gl.uniform4fv(progs.solid.uQModel, model.state.quat);
-  gl.uniform3fv(progs.solid.uColor, progs.solid.arrow.color);
-  gl.drawElements(gl.TRIANGLES, progs.solid.arrow.length, gl.UNSIGNED_SHORT, 0);
-  gl.disableVertexAttribArray(progs.solid.aPos);
-  gl.disableVertexAttribArray(progs.solid.aNormal);
+    gl.enable(gl.DEPTH_TEST);
+    gl.clear(gl.DEPTH_BUFFER_BIT);
+    gl.useProgram(progs.solid.program);
+    gl.enableVertexAttribArray(progs.solid.aPos);
+    gl.enableVertexAttribArray(progs.solid.aNormal);
+    gl.bindBuffer(gl.ARRAY_BUFFER, progs.solid.axes.bAttrib);
+    gl.vertexAttribPointer(progs.solid.aPos, 3, gl.FLOAT, false, 6*4, 0);
+    gl.vertexAttribPointer(progs.solid.aNormal, 3, gl.FLOAT, false, 6*4, 3*4);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, progs.solid.axes.bIx);
+    gl.uniform4fv(progs.solid.uQView, model.qView);
+    for(let i = 0; i < 3; i++) {
+      gl.uniform4fv(progs.solid.uQModel, progs.solid.axes.quats[i]);
+      gl.uniform3fv(progs.solid.uColor, progs.solid.axes.colors[i]);
+      gl.drawElements(gl.TRIANGLES, progs.solid.axes.length, gl.UNSIGNED_SHORT, 0);
+    }
+    gl.bindBuffer(gl.ARRAY_BUFFER, progs.solid.arrow.bAttrib);
+    gl.vertexAttribPointer(progs.solid.aPos, 3, gl.FLOAT, false, 6*4, 0);
+    gl.vertexAttribPointer(progs.solid.aNormal, 3, gl.FLOAT, false, 6*4, 3*4);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, progs.solid.arrow.bIx);
+    gl.uniform4fv(progs.solid.uQModel, model.state.quat);
+    gl.uniform3fv(progs.solid.uColor, progs.solid.arrow.color);
+    gl.drawElements(gl.TRIANGLES, progs.solid.arrow.length, gl.UNSIGNED_SHORT, 0);
+    gl.disableVertexAttribArray(progs.solid.aPos);
+    gl.disableVertexAttribArray(progs.solid.aNormal);
 
-  gl.enable(gl.BLEND);
-  gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ZERO, gl.ONE);
-  gl.useProgram(progs.sphere.program);
-  gl.enableVertexAttribArray(progs.sphere.aPos);
-  gl.bindBuffer(gl.ARRAY_BUFFER, progs.sphere.bPos);
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, progs.sphere.bIx);
-  gl.vertexAttribPointer(progs.sphere.aPos, 3, gl.FLOAT, false, 0, 0);
-  gl.uniform4fv(progs.sphere.uQView, model.qView);
-  gl.drawElements(gl.TRIANGLES, progs.sphere.length, gl.UNSIGNED_SHORT, 0);
-  gl.disableVertexAttribArray(progs.sphere.aPos);
-  gl.disable(gl.BLEND);
+    gl.useProgram(progs.line.program);
+    gl.enableVertexAttribArray(progs.line.aFactor);
+    gl.bindBuffer(gl.ARRAY_BUFFER, progs.line.bFactor);
+    gl.vertexAttribPointer(progs.line.aFactor, 3, gl.FLOAT, false, 0, 0);
+    gl.uniform3fv(progs.line.uPos, model.state.coords());
+    gl.uniform3fv(progs.line.uColor, progs.solid.arrow.color);
+    gl.uniform4fv(progs.line.uQView, model.qView);
+    gl.drawArrays(gl.LINES, 0, 18);
+    gl.disableVertexAttribArray(progs.line.aFactor);
 
-  gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
-  gl.clearColor(0, 0, 0, 1);
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-  gl.useProgram(progs.flat.program);
-  gl.enableVertexAttribArray(progs.flat.aPos);
-  gl.bindBuffer(gl.ARRAY_BUFFER, progs.sphere.bPos);
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, progs.sphere.bIx);
-  gl.vertexAttribPointer(progs.flat.aPos, 3, gl.FLOAT, false, 0, 0);
-  gl.vertexAttrib2f(progs.flat.aDelta, 0, 0);
-  gl.uniform4fv(progs.flat.uQView, model.qView);
-  gl.uniform3f(progs.flat.uColor, 0, 0, 0);
-  gl.uniform4f(progs.flat.uQModel, 0, 0, 0, 1);
-  gl.drawElements(gl.TRIANGLES, progs.sphere.length, gl.UNSIGNED_SHORT, 0);
-  gl.disableVertexAttribArray(progs.flat.aPos);
-  gl.enableVertexAttribArray(progs.flat.aDelta);
-  gl.bindBuffer(gl.ARRAY_BUFFER, progs.flat.disk.bPos);
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, progs.flat.disk.bIx);
-  gl.vertexAttribPointer(progs.flat.aDelta, 2, gl.FLOAT, false, 0, 0);
-  for(let i = 0; i < 3; i++) {
-    gl.uniform4fv(progs.flat.uQModel, progs.solid.axes.quats[i]);
-    gl.uniform3fv(progs.flat.uColor, progs.solid.axes.colorsSat[i]);
-    gl.vertexAttrib3f(progs.flat.aPos, 0, 0, 1.3);
+    gl.enable(gl.BLEND);
+    gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ZERO, gl.ONE);
+    gl.useProgram(progs.sphere.program);
+    gl.enableVertexAttribArray(progs.sphere.aPos);
+    gl.bindBuffer(gl.ARRAY_BUFFER, progs.sphere.bPos);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, progs.sphere.bIx);
+    gl.vertexAttribPointer(progs.sphere.aPos, 3, gl.FLOAT, false, 0, 0);
+    gl.uniform4fv(progs.sphere.uQView, model.qView);
+    gl.drawElements(gl.TRIANGLES, progs.sphere.length, gl.UNSIGNED_SHORT, 0);
+    gl.disableVertexAttribArray(progs.sphere.aPos);
+    gl.disable(gl.BLEND);
+
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+    gl.clearColor(0, 0, 0, 1);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    gl.useProgram(progs.flat.program);
+    gl.enableVertexAttribArray(progs.flat.aPos);
+    gl.bindBuffer(gl.ARRAY_BUFFER, progs.sphere.bPos);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, progs.sphere.bIx);
+    gl.vertexAttribPointer(progs.flat.aPos, 3, gl.FLOAT, false, 0, 0);
+    gl.vertexAttrib2f(progs.flat.aDelta, 0, 0);
+    gl.uniform4fv(progs.flat.uQView, model.qView);
+    gl.uniform3f(progs.flat.uColor, 0, 0, 0);
+    gl.uniform4f(progs.flat.uQModel, 0, 0, 0, 1);
+    gl.drawElements(gl.TRIANGLES, progs.sphere.length, gl.UNSIGNED_SHORT, 0);
+    gl.disableVertexAttribArray(progs.flat.aPos);
+    gl.enableVertexAttribArray(progs.flat.aDelta);
+    gl.bindBuffer(gl.ARRAY_BUFFER, progs.flat.disk.bPos);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, progs.flat.disk.bIx);
+    gl.vertexAttribPointer(progs.flat.aDelta, 2, gl.FLOAT, false, 0, 0);
+    for(let i = 0; i < 3; i++) {
+      gl.uniform4fv(progs.flat.uQModel, progs.solid.axes.quats[i]);
+      gl.uniform3fv(progs.flat.uColor, progs.solid.axes.colorsSat[i]);
+      gl.vertexAttrib3f(progs.flat.aPos, 0, 0, 1.3);
+      gl.drawElements(gl.TRIANGLES, progs.flat.disk.length, gl.UNSIGNED_SHORT, 0);
+      gl.vertexAttrib3f(progs.flat.aPos, 0, 0, -1.3);
+      gl.drawElements(gl.TRIANGLES, progs.flat.disk.length, gl.UNSIGNED_SHORT, 0);
+    }
+    gl.uniform4fv(progs.flat.uQModel, model.state.quat);
+    gl.uniform3fv(progs.flat.uColor, progs.solid.arrow.colorSat);
+    gl.vertexAttrib3f(progs.flat.aPos, 0, 0, 1.2);
     gl.drawElements(gl.TRIANGLES, progs.flat.disk.length, gl.UNSIGNED_SHORT, 0);
-    gl.vertexAttrib3f(progs.flat.aPos, 0, 0, -1.3);
-    gl.drawElements(gl.TRIANGLES, progs.flat.disk.length, gl.UNSIGNED_SHORT, 0);
+    gl.disableVertexAttribArray(progs.flat.aDelta);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+
+    model.changed = false;
   }
-  gl.uniform4fv(progs.flat.uQModel, model.state.quat);
-  gl.uniform3fv(progs.flat.uColor, progs.solid.arrow.colorSat);
-  gl.vertexAttrib3f(progs.flat.aPos, 0, 0, 1.2);
-  gl.drawElements(gl.TRIANGLES, progs.flat.disk.length, gl.UNSIGNED_SHORT, 0);
-  gl.disableVertexAttribArray(progs.flat.aDelta);
-  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
   c2d.fillStyle = '#ffffff05';
   c2d.globalCompositeOperation = 'lighter';
@@ -339,6 +375,7 @@ function rotMove(elm, x, y) {
       dir = [glX, glY, Math.sqrt(1 - glX*glX - glY*glY)];
     dir = vrotq(dir, qconj(model.qView));
     model.state.rotateTowards(dir);
+    model.changed = true;
   } else {
     let viewport = gl.getParameter(gl.VIEWPORT);
     model.tilt += (y - interaction.lastY) / viewport[3] * 4;
@@ -350,6 +387,7 @@ function rotMove(elm, x, y) {
     updateQView();
     interaction.lastX = x;
     interaction.lastY = y;
+    model.changed = true;
   }
 }
 
@@ -365,6 +403,10 @@ function updateQView() {
 }
 
 function State(x, y, z) {
+  this.coords = function() {
+    return vrotq([0, 0, 1], this.quat);
+  }
+
   this.rotAxis = function(axis, angle) {
     let q = [0, 0, 0, Math.cos(angle)];
     q[axis - 1] = Math.sin(angle);
@@ -377,7 +419,7 @@ function State(x, y, z) {
   }
 
   this.rotateTowards = function(dir) {
-    var cur = vrotq([0, 0, 1], this.quat);
+    var cur = this.coords();
     this.quat = qnormalize(qmulq(findRotation(cur, vnormalize(dir)), this.quat));
   }
 

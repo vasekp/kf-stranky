@@ -7,9 +7,31 @@
   border: inset 2px;
   width: 15rem;
   height: 15rem;
+  position: relative;
 }
 
 #sphere, #vector {
   width: 100%;
   height: 100%;
+}
+
+#coords {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.coord-line {
+  stroke-width: 0.015;
+  stroke: black;
+}
+
+.text {
+  font-size: .2px;
+}
+
+.sub {
+  font-size: .8em;
 }
