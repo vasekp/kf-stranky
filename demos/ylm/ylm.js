@@ -131,14 +131,6 @@ function filesReady(files) {
   requestAnimationFrame(draw);
 }
 
-function mulq(q1, q2) {
-  return [
-    q1[3]*q2[0] + q2[3]*q1[0] + q1[1]*q2[2] - q1[2]*q2[1],
-    q1[3]*q2[1] + q2[3]*q1[1] + q1[2]*q2[0] - q1[0]*q2[2],
-    q1[3]*q2[2] + q2[3]*q1[2] + q1[0]*q2[1] - q1[1]*q2[0],
-    q1[3]*q2[3] - q1[0]*q2[0] - q1[1]*q2[1] - q1[2]*q2[2]];
-}
-
 function draw(time) {
   gl.disable(gl.DEPTH_TEST);
   gl.useProgram(progs.bkg.program);
@@ -156,7 +148,7 @@ function draw(time) {
   }
   interaction.lastTime = time;
   interaction.lastAngle = model.angle;
-  const qView = mulq(
+  const qView = qmulq(
     [Math.sin((model.tilt - Math.PI/2)/2), 0, 0, Math.cos((model.tilt - Math.PI/2)/2)],
     [0, 0, Math.sin(model.angle/2), Math.cos(model.angle/2)]
   );

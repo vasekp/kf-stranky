@@ -312,7 +312,7 @@ function rotMove(elm, x, y) {
       dir = [glX / len, glY / len, 0];
     else
       dir = [glX, glY, Math.sqrt(1 - glX*glX - glY*glY)];
-    dir = rotate(dir, inv(model.qView));
+    dir = vrotq(dir, qconj(model.qView));
     model.state.rotateTowards(dir);
   } else {
     let viewport = gl.getParameter(gl.VIEWPORT);
@@ -332,69 +332,28 @@ function rotEnd() {
   interaction.pick = 0;
 }
 
-function mulq(q1, q2) {
-  return [
-    q1[3]*q2[0] + q2[3]*q1[0] + q1[1]*q2[2] - q1[2]*q2[1],
-    q1[3]*q2[1] + q2[3]*q1[1] + q1[2]*q2[0] - q1[0]*q2[2],
-    q1[3]*q2[2] + q2[3]*q1[2] + q1[0]*q2[1] - q1[1]*q2[0],
-    q1[3]*q2[3] - q1[0]*q2[0] - q1[1]*q2[1] - q1[2]*q2[2]
-  ];
-}
-
-function inv(q) {
-  return [-q[0], -q[1], -q[2], q[3]];
-}
-
-function rotate(v, q) {
-  var t = [
-    q[3]*v[0] + q[1]*v[2] - q[2]*v[1],
-    q[3]*v[1] + q[2]*v[0] - q[0]*v[2],
-    q[3]*v[2] + q[0]*v[1] - q[1]*v[0]
-  ];
-  return [
-    v[0] + 2*(q[1]*t[2] - q[2]*t[1]),
-    v[1] + 2*(q[2]*t[0] - q[0]*t[2]),
-    v[2] + 2*(q[0]*t[1] - q[1]*t[0]),
-  ];
-}
-
 function updateQView() {
-  model.qView = mulq(
+  model.qView = qmulq(
     [Math.sin((model.tilt - Math.PI/2)/2), 0, 0, Math.cos((model.tilt - Math.PI/2)/2)],
     [0, 0, Math.sin(model.angle/2), Math.cos(model.angle/2)]
   );
 }
 
 function State(x, y, z) {
-  this.coords = function() { return rotate([0, 0, 1], this.quat); }
+  this.coords = function() {
+    return vrotq([0, 0, 1], this.quat);
+  }
 
   this.rotAxis = function(axis, angle) {
     let q = [0, 0, 0, Math.cos(angle)];
     q[axis - 1] = Math.sin(angle);
-    this.quat = mulq(q, this.quat);
+    this.quat = qmulq(q, this.quat);
   }
 
   this.rotateTowards = function(dir) {
-    var cur = rotate([0, 0, 1], this.quat);
-    var len = Math.sqrt(dir[0] * dir[0] + dir[1] * dir[1] + dir[2] * dir[2]);
-    dir[0] /= len;
-    dir[1] /= len;
-    dir[2] /= len;
-    var cross = [
-      cur[1] * dir[2] - cur[2] * dir[1],
-      cur[2] * dir[0] - cur[0] * dir[2],
-      cur[0] * dir[1] - cur[1] * dir[0]
-    ];
-    var dot = dir[0] * cur[0] + dir[1] * cur[1] + dir[2] * cur[2];
-    if(dot == -1)
-      this.quat = [1, 0, 0, 0];
-    else {
-      let q = mulq([cross[0], cross[1], cross[2], 1 + dot], this.quat);
-      let qLen = Math.sqrt(q[0]*q[0] + q[1]*q[1] + q[2]*q[2] + q[3]*q[3]);
-      this.quat = [q[0] / qLen, q[1] / qLen, q[2] / qLen, q[3] / qLen];
-    }
+    var cur = vrotq([0, 0, 1], this.quat);
+    this.quat = qnormalize(qmulq(findRotation(cur, vnormalize(dir)), this.quat));
   }
 
-  this.quat = [0, 0, 0, 1];
-  this.rotateTowards([x, y, z]);
+  this.quat = findRotation([0, 0, 1], vnormalize([x, y, z]));
 }

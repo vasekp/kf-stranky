@@ -163,3 +163,62 @@ function findNearest(point, map, minDistance) {
   }
   return found;
 }
+
+/***** Vector and quaternion algebra *****/
+
+function dot(v1, v2) {
+  return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
+}
+
+function cross(v1, v2) {
+  return [
+    v1[1] * v2[2] - v1[2] * v2[1],
+    v1[2] * v2[0] - v1[0] * v2[2],
+    v1[0] * v2[1] - v1[1] * v2[0]
+  ];
+}
+
+function vnormalize(v) {
+  let len = Math.sqrt(dot(v, v));
+  return [v[0] / len, v[1] / len, v[2] / len];
+}
+
+function qmulq(q1, q2) {
+  return [
+    q1[3]*q2[0] + q2[3]*q1[0] + q1[1]*q2[2] - q1[2]*q2[1],
+    q1[3]*q2[1] + q2[3]*q1[1] + q1[2]*q2[0] - q1[0]*q2[2],
+    q1[3]*q2[2] + q2[3]*q1[2] + q1[0]*q2[1] - q1[1]*q2[0],
+    q1[3]*q2[3] - q1[0]*q2[0] - q1[1]*q2[1] - q1[2]*q2[2]
+  ];
+}
+
+function qconj(q) {
+  return [-q[0], -q[1], -q[2], q[3]];
+}
+
+function qnormalize(q) {
+  let qLen = Math.sqrt(q[0]*q[0] + q[1]*q[1] + q[2]*q[2] + q[3]*q[3]);
+  return [q[0] / qLen, q[1] / qLen, q[2] / qLen, q[3] / qLen];
+}
+
+function vrotq(v, q) {
+  var t = [
+    q[3]*v[0] + q[1]*v[2] - q[2]*v[1],
+    q[3]*v[1] + q[2]*v[0] - q[0]*v[2],
+    q[3]*v[2] + q[0]*v[1] - q[1]*v[0]
+  ];
+  return [
+    v[0] + 2*(q[1]*t[2] - q[2]*t[1]),
+    v[1] + 2*(q[2]*t[0] - q[0]*t[2]),
+    v[2] + 2*(q[0]*t[1] - q[1]*t[0]),
+  ];
+}
+
+function findRotation(v1, v2) {
+  let c = cross(v1, v2);
+  let d = dot(v1, v2);
+  if(d == -1)
+    return [1, 0, 0, 0];
+  else
+    return qnormalize([c[0], c[1], c[2], 1 + d]);
+}
