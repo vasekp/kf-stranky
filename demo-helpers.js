@@ -80,6 +80,26 @@ function Program(ctx, vs, fs) {
   }
 }
 
+function GraphicsComplex(num, dim, indexer) {
+  this._coords = new Float32Array(num * dim);
+  this._indices = [];
+
+  this.put = function(ix, coords) {
+    let base = indexer(ix) * dim;
+    for(let j = 0; j < dim; j++)
+      this._coords[base + j] = coords[j];
+  }
+
+  this.simplex = function() {
+    for(let j = 0; j < arguments.length; j++)
+      this._indices.push(indexer(arguments[j]));
+  }
+
+  this.coords = function() { return this._coords; };
+  this.indices = function() { return new Uint16Array(this._indices); }
+  this.length = function() { return this._indices.length; }
+}
+
 /***** Mouse and pointer event listeners *****/
 
 function callBack(elm, ev, func) {

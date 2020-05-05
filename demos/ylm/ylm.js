@@ -1,8 +1,6 @@
 'use strict';
 
 var canvas, gl, progs, model, interaction;
-const divX = 100, divY = 50;
-const divArrow = 10;
 const SIZE = 4;
 const numElements = SIZE * SIZE * SIZE * 2;
 
@@ -46,124 +44,62 @@ function filesReady(files) {
     -1, 1,
     1, -1]), gl.STATIC_DRAW);
 
-  progs.sphere = new Program(gl, files['sphere.vert'], files['sphere.frag']);
-
-  var strideX = 3;
-  var strideY = strideX * divX;
-  var points = new Float32Array(strideY * (divY + 1));
+  const divX = 100, divY = 50;
+  var cx = new GraphicsComplex(divX * (divY + 1), 3, function(xy) {
+    return (xy[0] % divX) + xy[1] * divX;
+  });
   for(let y = 0; y <= divY; y++) {
     let theta = Math.PI * y / divY + 0.001;
     for(let x = 0; x < divX; x++) {
       let phi = 2*Math.PI * x / divX + 0.001;
-      let base = x * strideX + y * strideY;
-      points[base + 0] = Math.sin(theta) * Math.cos(phi);
-      points[base + 1] = Math.sin(theta) * Math.sin(phi);
-      points[base + 2] = Math.cos(theta);
+      cx.put([x, y], [Math.sin(theta) * Math.cos(phi), Math.sin(theta) * Math.sin(phi), Math.cos(theta)]);
+      if(y < divY) {
+        cx.simplex([x+1, y], [x, y], [x, y+1]);
+        cx.simplex([x, y+1], [x+1, y+1], [x+1, y]);
+      }
     }
   }
+
+  progs.sphere = new Program(gl, files['sphere.vert'], files['sphere.frag']);
   progs.sphere.bPos = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, progs.sphere.bPos);
-  gl.bufferData(gl.ARRAY_BUFFER, points, gl.STATIC_DRAW);
-
-  var index = function(x, y) {
-    return (x % divX) + y * divX;
-  };
-
-  strideX = 6;
-  strideY = strideX * divX;
-  var indices = new Uint16Array(strideY * divY);
-  for(let y = 0; y < divY; y++) {
-    for(let x = 0; x < divX; x++) {
-      let base = x * strideX + y * strideY;
-      indices[base + 0] = index(x+1, y);
-      indices[base + 1] = index(x, y);
-      indices[base + 2] = index(x, y+1);
-      indices[base + 3] = index(x, y+1);
-      indices[base + 4] = index(x+1, y+1);
-      indices[base + 5] = index(x+1, y);
-    }
-  }
+  gl.bufferData(gl.ARRAY_BUFFER, cx.coords(), gl.STATIC_DRAW);
   progs.sphere.bIx = gl.createBuffer();
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, progs.sphere.bIx);
-  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, cx.indices(), gl.STATIC_DRAW);
+  progs.sphere.length = cx.length();
 
-  progs.arrow = new Program(gl, files['arrow.vert'], files['arrow.frag']);
-
-  strideX = 3 * 3 * 2;
-  var attribs = new Float32Array(strideX * divArrow + 2 * 3 * 2);
+  const divArrow = 10;
+  cx = new GraphicsComplex(divArrow * 3 + 2, 6, function(xy) {
+    return Array.isArray(xy) ? (xy[0] % divArrow) * 3 + xy[1] : divArrow * 3 + xy;
+  });
   const rIn = 0.025;
   const rOut = 0.05;
   const zStart = -1.6, zEnd = 1.6, zTip = 1.75;
-  for(let x = 0; x < divX; x++) {
-    let phi = 2*Math.PI * x / divArrow;
-    let base = x * strideX;
-    let c = Math.cos(phi), s = Math.sin(phi);
-    /* trunk - position */
-    attribs[base + 0] = attribs[base + 6] = rIn * c;
-    attribs[base + 1] = attribs[base + 7] = rIn * s;
-    attribs[base + 2] = zStart;
-    attribs[base + 8] = zEnd;
-    /* trunk - normal */
-    attribs[base + 3] = attribs[base + 9] = c;
-    attribs[base + 4] = attribs[base + 10] = s;
-    attribs[base + 5] = attribs[base + 11] = 0;
-    /* tip - position */
-    attribs[base + 12] = rOut * c;
-    attribs[base + 13] = rOut * s;
-    attribs[base + 14] = zEnd;
-    /* tip - normal */
-    attribs[base + 15] = (zTip - zEnd) * c;
-    attribs[base + 16] = (zTip - zEnd) * s;
-    attribs[base + 17] = rOut;
-  }
-  const ixStart = 3 * divArrow;
-  attribs[6*ixStart + 0] = 0;
-  attribs[6*ixStart + 1] = 0;
-  attribs[6*ixStart + 2] = zStart;
-  attribs[6*ixStart + 3] = 0;
-  attribs[6*ixStart + 4] = 0;
-  attribs[6*ixStart + 5] = -1;
-  const ixTip = 3 * divArrow + 1;
-  attribs[6*ixTip + 0] = 0;
-  attribs[6*ixTip + 1] = 0;
-  attribs[6*ixTip + 2] = zTip;
-  attribs[6*ixTip + 3] = 0;
-  attribs[6*ixTip + 4] = 0;
-  attribs[6*ixTip + 5] = 0;
-  progs.arrow.bAttribs = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, progs.arrow.bAttribs);
-  gl.bufferData(gl.ARRAY_BUFFER, attribs, gl.STATIC_DRAW);
-
-  index = function(x, y) {
-    return (x % divArrow) * 3 + y;
-  };
-
-  strideX = 18;
-  indices = new Uint16Array(strideX * divArrow);
+  cx.put(0, [0, 0, zStart,  0, 0, -1]);
+  cx.put(1, [0, 0, zTip,    0, 0, 0]);
   for(let x = 0; x < divArrow; x++) {
-    let base = x * strideX;
-    indices[base + 0] = index(x, 0);
-    indices[base + 1] = index(x+1, 0);
-    indices[base + 2] = index(x, 1);
-    indices[base + 3] = index(x+1, 1);
-    indices[base + 4] = index(x, 1);
-    indices[base + 5] = index(x+1, 0);
-    indices[base + 6] = index(x, 1);
-    indices[base + 7] = index(x+1, 1);
-    indices[base + 8] = index(x, 2);
-    indices[base + 9] = index(x+1, 2);
-    indices[base + 10] = index(x, 2);
-    indices[base + 11] = index(x+1, 1);
-    indices[base + 12] = index(x, 2);
-    indices[base + 13] = index(x+1, 2);
-    indices[base + 14] = ixTip;
-    indices[base + 15] = index(x+1, 0);
-    indices[base + 16] = index(x, 0);
-    indices[base + 17] = ixStart;
+    let phi = 2*Math.PI * x / divArrow;
+    let c = Math.cos(phi), s = Math.sin(phi);
+    cx.put([x, 0], [rIn * c, rIn * s, zStart,  c, s, 0]);
+    cx.put([x, 1], [rIn * c, rIn * s, zEnd,    c, s, 0]);
+    cx.put([x, 2], [rOut * c, rOut * s, zEnd,  (zTip - 1) * c, (zTip - 1) * s, rOut]);
+    cx.simplex([x, 0], [x+1, 0], [x, 1]);
+    cx.simplex([x+1, 1], [x, 1], [x+1, 0]);
+    cx.simplex([x, 1], [x+1, 1], [x, 2]);
+    cx.simplex([x+1, 2], [x, 2], [x+1, 1]);
+    cx.simplex([x+1, 0], [x, 0], 0);
+    cx.simplex([x, 2], [x+1, 2], 1);
   }
+
+  progs.arrow = new Program(gl, files['arrow.vert'], files['arrow.frag']);
+  progs.arrow.bAttrib = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, progs.arrow.bAttrib);
+  gl.bufferData(gl.ARRAY_BUFFER, cx.coords(), gl.STATIC_DRAW);
   progs.arrow.bIx = gl.createBuffer();
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, progs.arrow.bIx);
-  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, cx.indices(), gl.STATIC_DRAW);
+  progs.arrow.length = cx.length();
 
   const v2 = 1/Math.sqrt(2);
   progs.arrow.quats = [];
@@ -233,13 +169,13 @@ function draw(time) {
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, progs.sphere.bIx);
   gl.vertexAttribPointer(progs.sphere.aPos, 3, gl.FLOAT, false, 0, 0);
   gl.uniform4fv(progs.sphere.uQView, qView);
-  gl.drawElements(gl.TRIANGLES, divX * divY * 6, gl.UNSIGNED_SHORT, 0);
+  gl.drawElements(gl.TRIANGLES, progs.sphere.length, gl.UNSIGNED_SHORT, 0);
   gl.disableVertexAttribArray(progs.sphere.aPos);
 
   gl.useProgram(progs.arrow.program);
   gl.enableVertexAttribArray(progs.arrow.aPos);
   gl.enableVertexAttribArray(progs.arrow.aNormal);
-  gl.bindBuffer(gl.ARRAY_BUFFER, progs.arrow.bAttribs);
+  gl.bindBuffer(gl.ARRAY_BUFFER, progs.arrow.bAttrib);
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, progs.arrow.bIx);
   gl.vertexAttribPointer(progs.arrow.aPos, 3, gl.FLOAT, false, 6*4, 0);
   gl.vertexAttribPointer(progs.arrow.aNormal, 3, gl.FLOAT, false, 6*4, 3*4);
@@ -247,7 +183,7 @@ function draw(time) {
   for(let i = 0; i < 3; i++) {
     gl.uniform4fv(progs.arrow.uQModel, progs.arrow.quats[i]);
     gl.uniform3fv(progs.arrow.uColor, progs.arrow.colors[i]);
-    gl.drawElements(gl.TRIANGLES, divArrow * 18, gl.UNSIGNED_SHORT, 0);
+    gl.drawElements(gl.TRIANGLES, progs.arrow.length, gl.UNSIGNED_SHORT, 0);
   }
   gl.disableVertexAttribArray(progs.arrow.aPos);
   gl.disableVertexAttribArray(progs.arrow.aNormal);
