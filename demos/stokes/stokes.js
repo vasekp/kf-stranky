@@ -1,12 +1,20 @@
 'use strict';
 
-var gl, progs, fb, texture, model, interaction;
+var gl, c2d, progs, fb, texture, model, interaction;
 
 window.addEventListener('DOMContentLoaded', function() {
   var canvas = document.getElementById('sphere');
   canvas.width = canvas.clientWidth;
   canvas.height = canvas.clientHeight;
   gl = canvas.getContext('webgl');
+
+  canvas = document.getElementById('vector');
+  canvas.width = canvas.clientWidth;
+  canvas.height = canvas.clientHeight;
+  c2d = canvas.getContext('2d');
+  c2d.setTransform(canvas.width/2.5, 0, 0, -canvas.height/2.5, canvas.width/2, canvas.height/2);
+  c2d.lineWidth = 0.05;
+  c2d.lineCap = 'round';
 
   if(!gl) {
     alert('WebGL not supported');
@@ -192,6 +200,13 @@ function filesReady(files) {
 }
 
 function draw(time) {
+  if(interaction.lastTime) {
+    if(interaction.pick > 0)
+      model.state.rotAxis(interaction.pick, (time - interaction.lastTime) * 0.0003);
+    model.state.evolve((time - interaction.lastTime) * 0.01);
+  }
+  interaction.lastTime = time;
+
   gl.disable(gl.DEPTH_TEST);
   gl.useProgram(progs.bkg.program);
   gl.enableVertexAttribArray(progs.bkg.aPos);
@@ -199,12 +214,6 @@ function draw(time) {
   gl.vertexAttribPointer(progs.bkg.aPos, 2, gl.FLOAT, false, 0, 0);
   gl.drawArrays(gl.TRIANGLES, 0, 6);
   gl.disableVertexAttribArray(progs.bkg.aPos);
-
-  if(interaction.lastTime) {
-    if(interaction.pick > 0)
-      model.state.rotAxis(interaction.pick, (time - interaction.lastTime) * 0.001);
-  }
-  interaction.lastTime = time;
 
   gl.enable(gl.DEPTH_TEST);
   gl.clear(gl.DEPTH_BUFFER_BIT);
@@ -276,7 +285,21 @@ function draw(time) {
   gl.disableVertexAttribArray(progs.flat.aDelta);
   gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
-  var canvas = document.getElementById('vector');
+  c2d.fillStyle = '#ffffff05';
+  c2d.globalCompositeOperation = 'lighter';
+  c2d.fillRect(-1.5, -1.5, 3, 3);
+
+  let prev = model.lastPsi;
+  let psi = model.state.psi();
+  if(prev) {
+    c2d.fillStyle = '#000000ff';
+    c2d.globalCompositeOperation = 'multiply';
+    c2d.beginPath();
+    c2d.moveTo(prev[0][0], prev[1][0]);
+    c2d.lineTo(psi[0][0], psi[1][0]);
+    c2d.stroke();
+  }
+  model.lastPsi = psi;
 
   requestAnimationFrame(draw);
 }
@@ -302,6 +325,7 @@ function rotStart(elm, x, y) {
 
 function rotMove(elm, x, y) {
   if(interaction.pick > 0)
+    // handled in draw()
     return;
   else if(interaction.pick < 0) {
     let glX = ((x / gl.canvas.width) * 2 - 1) * 1.5;
@@ -340,14 +364,15 @@ function updateQView() {
 }
 
 function State(x, y, z) {
-  this.coords = function() {
-    return vrotq([0, 0, 1], this.quat);
-  }
-
   this.rotAxis = function(axis, angle) {
     let q = [0, 0, 0, Math.cos(angle)];
     q[axis - 1] = Math.sin(angle);
-    this.quat = qmulq(q, this.quat);
+    this.quat = qnormalize(qmulq(q, this.quat));
+  }
+
+  this.evolve = function(angle) {
+    let q = [0, 0, Math.sin(angle), Math.cos(angle)];
+    this.quat = qnormalize(qmulq(this.quat, q));
   }
 
   this.rotateTowards = function(dir) {
@@ -356,4 +381,13 @@ function State(x, y, z) {
   }
 
   this.quat = findRotation([0, 0, 1], vnormalize([x, y, z]));
+
+  this.psi = function() {
+    // X,Y,Z → Y,Z,X
+    let q = qmulq([1/2, 1/2, -1/2, 1/2], this.quat);
+    return [
+      [q[0], q[3]],
+      [-q[2], q[1]]
+    ];
+  }
 }
