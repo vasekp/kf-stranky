@@ -18,12 +18,13 @@ window.addEventListener('DOMContentLoaded', function() {
 
   model = {
     tilt: 0.2,
-    angle: -.5,
+    angle: -.8,
     theta: 1,
     phi: 1,
     state: new State(2, -.5, 1.3)
   };
   interaction = {};
+  updateQView();
 
   loadFiles(filesReady);
 });
@@ -144,6 +145,7 @@ function filesReady(files) {
   progs.solid.arrow.length = cx.length();
 
   progs.solid.arrow.color = new Float32Array([c2, c2, c1]);
+  progs.solid.arrow.colorSat = new Float32Array([1, 1, 0]);
 
   progs.flat = new Program(gl, files['flat.vert'], files['flat.frag']);
 
@@ -185,30 +187,8 @@ function filesReady(files) {
   gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
   var canvas = document.getElementById('sphere');
-  addPointerListeners(canvas, rotStart, rotMove);
+  addPointerListeners(canvas, rotStart, rotMove, rotEnd);
   requestAnimationFrame(draw);
-}
-
-function mulq(q1, q2) {
-  return [
-    q1[3]*q2[0] + q2[3]*q1[0] + q1[1]*q2[2] - q1[2]*q2[1],
-    q1[3]*q2[1] + q2[3]*q1[1] + q1[2]*q2[0] - q1[0]*q2[2],
-    q1[3]*q2[2] + q2[3]*q1[2] + q1[0]*q2[1] - q1[1]*q2[0],
-    q1[3]*q2[3] - q1[0]*q2[0] - q1[1]*q2[1] - q1[2]*q2[2]
-  ];
-}
-
-function rotate(v, q) {
-  var t = [
-    q[3]*v[0] + q[1]*v[2] - q[2]*v[1],
-    q[3]*v[1] + q[2]*v[0] - q[0]*v[2],
-    q[3]*v[2] + q[0]*v[1] - q[1]*v[0]
-  ];
-  return [
-    v[0] + 2*(q[1]*t[2] - q[2]*t[1]),
-    v[1] + 2*(q[2]*t[0] - q[0]*t[2]),
-    v[2] + 2*(q[0]*t[1] - q[1]*t[0]),
-  ];
 }
 
 function draw(time) {
@@ -220,10 +200,11 @@ function draw(time) {
   gl.drawArrays(gl.TRIANGLES, 0, 6);
   gl.disableVertexAttribArray(progs.bkg.aPos);
 
-  const qView = mulq(
-    [Math.sin((model.tilt - Math.PI/2)/2), 0, 0, Math.cos((model.tilt - Math.PI/2)/2)],
-    [0, 0, Math.sin(model.angle/2), Math.cos(model.angle/2)]
-  );
+  if(interaction.lastTime) {
+    if(interaction.pick > 0)
+      model.state.rotAxis(interaction.pick, (time - interaction.lastTime) * 0.001);
+  }
+  interaction.lastTime = time;
 
   gl.enable(gl.DEPTH_TEST);
   gl.clear(gl.DEPTH_BUFFER_BIT);
@@ -234,7 +215,7 @@ function draw(time) {
   gl.vertexAttribPointer(progs.solid.aPos, 3, gl.FLOAT, false, 6*4, 0);
   gl.vertexAttribPointer(progs.solid.aNormal, 3, gl.FLOAT, false, 6*4, 3*4);
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, progs.solid.axes.bIx);
-  gl.uniform4fv(progs.solid.uQView, qView);
+  gl.uniform4fv(progs.solid.uQView, model.qView);
   for(let i = 0; i < 3; i++) {
     gl.uniform4fv(progs.solid.uQModel, progs.solid.axes.quats[i]);
     gl.uniform3fv(progs.solid.uColor, progs.solid.axes.colors[i]);
@@ -257,7 +238,7 @@ function draw(time) {
   gl.bindBuffer(gl.ARRAY_BUFFER, progs.sphere.bPos);
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, progs.sphere.bIx);
   gl.vertexAttribPointer(progs.sphere.aPos, 3, gl.FLOAT, false, 0, 0);
-  gl.uniform4fv(progs.sphere.uQView, qView);
+  gl.uniform4fv(progs.sphere.uQView, model.qView);
   gl.drawElements(gl.TRIANGLES, progs.sphere.length, gl.UNSIGNED_SHORT, 0);
   gl.disableVertexAttribArray(progs.sphere.aPos);
   gl.disable(gl.BLEND);
@@ -271,7 +252,7 @@ function draw(time) {
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, progs.sphere.bIx);
   gl.vertexAttribPointer(progs.flat.aPos, 3, gl.FLOAT, false, 0, 0);
   gl.vertexAttrib2f(progs.flat.aDelta, 0, 0);
-  gl.uniform4fv(progs.flat.uQView, qView);
+  gl.uniform4fv(progs.flat.uQView, model.qView);
   gl.uniform3f(progs.flat.uColor, 0, 0, 0);
   gl.uniform4f(progs.flat.uQModel, 0, 0, 0, 1);
   gl.drawElements(gl.TRIANGLES, progs.sphere.length, gl.UNSIGNED_SHORT, 0);
@@ -288,6 +269,10 @@ function draw(time) {
     gl.vertexAttrib3f(progs.flat.aPos, 0, 0, -1.3);
     gl.drawElements(gl.TRIANGLES, progs.flat.disk.length, gl.UNSIGNED_SHORT, 0);
   }
+  gl.uniform4fv(progs.flat.uQModel, model.state.quat);
+  gl.uniform3fv(progs.flat.uColor, progs.solid.arrow.colorSat);
+  gl.vertexAttrib3f(progs.flat.aPos, 0, 0, 1.2);
+  gl.drawElements(gl.TRIANGLES, progs.flat.disk.length, gl.UNSIGNED_SHORT, 0);
   gl.disableVertexAttribArray(progs.flat.aDelta);
   gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
@@ -303,44 +288,113 @@ function rotStart(elm, x, y) {
   gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
   gl.readPixels(x, gl.canvas.height - y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, color);
   gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-  if(color[2] == 255)
-    interaction.face = 1;
+  if(color[0] == 255 && color[1] == 255)
+    interaction.pick = -1;
+  else if(color[2] == 255)
+    interaction.pick = 1;
   else if(color[1] == 255)
-    interaction.face = 2;
+    interaction.pick = 2;
   else if(color[0] == 255)
-    interaction.face = 3;
+    interaction.pick = 3;
   else
-    interaction.face = 0;
-  console.log(interaction.face);
+    interaction.pick = 0;
 }
 
 function rotMove(elm, x, y) {
-  if(interaction.face != 0)
+  if(interaction.pick > 0)
     return;
-  var viewport = gl.getParameter(gl.VIEWPORT);
-  model.tilt += (y - interaction.lastY) / viewport[3] * 4;
-  if(model.tilt > Math.PI / 2)
-    model.tilt = Math.PI / 2;
-  else if(model.tilt < -Math.PI / 2)
-    model.tilt = -Math.PI / 2;
-  model.angle += (x - interaction.lastX) / viewport[2] * 4;
-  interaction.lastX = x;
-  interaction.lastY = y;
+  else if(interaction.pick < 0) {
+    let glX = ((x / gl.canvas.width) * 2 - 1) * 1.5;
+    let glY = ((1 - y / gl.canvas.height) * 2 - 1) * 1.5;
+    let len = Math.hypot(glX, glY);
+    let dir;
+    if(len > 1)
+      dir = [glX / len, glY / len, 0];
+    else
+      dir = [glX, glY, Math.sqrt(1 - glX*glX - glY*glY)];
+    dir = rotate(dir, inv(model.qView));
+    model.state.rotateTowards(dir);
+  } else {
+    let viewport = gl.getParameter(gl.VIEWPORT);
+    model.tilt += (y - interaction.lastY) / viewport[3] * 4;
+    if(model.tilt > Math.PI / 2)
+      model.tilt = Math.PI / 2;
+    else if(model.tilt < -Math.PI / 2)
+      model.tilt = -Math.PI / 2;
+    model.angle += (x - interaction.lastX) / viewport[2] * 4;
+    updateQView();
+    interaction.lastX = x;
+    interaction.lastY = y;
+  }
+}
+
+function rotEnd() {
+  interaction.pick = 0;
+}
+
+function mulq(q1, q2) {
+  return [
+    q1[3]*q2[0] + q2[3]*q1[0] + q1[1]*q2[2] - q1[2]*q2[1],
+    q1[3]*q2[1] + q2[3]*q1[1] + q1[2]*q2[0] - q1[0]*q2[2],
+    q1[3]*q2[2] + q2[3]*q1[2] + q1[0]*q2[1] - q1[1]*q2[0],
+    q1[3]*q2[3] - q1[0]*q2[0] - q1[1]*q2[1] - q1[2]*q2[2]
+  ];
+}
+
+function inv(q) {
+  return [-q[0], -q[1], -q[2], q[3]];
+}
+
+function rotate(v, q) {
+  var t = [
+    q[3]*v[0] + q[1]*v[2] - q[2]*v[1],
+    q[3]*v[1] + q[2]*v[0] - q[0]*v[2],
+    q[3]*v[2] + q[0]*v[1] - q[1]*v[0]
+  ];
+  return [
+    v[0] + 2*(q[1]*t[2] - q[2]*t[1]),
+    v[1] + 2*(q[2]*t[0] - q[0]*t[2]),
+    v[2] + 2*(q[0]*t[1] - q[1]*t[0]),
+  ];
+}
+
+function updateQView() {
+  model.qView = mulq(
+    [Math.sin((model.tilt - Math.PI/2)/2), 0, 0, Math.cos((model.tilt - Math.PI/2)/2)],
+    [0, 0, Math.sin(model.angle/2), Math.cos(model.angle/2)]
+  );
 }
 
 function State(x, y, z) {
-  var len = Math.sqrt(x*x + y*y + z*z);
-  var cross = [-y / len, x / len, 0];
-  var dot = z / len;
-  if(dot == -1)
-    this.quat = [1, 0, 0, 0];
-  else {
-    let qLen = Math.sqrt(2 + 2*dot);
-    this.quat = [cross[0] / qLen, cross[1] / qLen, cross[2] / qLen, (1 + dot) / qLen];
+  this.coords = function() { return rotate([0, 0, 1], this.quat); }
+
+  this.rotAxis = function(axis, angle) {
+    let q = [0, 0, 0, Math.cos(angle)];
+    q[axis - 1] = Math.sin(angle);
+    this.quat = mulq(q, this.quat);
   }
 
-  this.coords = function() { return rotate([0, 0, 1], this.quat); }
-  this.rotX = function(a) { this.quat = mulq(this.quat, [sin(a), 0, 0, cos(a)]); }
-  this.rotY = function(a) { this.quat = mulq(this.quat, [0, sin(a), 0, cos(a)]); }
-  this.rotZ = function(a) { this.quat = mulq(this.quat, [0, 0, sin(a), cos(a)]); }
+  this.rotateTowards = function(dir) {
+    var cur = rotate([0, 0, 1], this.quat);
+    var len = Math.sqrt(dir[0] * dir[0] + dir[1] * dir[1] + dir[2] * dir[2]);
+    dir[0] /= len;
+    dir[1] /= len;
+    dir[2] /= len;
+    var cross = [
+      cur[1] * dir[2] - cur[2] * dir[1],
+      cur[2] * dir[0] - cur[0] * dir[2],
+      cur[0] * dir[1] - cur[1] * dir[0]
+    ];
+    var dot = dir[0] * cur[0] + dir[1] * cur[1] + dir[2] * cur[2];
+    if(dot == -1)
+      this.quat = [1, 0, 0, 0];
+    else {
+      let q = mulq([cross[0], cross[1], cross[2], 1 + dot], this.quat);
+      let qLen = Math.sqrt(q[0]*q[0] + q[1]*q[1] + q[2]*q[2] + q[3]*q[3]);
+      this.quat = [q[0] / qLen, q[1] / qLen, q[2] / qLen, q[3] / qLen];
+    }
+  }
+
+  this.quat = [0, 0, 0, 1];
+  this.rotateTowards([x, y, z]);
 }
