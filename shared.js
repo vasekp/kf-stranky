@@ -5,7 +5,7 @@ function Ajax(url, onSuccess, onError, timeout) {
 
   this.onSuccess = onSuccess;
   this.onError = this.onTimeout = onError;
-  this.timeout = timeout || 500;
+  this.timeout = timeout || 1000;
 
   this.sendRequest = function(requestData, callbackData) {
     var xhr = new XMLHttpRequest();
@@ -19,7 +19,7 @@ function Ajax(url, onSuccess, onError, timeout) {
           this.onError(callbackData);
         return;
       }
-      this.onSuccess(JSON.parse(xhr.response), callbackData);
+      this.onSuccess(xhr.response ? JSON.parse(xhr.response) : null, callbackData);
     }.bind(this);
     xhr.timeout = this.timeout;
     xhr.ontimeout = function() {

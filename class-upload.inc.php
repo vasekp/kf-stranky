@@ -1,7 +1,7 @@
 <?php
 function try_upload_file($unique = true) {
   $basename = basename($_FILES['file']['name']);
-  if(!preg_match('/^[a-z0-9-]*\.pdf$/', $basename))
+  if(!preg_match('/^[a-z0-9_+-]*\.pdf$/', $basename))
     throw new Exception('Invalid filename.');
 
   $filename = 'download/' . $basename;
@@ -25,7 +25,7 @@ function process_upload() {
       if(!isset($_POST['dld_ID']) || !isset($_POST['desc']))
         throw new Exception('Missing fields.');
       if($has_file) {
-        $basename = try_upload_file();
+        $basename = try_upload_file(false);
         $st = $db->prepare('update download set filename=?, description=? where ID=?');
         $st->bind_param('ssi', $basename, $_POST['desc'], $_POST['dld_ID']);
       } else {
