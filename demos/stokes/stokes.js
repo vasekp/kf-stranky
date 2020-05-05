@@ -9,8 +9,9 @@ window.addEventListener('DOMContentLoaded', function() {
   gl = canvas.getContext('webgl');
 
   canvas = document.getElementById('vector');
-  canvas.width = canvas.clientWidth;
-  canvas.height = canvas.clientHeight;
+  var ratio = window.devicePixelRatio || 1;
+  canvas.width = canvas.clientWidth * ratio;
+  canvas.height = canvas.clientHeight * ratio;
   c2d = canvas.getContext('2d');
   c2d.setTransform(canvas.width/2.5, 0, 0, -canvas.height/2.5, canvas.width/2, canvas.height/2);
   c2d.lineWidth = 0.05;

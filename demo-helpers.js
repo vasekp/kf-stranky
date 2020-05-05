@@ -147,6 +147,7 @@ function addPointerListeners(elm, fStart, fMove, fEnd) {
   elm.addEventListener('pointermove', function(e) { pointerMove(e, fMove); } );
   elm.addEventListener('pointerup', function(e) { pointerUp(e, fEnd); } );
   elm.addEventListener('pointercancel', function(e) { pointerUp(e, fEnd); } );
+  elm.addEventListener('touchstart', function(e) { e.preventDefault(); } );
   elm.style['touch-action'] = 'none';
 }
 
