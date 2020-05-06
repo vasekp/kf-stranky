@@ -18,7 +18,7 @@ if($en) {
   $tips = [
     'What parts of the Poincaré sphere correspond to linear, circular, elliptic polarizations?',
     'How are the E<sub>x</sub> a E<sub>y</sub> oscillations affected by the spherical angles ϑ, ϕ?',
-    'Which parameters of the ellipse are conserved in rotations of the vector around x, y, z axes? (You can try that by tapping and holding the axis tips.)'
+    'Which parameters of the ellipse are conserved in rotations of the vector around x, y, z axes? (You can try that by tapping and holding the axis tips.) Look for horizontal, vertical, diagonal extents and the surface area of the ellipse.'
   ];
 } else {
   $desc = 'Stokesovy parametry popisují polarizační stav světelné vlny (zde v ukázce uvažujeme pouze zcela polarizované vlny). Tvoří trojrozměrný vektor ležící na tzv. Poincarého sféře. Ta ukazuje topologické vztahy mezi možnými trajektoriemi opisovanými vektorem elektrické intenzity E. Polarizaci také můžeme charakterizovat pomocí amplitud oscilací složek E<sub>x</sub> a E<sub>y</sub> a jejich fázového rozdílu či pomocí geometrických vlastností polarizační elipsy.';
@@ -26,7 +26,7 @@ if($en) {
   $tips = [
     'Jakým částem Poincarého sféry odpovídají lineární polarizace? Kruhové? Eliptické?',
     'Jaký vliv na oscilace x- a y-složky elektrické intenzity mají sférické úhly ϑ, ϕ?',
-    'Jaké parametry trajektorie elektrické intenzity se zachovávají při rotacích Stokesových parametrů kolem x, y, z? (Stokesův vektor bude rotovat, stisknete-li a přidržíte špičky os.)'
+    'Jaké parametry trajektorie elektrické intenzity se zachovávají při rotacích Stokesových parametrů kolem x, y, z? (Stokesův vektor bude rotovat, stisknete-li a přidržíte špičky os.) Sledujte horizontální, vertikální, diagonální rozměry a plochu elipsy.'
   ];
 }
 
@@ -66,10 +66,11 @@ print <<<HTML
           <path d="M 0 -.5 V .5" marker-start="url(#move-ms)" marker-end="url(#move-me)"/>
         </marker>
       </defs>
+      <path id="amplitudes" stroke-dasharray=".1 .1" d="M 0 0"/>
       <path class="coord-line" d="M -1.3 0 H 1.3" marker-end="url(#coord-arrow)"/>
       <path class="coord-line" d="M 0 1.3 V -1.3" marker-end="url(#coord-arrow)"/>
-      <text class="filled text" x="1.3" y="-.1">E<tspan class="sub" dy=".2em">x</tspan></text>
-      <text class="filled text" x=".1" y="-1.3">E<tspan class="sub" dy=".2em">y</tspan></text>
+      <text class="text" x="1.3" y="-.1">E<tspan class="sub" dy=".2em">x</tspan></text>
+      <text class="text" x=".1" y="-1.3">E<tspan class="sub" dy=".2em">y</tspan></text>
       <path id="semiaxis1" d="M 0 0" marker-end="url(#move)"/>
       <path id="semiaxis2" d="M 0 0" marker-end="url(#move)"/>
       <path id="semiaxis3" d="M 0 0" marker-end="url(#move)"/>

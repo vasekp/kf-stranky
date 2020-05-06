@@ -226,7 +226,7 @@ function draw(time) {
       model.state.rotAxis(interaction.pick, (time - interaction.lastTime) * 0.0003);
       model.changed = true;
     }
-    model.state.evolve((time - interaction.lastTime) * 0.01);
+    model.state.evolve((time - interaction.lastTime) * 0.006);
   }
   interaction.lastTime = time;
 
@@ -331,25 +331,41 @@ function draw(time) {
     ];
     for(let i = 0; i < 4; i++)
       document.getElementById('semiaxis' + (i+1)).setAttribute('d', 'M 0 0 L ' + model.vxs[i][0] + ' ' + model.vxs[i][1]);
-
-    model.changed = false;
   }
 
-  c2d.fillStyle = '#ffffff05';
+  c2d.fillStyle = '#ffffff10';
   c2d.globalCompositeOperation = 'lighter';
   c2d.fillRect(-1.5, -1.5, 3, 3);
+  c2d.globalCompositeOperation = 'multiply';
 
   let prev = model.lastPsi;
   let psi = model.state.psi();
   if(prev) {
-    c2d.fillStyle = '#000000ff';
-    c2d.globalCompositeOperation = 'multiply';
+    c2d.strokeStyle = '#000000ff';
     c2d.beginPath();
     c2d.moveTo(prev[0][0], prev[1][0]);
     c2d.lineTo(psi[0][0], psi[1][0]);
     c2d.stroke();
   }
   model.lastPsi = psi;
+
+  let s = model.state.coords();
+  let th = Math.acos(s[0]) / 2;
+  let A = Math.cos(th), B = Math.sin(th);
+  if(model.changed) {
+    document.getElementById('amplitudes').setAttribute('d',
+      'M -1.3 ' + B + ' H 1.3 M -1.3 ' + -B + ' H 1.3 M ' + A + ' -1.3 V 1.3 M ' + -A + ' -1.3 V 1.3');
+    model.changed = false;
+  }
+  if(prev) {
+    c2d.strokeStyle = '#ff0000ff';
+    c2d.beginPath();
+    c2d.moveTo(A, prev[1][0], 0.05, 0, 2*Math.PI);
+    c2d.lineTo(A, psi[1][0], 0.05, 0, 2*Math.PI);
+    c2d.moveTo(prev[0][0], B, 0.05, 0, 2*Math.PI);
+    c2d.lineTo(psi[0][0], B, 0.05, 0, 2*Math.PI);
+    c2d.stroke();
+  }
 
   requestAnimationFrame(draw);
 }

@@ -38,10 +38,15 @@
 
 #move {
   stroke-width: 0.03;
-  stroke: #08f;
+  stroke: #08f8;
   fill: none;
 }
 
 #move-ms, #move-me {
-  fill: #08f;
+  fill: #08f8;
+}
+
+#amplitudes {
+  stroke-width: 0.015;
+  stroke: #f808;
 }
