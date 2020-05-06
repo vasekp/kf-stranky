@@ -8,7 +8,7 @@ window.addEventListener('DOMContentLoaded', function() {
   canvas = document.getElementById('canvas');
   canvas.width = canvas.clientWidth;
   canvas.height = canvas.clientHeight;
-  gl = canvas.getContext('webgl');
+  gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
 
   if(!gl) {
     alert('WebGL not supported');
