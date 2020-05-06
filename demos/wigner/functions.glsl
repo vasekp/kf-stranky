@@ -52,7 +52,7 @@ void decompose(in mat3 mx_0, in mat3 mx_t, in float time, out float alpha, out f
   // This would give alpha-alpha(0) with usual jumps between -π and +π, thus the jump
   // is now shifted to time = 0 (and multiples of 2π)
   float alpha1 = atan(-sin(time), -(mx_0[0][0]*mx_t[0][0] + mx_0[1][0]*mx_t[1][0]));
-  const float twopi = 4.*asin(1.);
+  float twopi = 4.*asin(1.);
   // Adding alpha(0) again, the only jumps that remain are -2π every 2π in time,
   // we know how to fix that.
   alpha = alpha1 + alpha0 + floor(time/twopi) * twopi;
