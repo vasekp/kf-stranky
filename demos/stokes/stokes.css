@@ -35,3 +35,13 @@
 .sub {
   font-size: .8em;
 }
+
+#move {
+  stroke-width: 0.03;
+  stroke: #08f;
+  fill: none;
+}
+
+#move-ms, #move-me {
+  fill: #08f;
+}

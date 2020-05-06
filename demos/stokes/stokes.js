@@ -215,8 +215,8 @@ function filesReady(files) {
   gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, rb);
   gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
-  var canvas = document.getElementById('sphere');
-  addPointerListeners(canvas, rotStart, rotMove, rotEnd);
+  addPointerListeners(document.getElementById('sphere'), glPStart, glPMove, glPEnd);
+  addPointerListeners(document.getElementById('coords'), vecPStart, vecPMove);
   requestAnimationFrame(draw);
 }
 
@@ -319,6 +319,19 @@ function draw(time) {
     gl.disableVertexAttribArray(progs.flat.aDelta);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
+    let s = model.state.coords();
+    let angle = Math.atan2(s[1], s[0]) / 2;
+    let v = Math.hypot(s[0], s[1]);
+    let a = Math.sqrt((1+v)/2), b = Math.sqrt((1-v)/2);
+    model.vxs = [
+      [a*Math.cos(angle), a*Math.sin(angle)],
+      [-a*Math.cos(angle), -a*Math.sin(angle)],
+      [b*Math.sin(angle), -b*Math.cos(angle)],
+      [-b*Math.sin(angle), b*Math.cos(angle)]
+    ];
+    for(let i = 0; i < 4; i++)
+      document.getElementById('semiaxis' + (i+1)).setAttribute('d', 'M 0 0 L ' + model.vxs[i][0] + ' ' + model.vxs[i][1]);
+
     model.changed = false;
   }
 
@@ -341,7 +354,7 @@ function draw(time) {
   requestAnimationFrame(draw);
 }
 
-function rotStart(elm, x, y) {
+function glPStart(elm, x, y) {
   interaction.lastX = x;
   interaction.lastY = y;
   var color = new Uint8Array(4);
@@ -360,7 +373,7 @@ function rotStart(elm, x, y) {
     interaction.pick = 0;
 }
 
-function rotMove(elm, x, y) {
+function glPMove(elm, x, y) {
   if(interaction.pick > 0)
     // handled in draw()
     return;
@@ -391,8 +404,32 @@ function rotMove(elm, x, y) {
   }
 }
 
-function rotEnd() {
+function glPEnd() {
   interaction.pick = 0;
+}
+
+function vecPStart(elm, x, y, rect) {
+  var tx = 1.5*(2*x/rect.width - 1);
+  var ty = 1.5*(2*y/rect.height - 1);
+  interaction.moving = findNearest([tx, ty], model.vxs, 0.3);
+  interaction.lastX = tx;
+  interaction.lastY = ty;
+}
+
+function vecPMove(elm, x, y, rect) {
+  if(!interaction.moving)
+    return;
+  var tx = 1.5*(2*x/rect.width - 1);
+  var ty = 1.5*(2*y/rect.height - 1);
+  var angle = Math.atan2(ty, tx);
+  var oldCoords = model.state.coords();
+  let a = Math.hypot(tx, ty);
+  let v = 2*a*a - 1;
+  let sx = v * Math.cos(2*angle);
+  let sy = v * Math.sin(2*angle);
+  let sz = Math.sqrt(Math.max(1 - sx*sx - sy*sy, 0.01)) * Math.sign(oldCoords[2]);
+  model.state.rotateTowards([sx, sy, sz]);
+  model.changed = true;
 }
 
 function updateQView() {
