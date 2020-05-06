@@ -2,12 +2,11 @@
 $title = $en ? 'Physical demonstrations' : 'Fyzikální ukázky';
 $github_url = 'https://github.com/vasekp/kf-stranky/issues';
 $intro_text = $en
-  ? 'This is a growing list of interactive demonstrations from various parts of physics. Some demos may not work in older browsers or on mobile devices.'
-  : 'Na této stránce se budou postupně objevovat interaktivní ukázky z různých oblastí fyziky. Ukázky nemusejí fungovat ve starších prohlížečích nebo na mobilních zařízeních.';
-$report_bugs_on = $en
-  ? 'This is a test deployment, please report any bugs and suggestions on'
-  : 'Jedná se o testovací nasazení, případné chyby a náměty prosím přidávejte na';
-$github = 'GitHub';
+  ? 'This is a growing list of interactive demonstrations from various parts of physics.'
+  : 'Na této stránce se budou postupně objevovat interaktivní ukázky z různých oblastí fyziky.';
+$report_bugs = $en
+  ? 'The demos should work in most modern browsers including mobile. If something does not display correctly or the interactive elements are not responsive, please use the bug reporting link.'
+  : 'Ukázky by měly fungovat na většině moderních prohlížečů včetně mobilních zařízení. Pokud se něco nezobrazuje správně nebo interakční prvky nereagují, použijte prosím možnosti pro nahlášení chyb.';
 
 $sql = "select id, title_$prilang as title from demo_topics order by title";
 $result = $db->query($sql);
@@ -38,7 +37,7 @@ foreach($topics as &$topic) {
 print <<<HTML
 <h1>$title</h1>
 <p>$intro_text</p>
-<p>$report_bugs_on <a href="$github_url" target="_blank">$github</a>.</p>\n
+<p>$report_bugs</p>\n
 HTML;
 
 foreach($topics as &$topic) {
