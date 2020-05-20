@@ -15,7 +15,7 @@ $stranky = [
   'personal' => $en ? 'Personal' : 'Osobní'
 ];
 
-$base = basename($_SERVER['REDIRECT_URL'], '.php');
+$base = basename($_SERVER['SCRIPT_NAME'], '.php');
 if(array_key_exists($base, $stranky)) {
   $title_append = ' - ' . $stranky[$base];
   $addr_prefix = '';
