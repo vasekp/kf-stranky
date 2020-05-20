@@ -2,7 +2,11 @@
 include 'shared.inc.php';
 include 'indent.inc.php';
 
-$en = @$_GET['l'] === 'en';
+if(isset($_SERVER['REDIRECT_QUERY_STRING'])) {
+  parse_str($_SERVER['REDIRECT_QUERY_STRING'], $params);
+  $en = @$params['l'] === 'en';
+} else
+  $en = @$_GET['l'] === 'en';
 $prilang = $en ? 'en' : 'cz';
 $seclang = $en ? 'cz' : 'en';
 
@@ -15,7 +19,7 @@ $stranky = [
   'personal' => $en ? 'Personal' : 'Osobní'
 ];
 
-$base = basename($_SERVER['REDIRECT_URL'], '.php');
+$base = basename($_SERVER['SCRIPT_NAME'], '.php');
 if(array_key_exists($base, $stranky)) {
   $title_append = ' - ' . $stranky[$base];
   $addr_prefix = '';
