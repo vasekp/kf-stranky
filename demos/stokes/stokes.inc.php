@@ -36,7 +36,6 @@ foreach($tips as $tip)
 $tips = join(PHP_EOL, $list);
 
 print <<<HTML
-<h1>$demotitle</h1>
 <p>$desc</p>
 <div class="row">
   <div class="container"><canvas id="sphere"></canvas></div>

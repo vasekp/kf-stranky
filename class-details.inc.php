@@ -30,7 +30,7 @@ $selLink = modifyQuery(['c' => 'sel']);
 print <<<HTML
 <h1>
 $classInfo[title] <span class="smaller">($classInfo[KOS])</span>
-<a href="$selLink"><img id="class-sel" class="inline-img" src="images/more.svg"/></a>
+<a href="$selLink"><img id="more" class="inline-img" src="images/more.svg"/></a>
 </h1>
 <div id="intro">
   $classInfo[intro]

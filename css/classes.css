@@ -59,12 +59,3 @@ img.icon {
 .text {
   flex-grow: 1;
 }
-
-#class-sel {
-  opacity: .5;
-  transition: opacity .5s;
-}
-
-#class-sel:hover {
-  opacity: 1;
-}
