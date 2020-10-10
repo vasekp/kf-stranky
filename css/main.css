@@ -179,6 +179,7 @@ h1, h2 {
   clear: both;
   margin: 1.5rem 0 .7rem 0;
   font-weight: 600;
+  line-height: 100%;
 }
 
 h1 {
@@ -251,4 +252,10 @@ sup {
 
 sub {
   top: .3rem;
+}
+
+.inline-img {
+  width: 1em;
+  height: 1em;
+  vertical-align: top;
 }

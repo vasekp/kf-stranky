@@ -24,9 +24,14 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 $sql = "select title, KOS, intro, announces, tutorials from classes where ID='$cid'";
 $result = $db->query($sql);
 $classInfo = $result->fetch_assoc();
+$classInfo['title'] = htmlspecialchars($classInfo['title']);
+$selLink = modifyQuery(['c' => 'sel']);
 
 print <<<HTML
-<h1>$classInfo[title] <span class="smaller">($classInfo[KOS])</span></h1>
+<h1>
+$classInfo[title] <span class="smaller">($classInfo[KOS])</span>
+<a href="$selLink"><img id="class-sel" class="inline-img" src="images/more.svg"/></a>
+</h1>
 <div id="intro">
   $classInfo[intro]
 </div>\n
