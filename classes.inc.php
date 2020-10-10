@@ -8,7 +8,7 @@ if($admin) {
   $scripts[] = 'classes-admin.js';
 }
 
-$cid = isset($_GET['c']) ? $_GET['c'] : 'kf19';
+$cid = isset($_GET['c']) ? $_GET['c'] : 'ko20';
 
 $sql = 'select language from classes where ID=?';
 $st = $db->prepare($sql);
