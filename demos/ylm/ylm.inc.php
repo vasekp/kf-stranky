@@ -67,7 +67,6 @@ foreach($explItems as $item) {
 $explanations = join(PHP_EOL, $list);
 
 print <<<HTML
-<h1>$demotitle</h1>
 <p>$desc</p>
 <div class="settings">
   <div>$type:</div>

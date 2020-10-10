@@ -259,3 +259,12 @@ sub {
   height: 1em;
   vertical-align: top;
 }
+
+#more {
+  opacity: .5;
+  transition: opacity .5s;
+}
+
+#more:hover {
+  opacity: 1;
+}
