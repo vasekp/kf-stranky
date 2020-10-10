@@ -38,9 +38,8 @@
   opacity: 0;
 }
 
-.inline-img {
-  width: .8rem;
-  height: .8rem;
+#play-controls {
+  line-height: 100%;
 }
 
 .settings {

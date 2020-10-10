@@ -16,9 +16,8 @@
   display: inline-block;
 }
 
-.inline-img {
-  width: .8rem;
-  height: .8rem;
+#controls {
+  line-height: 100%;
 }
 
 #svg1 {
