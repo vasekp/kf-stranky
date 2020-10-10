@@ -2,6 +2,7 @@
 
 var interaction = {}, values;
 var gl, progs, texture, fullBuff;
+var over;
 const baseK = 40;
 
 window.addEventListener('DOMContentLoaded', function() {
@@ -54,10 +55,53 @@ function filesReady(files) {
     wavelength: 1.5
   };
 
+  over = new Overlay(document.getElementById('container'),
+    { xMin: -5, xMax: 5, yMin: -5, yMax: 5 });
+  let centerFun = function() { return [0, 0]; };
+  over.addControl(new DashedPath(
+    function() { return [
+      [-8*Math.sin(values.angle), -8*Math.cos(values.angle)],
+      [0, 0],
+      [8*Math.sin(values.angle), -8*Math.cos(values.angle)]]; },
+    'black'));
+  over.addControl(new DashedPath(
+    function() {
+      let angleCrit = Math.asin(values.ratio);
+      return !isNaN(angleCrit) ? [
+        [-8*Math.sin(angleCrit), -8*Math.cos(angleCrit)],
+        [0, 0],
+        [8*Math.sin(angleCrit), -8*Math.cos(angleCrit)]
+      ] : null; },
+    'red'));
+  over.addControl(new DashedPath(
+    function() {
+      let angleRef = Math.asin(Math.sin(values.angle) / values.ratio);
+      return !isNaN(angleRef) ? [[0, 0], [8*Math.sin(angleRef), 8*Math.cos(angleRef)]] : null; },
+    'black'));
+  over.addControl(new CenterControl(
+    function() { return [-4.5*Math.sin(values.angle), -4.5*Math.cos(values.angle)]; },
+    centerFun,
+    'vert-bent', '#F44', moveAngle
+  ));
+  over.addControl(new CenterControl(
+    function() { return [-values.wavelength*Math.sin(values.angle), -values.wavelength*Math.cos(values.angle)]; },
+    centerFun,
+    'horz', '#4F4', moveWavelength
+  ));
+  over.addControl(new DirControl(
+    function() {
+      let c = Math.cos(values.angle),
+          s = Math.sin(values.angle);
+      return [-3*s - values.width * c, -3*c + values.width * s];
+    },
+    centerFun,
+    function() { return [-3*Math.sin(values.angle), -3*Math.cos(values.angle)]; },
+    'vert', '#44F', moveWidth
+  ));
+
   makeSwitch('polarization', changePolarization, 0);
   document.getElementById('ratio').addEventListener('change', ratioChanged);
   document.getElementById('ratio').addEventListener('input', ratioChanged);
-  addPointerListeners(document.getElementById('coords'), pStart, pMove);
   requestAnimationFrame(draw);
 }
 
@@ -65,6 +109,7 @@ function updateValues() {
   // Too narrow beams are unphysical: force Rayleigh length at least 5 (viewport size)
   if(values.width < Math.sqrt(10*values.wavelength / baseK))
     values.width = Math.sqrt(10*values.wavelength / baseK);
+  over.refresh();
 
   let kMag = baseK / values.wavelength;
   let kVec = [kMag * Math.sin(values.angle), kMag * Math.cos(values.angle)];
@@ -85,36 +130,6 @@ function updateValues() {
   gl.useProgram(progs.draw.program);
   gl.uniform2fv(progs.draw.uK, kVec);
   gl.uniform1i(progs.draw.uSampler, texture);
-
-  function r2d(rad) {
-    return rad / Math.PI * 180;
-  }
-
-  document.getElementById('incident').setAttribute('transform',
-    'rotate(' + (-90-r2d(values.angle)) + ')');
-  document.getElementById('reflected').setAttribute('transform',
-    'rotate(' + (-90+r2d(values.angle)) + ')');
-
-  let angleRef = Math.asin(Math.sin(values.angle) / values.ratio);
-  if(!isNaN(angleRef))
-    document.getElementById('refracted').setAttribute('transform',
-      'rotate(' + (90-r2d(angleRef)) + ')');
-  toggleClass(document.getElementById('refracted').classList, 'hide', isNaN(angleRef));
-
-  let angleCrit = Math.asin(values.ratio);
-  if(!isNaN(angleCrit)) {
-    document.getElementById('crit1').setAttribute('transform',
-      'rotate(' + (-90+r2d(angleCrit)) + ')');
-    document.getElementById('crit2').setAttribute('transform',
-      'rotate(' + (-90-r2d(angleCrit)) + ')');
-  }
-  toggleClass(document.getElementById('crit1').classList, 'hide', isNaN(angleCrit));
-  toggleClass(document.getElementById('crit2').classList, 'hide', isNaN(angleCrit));
-
-  document.getElementById('width').setAttribute('d',
-    'M 3 ' + -(values.width + .5) + ' V ' + -values.width + ' V ' + values.width + ' v .5');
-  document.getElementById('wavelength').setAttribute('d',
-    'M ' + (values.wavelength - .5) + ' 0 h .5 h .5');
 }
 
 function scissorAbove() {
@@ -159,50 +174,36 @@ function draw(time) {
   requestAnimationFrame(draw);
 }
 
-function pStart(elm, x, y, rect) {
-  var tx = 5*(2*x/rect.width - 1);
-  var ty = -5*(2*y/rect.height - 1);
-  var cc = Math.cos(values.angle);
-  var ss = Math.sin(values.angle);
-  var ptTransformed = [-ss*tx - cc*ty, -ss*ty + cc*tx];
-  var refs = {
-    'rot': [4.5, 0],
-    'w+': [3, values.width],
-    'w-': [3, -values.width],
-    'wl': [values.wavelength, 0]
-  };
-  interaction.moving = findNearest(ptTransformed, refs, 0.5);
+function moveAngle(x, y) {
+  if(y > 0)
+    y = 0;
+  values.angle = Math.atan2(-x, -y);
+  updateValues();
+  prepare();
 }
 
-function pMove(elm, x, y, rect) {
-  if(!interaction.moving)
-    return;
+function moveWavelength(x, y) {
+  let cc = Math.cos(values.angle);
+  let ss = Math.sin(values.angle);
+  let d = -(ss*x + cc*y);
+  if(d < 0.7)
+    d = 0.7;
+  if(d > 5)
+    d = 5;
+  values.wavelength = d;
+  updateValues();
+  prepare();
+}
 
-  var tx = 5*(2*x/rect.width - 1);
-  var ty = -5*(2*y/rect.height - 1);
-  if(interaction.moving === 'rot') {
-    if(ty > 0)
-      ty = 0;
-    values.angle = Math.atan2(-tx, -ty);
-  } else if(interaction.moving === 'w+' || interaction.moving === 'w-') {
-    let cc = Math.cos(values.angle);
-    let ss = Math.sin(values.angle);
-    let w = Math.abs(cc*tx - ss*ty);
-    if(w < 0.05)
-      w = 0.05;
-    else if(w > 4)
-      w = 4;
-    values.width = w;
-  } else if(interaction.moving === 'wl') {
-    let cc = Math.cos(values.angle);
-    let ss = Math.sin(values.angle);
-    let d = -(ss*tx + cc*ty);
-    if(d < 0.7)
-      d = 0.7;
-    if(d > 5)
-      d = 5;
-    values.wavelength = d;
-  }
+function moveWidth(x, y) {
+  let cc = Math.cos(values.angle);
+  let ss = Math.sin(values.angle);
+  let w = Math.abs(cc*x - ss*y);
+  if(w < 0.05)
+    w = 0.05;
+  else if(w > 4)
+    w = 4;
+  values.width = w;
   updateValues();
   prepare();
 }

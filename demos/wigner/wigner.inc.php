@@ -84,72 +84,7 @@ print <<<HTML
 </div>
 <div id="container">
   <canvas id="canvas"></canvas>
-  <svg id="coords"
-      xmlns="http://www.w3.org/2000/svg"
-      xmlns:xlink="http://www.w3.org/1999/xlink"
-      version="1.1" viewBox="-5 -5 10 10">
-    <defs>
-      <path id="apath" d="M -1 -1 L 1 0 L -1 1 z"/>
-      <marker class="filled" id="coord-arrow" viewbox="-1 -1 2 2" markerUnits="userSpaceOnUse"
-          markerWidth=".2" markerHeight=".2" orient="auto">
-        <use xlink:href="#apath"/>
-      </marker>
-      <marker class="filled c1" id="c1-me" viewbox="-1 -1 2 2" markerUnits="userSpaceOnUse"
-          markerWidth=".2" markerHeight=".2" orient="auto">
-        <use xlink:href="#apath"/>
-      </marker>
-      <marker class="filled c1" id="c1-ms" viewbox="-1 -1 2 2" markerUnits="userSpaceOnUse"
-          markerWidth=".2" markerHeight=".2" orient="auto">
-        <use xlink:href="#apath" transform="scale(-1, 1)"/>
-      </marker>
-      <marker class="filled c2" id="c2-me" viewbox="-1 -1 2 2" markerUnits="userSpaceOnUse"
-          markerWidth=".2" markerHeight=".2" orient="auto">
-        <use xlink:href="#apath"/>
-      </marker>
-      <marker class="filled c2" id="c2-ms" viewbox="-1 -1 2 2" markerUnits="userSpaceOnUse"
-          markerWidth=".2" markerHeight=".2" orient="auto">
-        <use xlink:href="#apath" transform="scale(-1, 1)"/>
-      </marker>
-      <marker class="filled c3" id="c3-me" viewbox="-1 -1 2 2" markerUnits="userSpaceOnUse"
-          markerWidth=".2" markerHeight=".2" orient="auto">
-        <use xlink:href="#apath"/>
-      </marker>
-      <marker class="filled c3" id="c3-ms" viewbox="-1 -1 2 2" markerUnits="userSpaceOnUse"
-          markerWidth=".2" markerHeight=".2" orient="auto">
-        <use xlink:href="#apath" transform="scale(-1, 1)"/>
-      </marker>
-      <marker id="skew" class="stroked c1" viewbox="-1 -1 2 2" markerUnits="userSpaceOnUse"
-          markerWidth="2" markerHeight="2" orient="auto">
-        <path d="M -.15 -.15 H .15 V .15 H -.15 z"/>
-        <path d="M -.5 0 H .5" marker-start="url(#c1-ms)" marker-end="url(#c1-me)"/>
-        <path d="M 0 -.5 V .5" marker-start="url(#c1-ms)" marker-end="url(#c1-me)"/>
-      </marker>
-      <marker id="rot" class="stroked c2" viewbox="-1 -1 2 2" markerUnits="userSpaceOnUse"
-          markerWidth="2" markerHeight="2" orient="auto">
-        <path d="M -.15 -.15 H .15 V .15 H -.15 z"/>
-        <path d="M -.5 0 H .5" marker-start="url(#c2-ms)" marker-end="url(#c2-me)"/>
-        <path d="M -.1 -.5 Q .1 0 -.1 .5" marker-start="url(#c2-ms)" marker-end="url(#c2-me)"/>
-      </marker>
-      <marker id="move" class="stroked c3" viewbox="-1 -1 2 2" markerUnits="userSpaceOnUse"
-          markerWidth="2" markerHeight="2" orient="auto">
-        <path d="M -.15 -.15 H .15 V .15 H -.15 z"/>
-        <path d="M -.5 0 H .5" marker-start="url(#c3-ms)" marker-end="url(#c3-me)"/>
-        <path d="M 0 -.5 V .5" marker-start="url(#c3-ms)" marker-end="url(#c3-me)"/>
-      </marker>
-    </defs>
-    <path class="stroked" d="M -4 0 H 4" marker-end="url(#coord-arrow)"/>
-    <path class="stroked" d="M 0 4 V -4" marker-end="url(#coord-arrow)"/>
-    <text class="filled text" x="4" y="-.2">q</text>
-    <text class="filled text" x=".2" y="-4">p</text>
-    <g id="shape-controls" class="hidden" transform="scale(1, -1)">
-      <path id="bounds" class="stroked" d="M 0 0" stroke-dasharray=".1 .1"/>
-      <path id="edge-x" d="M 0 0" marker-end="url(#skew)"/>
-      <path id="edge-y" d="M 0 0" marker-end="url(#skew)"/>
-      <path id="corner-xy" d="M 0 0" marker-end="url(#rot)"/>
-      <path id="center" d="M 0 0" marker-end="url(#move)"/>
-      <path id="separ" d="M 0 0" marker-end="url(#rot)"/>
-    </g>
-  </svg>
+  <div id="overlayContainer"></div>
 </div>
 <h2>$try</h2>
 <ul>

@@ -15,7 +15,7 @@
   height: 100%;
 }
 
-#coords {
+.controls {
   position: absolute;
   left: 0;
   top: 0;
@@ -23,30 +23,10 @@
   height: 100%;
 }
 
-.coord-line {
-  stroke-width: 0.015;
-  stroke: black;
-}
-
-.text {
-  font-size: .2px;
+.controls .control {
+  opacity: .7;
 }
 
 .sub {
   font-size: .8em;
-}
-
-#move {
-  stroke-width: 0.03;
-  stroke: #08f8;
-  fill: none;
-}
-
-#move-ms, #move-me {
-  fill: #08f8;
-}
-
-#amplitudes {
-  stroke-width: 0.015;
-  stroke: #f808;
 }

@@ -203,7 +203,7 @@ function qnormalize(q) {
 }
 
 function vrotq(v, q) {
-  var t = [
+  let t = [
     q[3]*v[0] + q[1]*v[2] - q[2]*v[1],
     q[3]*v[1] + q[2]*v[0] - q[0]*v[2],
     q[3]*v[2] + q[0]*v[1] - q[1]*v[0]
@@ -222,4 +222,236 @@ function findRotation(v1, v2) {
     return [1, 0, 0, 0];
   else
     return qnormalize([c[0], c[1], c[2], 1 + d]);
+}
+
+function m2inv(m) {
+  let invd = 1/(m[0]*m[3] - m[1]*m[2]);
+  return [invd*m[3], -invd*m[1], -invd*m[2], invd*m[0],
+    invd*(m[2]*m[5] - m[3]*m[4]), invd*(m[1]*m[4] - m[0]*m[5])];
+}
+
+function m2v(m, v) {
+  return [m[0]*v[0] + m[2]*v[1] + m[4], m[1]*v[0] + m[3]*v[1] + m[5]];
+}
+
+function relAngle(v1, v2) {
+  return Math.atan2(v1[0]*v2[1] - v1[1]*v2[0], v1[0]*v2[0] + v1[1]*v2[1]);
+}
+
+/***** Controller interface *****/
+
+let svgNS = 'http://www.w3.org/2000/svg';
+let xlinkNS = 'http://www.w3.org/1999/xlink';
+let svgMime = 'image/svg+xml';
+
+function Overlay(container, baseCoords, activateCallback) {
+  let svg = document.createElementNS(svgNS, 'svg');
+  svg.classList.add('controls');
+  container.appendChild(svg);
+
+  let em = parseFloat(getComputedStyle(container).fontSize);
+  let w = svg.clientWidth / em;
+  let h = svg.clientHeight / em;
+  svg.setAttributeNS(null, 'viewBox', '0 0 ' + w + ' ' + h);
+  this.w2c = [
+    (baseCoords.xMax - baseCoords.xMin) / w, 0,
+    0, (baseCoords.yMin - baseCoords.yMax) / h,
+    baseCoords.xMin, baseCoords.yMax
+  ];
+  this.c2w = m2inv(this.w2c);
+
+  let controls = [];
+  let parser = new DOMParser();
+  this.addControl = function(control) {
+    let elm = control.elm = document.adoptNode(parser.parseFromString(control.svg, svgMime).documentElement);
+    if(!(control.extra && control.extra.alwaysVisible))
+      elm.classList.add('control');
+    svg.appendChild(elm);
+    control.owner = this;
+    controls.push(control);
+    if(control.update)
+      control.update();
+  };
+
+  this.refresh = function() {
+    controls.forEach(function(c) { if(c.update) c.update(); });
+    if(this.active)
+      requestAnimationFrame(this.refresh);
+  }.bind(this);
+  this.refresh();
+
+  Object.defineProperty(this, 'active', {
+    get: function() { return svg.classList.contains('active'); },
+    set: function(a) {
+      svg.classList.toggle('active', a);
+      requestAnimationFrame(this.refresh);
+    }
+  });
+
+  let activeControl;
+  let delta;
+  let pStart = function(elm, x, y) {
+    if(!this.active) {
+      if(activateCallback)
+        activateCallback();
+    }
+    let pos = m2v(this.w2c, [x/em, y/em]);
+    activeControl = findNearest2(pos, controls, 0.5);
+    if(!activeControl)
+      return;
+    let refPos = activeControl.coords();
+    delta = [pos[0] - refPos[0], pos[1] - refPos[1]];
+  }.bind(this);
+  let pMove = function(elm, x, y) {
+    if(!activeControl)
+      return;
+    let pos = m2v(this.w2c, [x/em, y/em]);
+    pos[0] -= delta[0];
+    pos[1] -= delta[1];
+    let ref = activeControl.ref ? activeControl.ref() : [0, 0];
+    activeControl.callback(pos[0] - ref[0], pos[1] - ref[1]);
+  }.bind(this);
+  let pEnd = function() {
+    activeControl = null;
+  }.bind(this);
+  addPointerListeners(svg, pStart, pMove, pEnd);
+}
+
+function findNearest2(point, controls, minDistance) {
+  var currentMin = minDistance;
+  var found = null;
+  controls.forEach(function(control) {
+    if(!control.coords)
+      return;
+    let refPoint = control.coords();
+    if(!refPoint)
+      return;
+    let dist = Math.hypot(point[0] - refPoint[0], point[1] - refPoint[1]);
+    if(dist < currentMin) {
+      found = control;
+      currentMin = dist;
+    }
+  });
+  return found;
+}
+
+let idCounter = function() {
+  let c = 0;
+  return function() { return ++c; }
+}();
+
+function controlNodeSVG(color, shape) {
+  let svg = '<g xmlns="' + svgNS + '" xmlns:xlink="' + xlinkNS + '" '
+    + 'fill="' + color + '" stroke="' + color + '" stroke-width=".06">';
+  let box = '<path fill="none" d="M -.35 -.35 H .35 V .35 H -.35 z"/>';
+  let horz = '<path d="M -1 0 H 1 M 1 0 l 0 -.2 .4 .2 -.4 .2 z M -1 0 l 0 -.2 -.4 .2 .4 .2 z"/>';
+  let vert = '<path d="M 0 -1 V 1 M 0 1 l -.2 0 .2 .4 .2 -.4 z M 0 -1 l -.2 0 .2 -.4 .2 .4 z"/>';
+  let vert_bent = '<path fill="none" d="M -.1 -1 Q .1 0 -.1 1"/>'
+        + '<path d="M -.1 1 l -.24 -.05 0.14 0.54 .35 -.43 z M -.1 -1 l -.24 .05 0.14 -0.54 .35 .43 z"/>';
+  switch(shape) {
+    case 'cross':
+      svg += box + horz + vert;
+      break;
+    case 'bent':
+      svg += box + horz + vert_bent;
+      break;
+    case 'horz':
+      svg += box + horz;
+      break;
+    case 'vert':
+      svg += box + vert;
+      break;
+    case 'vert-bent':
+      svg += box + vert_bent;
+      break;
+    case 'dash':
+      let c = idCounter();
+      svg += '<defs><path id="path' + c + '" fill="none"/></defs>'
+        + '<use xlink:href="#path' + c + '" stroke="' + color + '" stroke-dasharray=".3 .3"/>'
+        + '<use xlink:href="#path' + c + '" stroke="white" stroke-dasharray=".3 .3" stroke-dashoffset=".3"/>'
+      break;
+  }
+  svg += '</g>';
+  return svg;
+}
+
+function BaseMarker(shape, color, extra) {
+  this.extra = extra;
+  this.svg = controlNodeSVG(color, shape);
+}
+
+function CoordAxes(xMin, xMax, yMin, yMax, xMark, yMark) {
+  BaseMarker.call(this, '', 'black');
+  this.extra = { alwaysVisible: true };
+  this.update = function() {
+    let parser = new DOMParser();
+    let pxMin = m2v(this.owner.c2w, [xMin, 0]),
+        pxMax = m2v(this.owner.c2w, [xMax, 0]),
+        pyMin = m2v(this.owner.c2w, [0, yMin]),
+        pyMax = m2v(this.owner.c2w, [0, yMax]);
+    let svg = '<g xmlns="' + svgNS + '">'
+      + '<path d="M ' + pxMin[0] + ' ' + pxMin[1] + ' L ' + pxMax[0] + ' ' + pxMax[1] + ' m 0 0 '
+        + 'l 0 -.25 .5 .25 -.5 .25 z"/>'
+      + '<text x="' + pxMax[0] + '" y="' + (pxMax[1] - .5) + '" font-size="1" stroke="none">' + xMark + '</text>'
+      + '<path d="M ' + pyMin[0] + ' ' + pyMin[1] + ' L ' + pyMax[0] + ' ' + pyMax[1] + ' m 0 0 '
+        + 'l -.25 0 .25 -.5 .25 .5 z"/>'
+      + '<text x="' + (pyMax[0] + .5) + '" y="' + pyMax[1] + '" font-size="1" stroke="none">' + yMark + '</text>'
+      + '</g>';
+    let frag = parser.parseFromString(svg, svgMime).documentElement;
+    this.elm.appendChild(document.adoptNode(frag));
+    this.update = null;
+  }
+}
+
+function DashedPath(arrayFun, color, extra) {
+  BaseMarker.call(this, 'dash', color, extra);
+  this.update = function() {
+    let pts = arrayFun();
+    this.elm.style.visibility = pts ? 'visible' : 'hidden';
+    if(!pts)
+      return;
+    let c2w = this.owner.c2w;
+    pts = pts.map(function(pt) {
+      let coord = m2v(c2w, pt);
+      return coord[0] + ' ' + coord[1];
+    });
+    this.elm.querySelector('path').setAttribute('d', 'M ' + pts.join(' L '));
+  }
+}
+
+function Control(coordsFun, refFun, dirFun, shape, color, callback) {
+  BaseMarker.call(this, shape, color, callback);
+  this.coords = coordsFun;
+  this.ref = refFun;
+  this.dir = dirFun;
+  this.callback = callback;
+  this.update = function() {
+    let pos = this.coords();
+    this.elm.style.visibility = pos ? 'visible' : 'hidden';
+    if(!pos)
+      return;
+    let dir = this.dir(pos);
+    let angle = Math.atan2(dir[1], dir[0]);
+    let powW = m2v(this.owner.c2w, pos);
+    let trf = 'translate(' + powW[0] + ' ' + powW[1] + ') rotate(' + (-angle/Math.PI*180) + ')';
+    this.elm.setAttribute('transform', trf);
+  };
+}
+
+function AbsControl(coordsFun, shape, color, callback) {
+  Control.call(this, coordsFun, null, function() { return [1,0]; }, shape, color, callback);
+}
+
+function CenterControl(coordsFun, centerFun, shape, color, callback) {
+  this.center = centerFun;
+  Control.call(this, coordsFun, centerFun,
+    function(pos) {
+      let center = this.center();
+      return [pos[0] - center[0], pos[1] - center[1]];
+    },
+    shape, color, callback);
+}
+
+function DirControl(coordsFun, refFun, axisFun, shape, color, callback) {
+  Control.call(this, coordsFun, refFun, axisFun, shape, color, callback);
 }

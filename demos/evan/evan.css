@@ -19,7 +19,7 @@
   grid-gap: .5rem;
 }
 
-#coords {
+.controls {
   position: absolute;
   left: 0;
   top: 0;
@@ -27,32 +27,6 @@
   height: 25rem;
   opacity: 0.7;
   --color: black;
-}
-
-.white {
-  --color: white;
-}
-
-.c1 {
-  --color: #0cf;
-}
-
-.c2 {
-  --color: #4e4;
-}
-
-.c3 {
-  --color: #fc0;
-}
-
-#coords .stroked {
-  stroke: var(--color);
-  stroke-width: 0.03;
-  fill: none;
-}
-
-#coords .filled {
-  fill: var(--color);
 }
 
 #ratio {
