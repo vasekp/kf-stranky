@@ -12,6 +12,32 @@
   height: 50rem;
 }
 
+#overlayContainer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 25rem;
+  height: 25rem;
+}
+
+.controls {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.7;
+}
+
+.controls .control {
+  opacity: 1;
+  transition: opacity .5s;
+}
+
+.controls:not(.active) .control {
+  opacity: 0;
+}
+
 .inline-img {
   width: .8rem;
   height: .8rem;
@@ -22,48 +48,4 @@
   grid-template-columns: auto auto auto;
   align-items: center;
   grid-gap: .5rem;
-}
-
-#coords {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 25rem;
-  height: 25rem;
-  opacity: 0.7;
-  --color: black;
-}
-
-.c1 {
-  --color: #4c4;
-}
-
-.c2 {
-  --color: #c44;
-}
-
-.c3 {
-  --color: #44c;
-}
-
-.filled {
-  fill: var(--color);
-}
-
-.stroked {
-  stroke: var(--color);
-  stroke-width: 0.03;
-  fill: none;
-}
-
-#shape-controls {
-  transition: opacity .5s;
-}
-
-.hidden {
-  opacity: 0;
-}
-
-.text {
-  font-size: .4px;
 }
