@@ -22,11 +22,6 @@ window.addEventListener('DOMContentLoaded', function() {
     return;
   }
 
-  if(gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.HIGH_FLOAT).precision <= 0) {
-    alert('High precision, required for this demo, not supported in this hardware');
-    return;
-  }
-
   gl.clearColor(1, 1, 1, 1);
   angle = 0;
 

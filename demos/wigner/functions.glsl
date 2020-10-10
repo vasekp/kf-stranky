@@ -63,12 +63,16 @@ float alpha(mat3 mx) {
   return atan(mx[1][0], mx[0][0]);
 }
 
+float mexp(float f) {
+  return f < -50. ? 0. : exp(f);
+}
+
 float w_gauss(vec2 xy) {
   return exp(-dot(xy, xy));
 }
 
 float int_gauss(float q) {
-  return exp(-q*q);
+  return mexp(-q*q);
 }
 
 float psi_gauss(float q) {
@@ -80,7 +84,7 @@ float w_fock(vec2 xy) {
 }
 
 float int_fock(float q) {
-  return 2.*q*q * exp(-q*q);
+  return 2.*q*q * mexp(-q*q);
 }
 
 float psi_fock(float q) {
@@ -96,7 +100,7 @@ float w_cat(vec2 xy, float s) {
 }
 
 float int_cat(float q, float s, float alpha) {
-  return 1./(1.+exp(-s*s)) * exp(-q*q - pow(s*cos(alpha), 2.)) * (cosh(2.*cos(alpha)*s*q) + cos(2.*sin(alpha)*s*q));
+  return 1./(1.+exp(-s*s)) * mexp(-q*q - pow(s*cos(alpha), 2.)) * (cosh(2.*cos(alpha)*s*q) + cos(2.*sin(alpha)*s*q));
 }
 
 vec2 cx_unit(float a) {
