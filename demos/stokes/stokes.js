@@ -1,6 +1,7 @@
 'use strict';
 
 var gl, c2d, progs, fb, texture, model, interaction;
+var over;
 
 window.addEventListener('DOMContentLoaded', function() {
   var canvas = document.getElementById('sphere');
@@ -35,6 +36,47 @@ window.addEventListener('DOMContentLoaded', function() {
   };
   interaction = {};
   updateQView();
+
+  over = new Overlay(document.getElementById('container2D'),
+    { xMin: -1.5, xMax: 1.5, yMin: -1.5, yMax: 1.5 });
+  over.addControl(new CoordAxes(-1.3, 1.3, -1.3, 1.3,
+    'E<tspan class="sub" dy=".2em">x</tspan>',
+    'E<tspan class="sub" dy=".2em">y</tspan>'));
+  over.addControl(new DashedPath(
+    function() {
+      let A = model.state.A, B = model.state.B;
+      return [[-A, -B], [-A, B], [A, B], [A, -B], [-A, -B]];
+    },
+    '#F80'));
+  let centerFun = function() { return [0, 0]; };
+  over.addControl(new CenterControl(
+    function() {
+      let e = model.state.ellipse;
+      return [e.a*Math.cos(e.angle), e.a*Math.sin(e.angle)]; },
+    centerFun,
+    '#08F', moveSemiaxis
+  ));
+  over.addControl(new CenterControl(
+    function() {
+      let e = model.state.ellipse;
+      return [e.b*Math.sin(e.angle), -e.b*Math.cos(e.angle)]; },
+    centerFun,
+    '#08F', moveSemiaxis
+  ));
+  over.addControl(new CenterControl(
+    function() {
+      let e = model.state.ellipse;
+      return [-e.a*Math.cos(e.angle), -e.a*Math.sin(e.angle)]; },
+    centerFun,
+    '#08F', moveSemiaxis
+  ));
+  over.addControl(new CenterControl(
+    function() {
+      let e = model.state.ellipse;
+      return [-e.b*Math.sin(e.angle), e.b*Math.cos(e.angle)]; },
+    centerFun,
+    '#08F', moveSemiaxis
+  ));
 
   loadFiles(filesReady);
 });
@@ -216,7 +258,6 @@ function filesReady(files) {
   gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
   addPointerListeners(document.getElementById('sphere'), glPStart, glPMove, glPEnd);
-  addPointerListeners(document.getElementById('coords'), vecPStart, vecPMove);
   requestAnimationFrame(draw);
 }
 
@@ -268,7 +309,7 @@ function draw(time) {
     gl.enableVertexAttribArray(progs.line.aFactor);
     gl.bindBuffer(gl.ARRAY_BUFFER, progs.line.bFactor);
     gl.vertexAttribPointer(progs.line.aFactor, 3, gl.FLOAT, false, 0, 0);
-    gl.uniform3fv(progs.line.uPos, model.state.coords());
+    gl.uniform3fv(progs.line.uPos, model.state.coords);
     gl.uniform3fv(progs.line.uColor, progs.solid.arrow.color);
     gl.uniform4fv(progs.line.uQView, model.qView);
     gl.drawArrays(gl.LINES, 0, 18);
@@ -319,18 +360,8 @@ function draw(time) {
     gl.disableVertexAttribArray(progs.flat.aDelta);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
-    let s = model.state.coords();
-    let angle = Math.atan2(s[1], s[0]) / 2;
-    let v = Math.hypot(s[0], s[1]);
-    let a = Math.sqrt((1+v)/2), b = Math.sqrt((1-v)/2);
-    model.vxs = [
-      [a*Math.cos(angle), a*Math.sin(angle)],
-      [-a*Math.cos(angle), -a*Math.sin(angle)],
-      [b*Math.sin(angle), -b*Math.cos(angle)],
-      [-b*Math.sin(angle), b*Math.cos(angle)]
-    ];
-    for(let i = 0; i < 4; i++)
-      document.getElementById('semiaxis' + (i+1)).setAttribute('d', 'M 0 0 L ' + model.vxs[i][0] + ' ' + model.vxs[i][1]);
+    over.refresh();
+    model.changed = false;
   }
 
   c2d.fillStyle = '#ffffff10';
@@ -349,21 +380,13 @@ function draw(time) {
   }
   model.lastPsi = psi;
 
-  let s = model.state.coords();
-  let th = Math.acos(s[0]) / 2;
-  let A = Math.cos(th), B = Math.sin(th);
-  if(model.changed) {
-    document.getElementById('amplitudes').setAttribute('d',
-      'M -1.3 ' + B + ' H 1.3 M -1.3 ' + -B + ' H 1.3 M ' + A + ' -1.3 V 1.3 M ' + -A + ' -1.3 V 1.3');
-    model.changed = false;
-  }
   if(prev) {
     c2d.strokeStyle = '#ff0000ff';
     c2d.beginPath();
-    c2d.moveTo(A, prev[1][0], 0.05, 0, 2*Math.PI);
-    c2d.lineTo(A, psi[1][0], 0.05, 0, 2*Math.PI);
-    c2d.moveTo(prev[0][0], B, 0.05, 0, 2*Math.PI);
-    c2d.lineTo(psi[0][0], B, 0.05, 0, 2*Math.PI);
+    c2d.moveTo(model.state.A, prev[1][0], 0.05, 0, 2*Math.PI);
+    c2d.lineTo(model.state.A, psi[1][0], 0.05, 0, 2*Math.PI);
+    c2d.moveTo(prev[0][0], model.state.B, 0.05, 0, 2*Math.PI);
+    c2d.lineTo(psi[0][0], model.state.B, 0.05, 0, 2*Math.PI);
     c2d.stroke();
   }
 
@@ -424,22 +447,10 @@ function glPEnd() {
   interaction.pick = 0;
 }
 
-function vecPStart(elm, x, y, rect) {
-  var tx = 1.5*(2*x/rect.width - 1);
-  var ty = 1.5*(2*y/rect.height - 1);
-  interaction.moving = findNearest([tx, ty], model.vxs, 0.3);
-  interaction.lastX = tx;
-  interaction.lastY = ty;
-}
-
-function vecPMove(elm, x, y, rect) {
-  if(!interaction.moving)
-    return;
-  var tx = 1.5*(2*x/rect.width - 1);
-  var ty = 1.5*(2*y/rect.height - 1);
-  var angle = Math.atan2(ty, tx);
-  var oldCoords = model.state.coords();
-  let a = Math.hypot(tx, ty);
+function moveSemiaxis(x, y) {
+  var angle = Math.atan2(y, x);
+  var oldCoords = model.state.coords;
+  let a = Math.hypot(x, y);
   let v = 2*a*a - 1;
   let sx = v * Math.cos(2*angle);
   let sy = v * Math.sin(2*angle);
@@ -456,9 +467,25 @@ function updateQView() {
 }
 
 function State(x, y, z) {
-  this.coords = function() {
-    return vrotq([0, 0, 1], this.quat);
-  }
+  let quat = findRotation([0, 0, 1], vnormalize([x, y, z]));
+  Object.defineProperty(this, 'quat', {
+    get: function() { return quat; },
+    set: function(q) { quat = q; updateParams(); }
+  });
+
+  let updateParams = function() {
+    let s = this.coords = vrotq([0, 0, 1], this.quat);
+    let th = Math.acos(s[0]) / 2;
+    this.A = Math.cos(th);
+    this.B = Math.sin(th);
+    let v = Math.hypot(s[0], s[1]);
+    this.ellipse = {
+      a: Math.sqrt((1+v)/2),
+      b: Math.sqrt((1-v)/2),
+      angle: Math.atan2(s[1], s[0]) / 2
+    };
+  }.bind(this);
+  updateParams();
 
   this.rotAxis = function(axis, angle) {
     let q = [0, 0, 0, Math.cos(angle)];
@@ -472,18 +499,15 @@ function State(x, y, z) {
   }
 
   this.rotateTowards = function(dir) {
-    var cur = this.coords();
-    this.quat = qnormalize(qmulq(findRotation(cur, vnormalize(dir)), this.quat));
+    this.quat = qnormalize(qmulq(findRotation(this.coords, vnormalize(dir)), this.quat));
   }
-
-  this.quat = findRotation([0, 0, 1], vnormalize([x, y, z]));
 
   this.psi = function() {
     // X,Y,Z → Y,Z,X
     let q = qmulq([1/2, 1/2, -1/2, 1/2], this.quat);
     return [
       [q[0], q[3]],
-      [-q[2], q[1]]
+      [q[2], -q[1]]
     ];
   }
 }

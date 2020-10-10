@@ -273,19 +273,18 @@ function Overlay(container, baseCoords, activateCallback) {
       control.update();
   };
 
-  let refresh = function() {
-    if(this.active) {
-      controls.forEach(function(c) { if(c.update) c.update(); });
+  this.refresh = function() {
+    controls.forEach(function(c) { if(c.update) c.update(); });
+    if(this.active)
       requestAnimationFrame(refresh);
-    }
   }.bind(this);
-  refresh();
+  this.refresh();
 
   Object.defineProperty(this, 'active', {
     get: function() { return svg.classList.contains('active'); },
     set: function(a) {
       svg.classList.toggle('active', a);
-      requestAnimationFrame(refresh);
+      requestAnimationFrame(this.refresh);
     }
   });
 
@@ -295,7 +294,6 @@ function Overlay(container, baseCoords, activateCallback) {
     if(!this.active) {
       if(activateCallback)
         activateCallback();
-      return;
     }
     let pos = m2v(this.w2c, [x/em, y/em]);
     activeControl = findNearest2(pos, controls, 0.5);

@@ -40,42 +40,8 @@ print <<<HTML
 <p>$desc</p>
 <div class="row">
   <div class="container"><canvas id="sphere"></canvas></div>
-  <div class="container">
+  <div class="container" id="container2D">
     <canvas id="vector"></canvas>
-    <svg id="coords"
-        xmlns="http://www.w3.org/2000/svg"
-        xmlns:xlink="http://www.w3.org/1999/xlink"
-        version="1.1" viewBox="-1.5 -1.5 3 3">
-      <defs>
-        <marker class="filled" id="coord-arrow" viewbox="-1 -1 2 2" markerUnits="userSpaceOnUse"
-            markerWidth=".1" markerHeight=".1" orient="auto">
-          <path id="apath" d="M -1 -1 L 1 0 L -1 1 z"/>
-        </marker>
-        <marker id="move-ms" viewbox="-1 -1 2 2" markerUnits="userSpaceOnUse"
-            markerWidth=".2" markerHeight=".2" orient="auto">
-          <use xlink:href="#apath" transform="scale(-1, 1)"/>
-        </marker>
-        <marker id="move-me" viewbox="-1 -1 2 2" markerUnits="userSpaceOnUse"
-            markerWidth=".2" markerHeight=".2" orient="auto">
-          <use xlink:href="#apath"/>
-        </marker>
-        <marker id="move" viewbox="-.6 -.6 1.2 1.2" markerUnits="userSpaceOnUse"
-            markerWidth=".6" markerHeight=".6" orient="auto">
-          <path d="M -.15 -.15 H .15 V .15 H -.15 z"/>
-          <path d="M -.5 0 H .5" marker-start="url(#move-ms)" marker-end="url(#move-me)"/>
-          <path d="M 0 -.5 V .5" marker-start="url(#move-ms)" marker-end="url(#move-me)"/>
-        </marker>
-      </defs>
-      <path id="amplitudes" stroke-dasharray=".1 .1" d="M 0 0"/>
-      <path class="coord-line" d="M -1.3 0 H 1.3" marker-end="url(#coord-arrow)"/>
-      <path class="coord-line" d="M 0 1.3 V -1.3" marker-end="url(#coord-arrow)"/>
-      <text class="text" x="1.3" y="-.1">E<tspan class="sub" dy=".2em">x</tspan></text>
-      <text class="text" x=".1" y="-1.3">E<tspan class="sub" dy=".2em">y</tspan></text>
-      <path id="semiaxis1" d="M 0 0" marker-end="url(#move)"/>
-      <path id="semiaxis2" d="M 0 0" marker-end="url(#move)"/>
-      <path id="semiaxis3" d="M 0 0" marker-end="url(#move)"/>
-      <path id="semiaxis4" d="M 0 0" marker-end="url(#move)"/>
-    </svg>
   </div>
 </div>
 <h2>$try</h2>
