@@ -276,7 +276,7 @@ function Overlay(container, baseCoords, activateCallback) {
   this.refresh = function() {
     controls.forEach(function(c) { if(c.update) c.update(); });
     if(this.active)
-      requestAnimationFrame(refresh);
+      requestAnimationFrame(this.refresh);
   }.bind(this);
   this.refresh();
 
@@ -335,25 +335,40 @@ function findNearest2(point, controls, minDistance) {
   return found;
 }
 
+let idCounter = function() {
+  let c = 0;
+  return function() { return ++c; }
+}();
+
 function controlNodeSVG(color, shape) {
   let svg = '<g xmlns="' + svgNS + '" xmlns:xlink="' + xlinkNS + '" '
     + 'fill="' + color + '" stroke="' + color + '" stroke-width=".06">';
+  let box = '<path fill="none" d="M -.35 -.35 H .35 V .35 H -.35 z"/>';
+  let horz = '<path d="M -1 0 H 1 M 1 0 l 0 -.2 .4 .2 -.4 .2 z M -1 0 l 0 -.2 -.4 .2 .4 .2 z"/>';
+  let vert = '<path d="M 0 -1 V 1 M 0 1 l -.2 0 .2 .4 .2 -.4 z M 0 -1 l -.2 0 .2 -.4 .2 .4 z"/>';
+  let vert_bent = '<path fill="none" d="M -.1 -1 Q .1 0 -.1 1"/>'
+        + '<path d="M -.1 1 l -.24 -.05 0.14 0.54 .35 -.43 z M -.1 -1 l -.24 .05 0.14 -0.54 .35 .43 z"/>';
   switch(shape) {
     case 'cross':
-      svg += '<path fill="none" d="M -.35 -.35 H .35 V .35 H -.35 z"/>'
-        + '<path d="M -1 0 H 1 M 1 0 l 0 -.2 .4 .2 -.4 .2 z M -1 0 l 0 -.2 -.4 .2 .4 .2 z"/>'
-        + '<path d="M 0 -1 V 1 M 0 1 l -.2 0 .2 .4 .2 -.4 z M 0 -1 l -.2 0 .2 -.4 .2 .4 z"/>'
+      svg += box + horz + vert;
       break;
     case 'bent':
-      svg += '<path fill="none" d="M -.35 -.35 H .35 V .35 H -.35 z"/>'
-        + '<path d="M -1 0 H 1 M 1 0 l 0 -.2 .4 .2 -.4 .2 z M -1 0 l 0 -.2 -.4 .2 .4 .2 z"/>'
-        + '<path fill="none" d="M -.1 -1 Q .1 0 -.1 1"/>'
-        + '<path d="M -.1 1 l -.24 -.05 0.14 0.54 .35 -.43 z M -.1 -1 l -.24 .05 0.14 -0.54 .35 .43 z"/>'
+      svg += box + horz + vert_bent;
+      break;
+    case 'horz':
+      svg += box + horz;
+      break;
+    case 'vert':
+      svg += box + vert;
+      break;
+    case 'vert-bent':
+      svg += box + vert_bent;
       break;
     case 'dash':
-      svg += '<defs><path id="path" fill="none"/></defs>'
-        + '<use xlink:href="#path" stroke="' + color + '" stroke-dasharray=".3 .3"/>'
-        + '<use xlink:href="#path" stroke="white" stroke-dasharray=".3 .3" stroke-dashoffset=".3"/>'
+      let c = idCounter();
+      svg += '<defs><path id="path' + c + '" fill="none"/></defs>'
+        + '<use xlink:href="#path' + c + '" stroke="' + color + '" stroke-dasharray=".3 .3"/>'
+        + '<use xlink:href="#path' + c + '" stroke="white" stroke-dasharray=".3 .3" stroke-dashoffset=".3"/>'
       break;
   }
   svg += '</g>';
@@ -400,7 +415,7 @@ function DashedPath(arrayFun, color, extra) {
       let coord = m2v(c2w, pt);
       return coord[0] + ' ' + coord[1];
     });
-    this.elm.querySelector('#path').setAttribute('d', 'M ' + pts.join(' L '));
+    this.elm.querySelector('path').setAttribute('d', 'M ' + pts.join(' L '));
   }
 }
 
@@ -423,20 +438,20 @@ function Control(coordsFun, refFun, dirFun, shape, color, callback) {
   };
 }
 
-function AbsControl(coordsFun, color, callback) {
-  Control.call(this, coordsFun, null, function() { return [1,0]; }, 'cross', color, callback);
+function AbsControl(coordsFun, shape, color, callback) {
+  Control.call(this, coordsFun, null, function() { return [1,0]; }, shape, color, callback);
 }
 
-function CenterControl(coordsFun, centerFun, color, callback) {
+function CenterControl(coordsFun, centerFun, shape, color, callback) {
   this.center = centerFun;
   Control.call(this, coordsFun, centerFun,
     function(pos) {
       let center = this.center();
       return [pos[0] - center[0], pos[1] - center[1]];
     },
-    'bent', color, callback);
+    shape, color, callback);
 }
 
-function DirControl(coordsFun, refFun, axisFun, color, callback) {
-  Control.call(this, coordsFun, refFun, axisFun, 'cross', color, callback);
+function DirControl(coordsFun, refFun, axisFun, shape, color, callback) {
+  Control.call(this, coordsFun, refFun, axisFun, shape, color, callback);
 }

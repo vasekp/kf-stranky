@@ -68,25 +68,25 @@ function filesReady(files) {
   over.addControl(new DashedPath(
     function() { return [coords(-1, -1), coords(1, -1), coords(1, 1), coords(-1, 1), coords(-1, -1)] },
     '#C44'));
-  over.addControl(new AbsControl(centerFun, '#CC4', moveCentre));
+  over.addControl(new AbsControl(centerFun, 'cross', '#CC4', moveCentre));
   over.addControl(new DirControl(
     function() { return coords(1, 0); },
     centerFun,
     function() { return [scale[2], scale[3]]; },
-    '#4C4', moveEx));
+    'cross', '#4C4', moveEx));
   over.addControl(new DirControl(
     function() { return coords(0, 1); },
     centerFun,
     function() { return [scale[0], scale[1]]; },
-    '#4C4', moveEy));
+    'cross', '#4C4', moveEy));
   over.addControl(new CenterControl(
     function() { return coords(1, 1); },
     centerFun,
-    '#C44', moveCorner));
+    'bent', '#C44', moveCorner));
   over.addControl(new CenterControl(
     function() { return fun == 'cat' ? [catSepar * scale[0] + shift[0], catSepar * scale[1] + shift[1]] : null; },
     centerFun,
-    '#C44', moveSepar));
+    'bent', '#C44', moveSepar));
 
   makeSwitch('play-controls', playControl, 0);
   makeSwitch('func', changeFuncType, 0);

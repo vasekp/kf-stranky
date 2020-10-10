@@ -54,28 +54,28 @@ window.addEventListener('DOMContentLoaded', function() {
       let e = model.state.ellipse;
       return [e.a*Math.cos(e.angle), e.a*Math.sin(e.angle)]; },
     centerFun,
-    '#08F', moveSemiaxis
+    'bent', '#08F', moveSemiaxis
   ));
   over.addControl(new CenterControl(
     function() {
       let e = model.state.ellipse;
       return [e.b*Math.sin(e.angle), -e.b*Math.cos(e.angle)]; },
     centerFun,
-    '#08F', moveSemiaxis
+    'bent', '#08F', moveSemiaxis
   ));
   over.addControl(new CenterControl(
     function() {
       let e = model.state.ellipse;
       return [-e.a*Math.cos(e.angle), -e.a*Math.sin(e.angle)]; },
     centerFun,
-    '#08F', moveSemiaxis
+    'bent', '#08F', moveSemiaxis
   ));
   over.addControl(new CenterControl(
     function() {
       let e = model.state.ellipse;
       return [-e.b*Math.sin(e.angle), e.b*Math.cos(e.angle)]; },
     centerFun,
-    '#08F', moveSemiaxis
+    'bent', '#08F', moveSemiaxis
   ));
 
   loadFiles(filesReady);
