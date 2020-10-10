@@ -340,15 +340,15 @@ function controlNodeSVG(color, shape) {
     + 'fill="' + color + '" stroke="' + color + '" stroke-width=".06">';
   switch(shape) {
     case 'cross':
-      svg += '<path fill="none" d="M -.4 -.4 H .4 V .4 H -.4 z"/>'
-        + '<path d="M -1.2 0 H 1.2 M 1.2 0 l 0 -.25 .5 .25 -.5 .25 z M -1.2 0 l 0 -.25 -.5 .25 .5 .25 z"/>'
-        + '<path d="M 0 -1.2 V 1.2 M 0 1.2 l -.25 0 .25 .5 .25 -.5 z M 0 -1.2 l -.25 0 .25 -.5 .25 .5 z"/>'
+      svg += '<path fill="none" d="M -.35 -.35 H .35 V .35 H -.35 z"/>'
+        + '<path d="M -1 0 H 1 M 1 0 l 0 -.2 .4 .2 -.4 .2 z M -1 0 l 0 -.2 -.4 .2 .4 .2 z"/>'
+        + '<path d="M 0 -1 V 1 M 0 1 l -.2 0 .2 .4 .2 -.4 z M 0 -1 l -.2 0 .2 -.4 .2 .4 z"/>'
       break;
     case 'bent':
-      svg += '<path fill="none" d="M -.4 -.4 H .4 V .4 H -.4 z"/>'
-        + '<path d="M -1.2 0 H 1.2 M 1.2 0 l 0 -.25 .5 .25 -.5 .25 z M -1.2 0 l 0 -.25 -.5 .25 .5 .25 z"/>'
-        + '<path fill="none" d="M -.25 -1.2 Q .25 0 -.25 1.2"/>'
-        + '<path d="M -.25 1.2 l -.23 -.10 0.02 0.56 .43 -.35 z M -.25 -1.2 l -.23 .10 0.02 -0.56 .43 .35 z"/>'
+      svg += '<path fill="none" d="M -.35 -.35 H .35 V .35 H -.35 z"/>'
+        + '<path d="M -1 0 H 1 M 1 0 l 0 -.2 .4 .2 -.4 .2 z M -1 0 l 0 -.2 -.4 .2 .4 .2 z"/>'
+        + '<path fill="none" d="M -.1 -1 Q .1 0 -.1 1"/>'
+        + '<path d="M -.1 1 l -.24 -.05 0.14 0.54 .35 -.43 z M -.1 -1 l -.24 .05 0.14 -0.54 .35 .43 z"/>'
       break;
     case 'dash':
       svg += '<defs><path id="path" fill="none"/></defs>'
