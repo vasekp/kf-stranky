@@ -64,7 +64,7 @@ float alpha(mat3 mx) {
 }
 
 float mexp(float f) {
-  return f < -50. ? 0. : exp(f);
+  return f < -10. ? 0.0000001 : exp(f);
 }
 
 float w_gauss(vec2 xy) {
@@ -76,7 +76,7 @@ float int_gauss(float q) {
 }
 
 float psi_gauss(float q) {
-  return exp(-q*q/2.);
+  return mexp(-q*q/2.);
 }
 
 float w_fock(vec2 xy) {
@@ -88,7 +88,7 @@ float int_fock(float q) {
 }
 
 float psi_fock(float q) {
-  return sqrt(2.) * q * exp(-q*q/2.);
+  return sqrt(2.) * q * mexp(-q*q/2.);
 }
 
 float cosh(float x) {
