@@ -157,7 +157,7 @@ function prepare() {
 function draw(time) {
   gl.bindBuffer(gl.ARRAY_BUFFER, fullBuff);
   gl.useProgram(progs.draw.program);
-  gl.uniform1f(progs.draw.uTime, (time / 1000.0) % (2*Math.PI));
+  gl.uniform1f(progs.draw.uTime, time / 1000.0);
   gl.enableVertexAttribArray(progs.draw.aPos);
   gl.vertexAttribPointer(progs.draw.aPos, 2, gl.FLOAT, false, 0, 0);
   gl.scissor(0, 0, gl.canvas.width, gl.canvas.height / 2);
