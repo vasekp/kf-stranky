@@ -16,8 +16,6 @@ void main(void) {
   for(float p = -1.0; p < 1.0; p += 0.005) {
     div += 1.0;
     float kx = uK.x - p*uSpread*uK.y, ky = uK.y + p*uSpread*uK.x;
-    if(ky < 0.0)
-      continue;
     float ky1 = uPpolarized ? ky*uRatioSquared : ky;
     float ky2s = uRatioSquared * (kx*kx + ky*ky) - kx*kx;
     float ky2 = sqrt(abs(ky2s));

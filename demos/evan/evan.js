@@ -115,10 +115,6 @@ function updateValues() {
   let kVec = [kMag * Math.sin(values.angle), kMag * Math.cos(values.angle)];
   let spread = Math.PI/(values.width * kMag);
 
-  // Check that our variation of k does not bring us to the wrong half-plane
-  if(kVec[1] - Math.abs(kVec[0])*spread < 0)
-    spread = kVec[1] / Math.abs(kVec[0]);
-
   [progs.prepAbove, progs.prepBelow].forEach(function(prog) {
     gl.useProgram(prog.program);
     gl.uniform2fv(prog.uK, kVec);
