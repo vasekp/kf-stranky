@@ -26,6 +26,6 @@ void main(void) {
     * cx_mul(temp, cx_unit(phase));
 
   float aval = length(val);
-  vec3 clr = color(val / aval);
+  vec3 clr = aval == 0. ? vec3(.5) : color(val / aval);
   gl_FragColor = vec4(mix(clr, vec3(1.), smoothstep(aval - .02, aval + .02, vY)), 1.);
 }

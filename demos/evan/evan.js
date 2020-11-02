@@ -3,7 +3,8 @@
 var interaction = {}, values;
 var gl, progs, texture, fullBuff;
 var over;
-const baseK = 40;
+
+const lambdaScale = 5;
 
 window.addEventListener('DOMContentLoaded', function() {
   var canvas = document.getElementById('canvas');
@@ -52,7 +53,7 @@ function filesReady(files) {
     ratio: Math.exp(-.25),
     width: 1,
     polarization: 's',
-    wavelength: 1.5
+    wavelength: 0.3
   };
 
   over = new Overlay(document.getElementById('container'),
@@ -84,7 +85,7 @@ function filesReady(files) {
     'vert-bent', '#F44', moveAngle
   ));
   over.addControl(new CenterControl(
-    function() { return [-values.wavelength*Math.sin(values.angle), -values.wavelength*Math.cos(values.angle)]; },
+    function() { return [-lambdaScale * values.wavelength * Math.sin(values.angle), -lambdaScale * values.wavelength * Math.cos(values.angle)]; },
     centerFun,
     'horz', '#4F4', moveWavelength
   ));
@@ -93,6 +94,16 @@ function filesReady(files) {
       let c = Math.cos(values.angle),
           s = Math.sin(values.angle);
       return [-3*s - values.width * c, -3*c + values.width * s];
+    },
+    centerFun,
+    function() { return [-3*Math.sin(values.angle), -3*Math.cos(values.angle)]; },
+    'vert', '#44F', moveWidth
+  ));
+  over.addControl(new DirControl(
+    function() {
+      let c = Math.cos(values.angle),
+          s = Math.sin(values.angle);
+      return [-3*s + values.width * c, -3*c - values.width * s];
     },
     centerFun,
     function() { return [-3*Math.sin(values.angle), -3*Math.cos(values.angle)]; },
@@ -107,17 +118,14 @@ function filesReady(files) {
 
 function updateValues() {
   // Too narrow beams are unphysical: force Rayleigh length at least 5 (viewport size)
-  if(values.width < Math.sqrt(10*values.wavelength / baseK))
-    values.width = Math.sqrt(10*values.wavelength / baseK);
+  const rayleighLimit = 5;
+  if(values.width < Math.sqrt(rayleighLimit * values.wavelength / Math.PI))
+    values.width = Math.sqrt(rayleighLimit * values.wavelength / Math.PI);
   over.refresh();
 
-  let kMag = baseK / values.wavelength;
+  let kMag = 2*Math.PI / values.wavelength;
   let kVec = [kMag * Math.sin(values.angle), kMag * Math.cos(values.angle)];
   let spread = Math.PI/(values.width * kMag);
-
-  // Check that our variation of k does not bring us to the wrong half-plane
-  if(kVec[1] - Math.abs(kVec[0])*spread < 0)
-    spread = kVec[1] / Math.abs(kVec[0]);
 
   [progs.prepAbove, progs.prepBelow].forEach(function(prog) {
     gl.useProgram(prog.program);
@@ -161,7 +169,7 @@ function prepare() {
 function draw(time) {
   gl.bindBuffer(gl.ARRAY_BUFFER, fullBuff);
   gl.useProgram(progs.draw.program);
-  gl.uniform1f(progs.draw.uTime, (time / 1000.0) % (2*Math.PI));
+  gl.uniform1f(progs.draw.uTime, time);
   gl.enableVertexAttribArray(progs.draw.aPos);
   gl.vertexAttribPointer(progs.draw.aPos, 2, gl.FLOAT, false, 0, 0);
   gl.scissor(0, 0, gl.canvas.width, gl.canvas.height / 2);
@@ -190,7 +198,7 @@ function moveWavelength(x, y) {
     d = 0.7;
   if(d > 5)
     d = 5;
-  values.wavelength = d;
+  values.wavelength = d / lambdaScale;
   updateValues();
   prepare();
 }

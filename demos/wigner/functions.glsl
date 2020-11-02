@@ -63,20 +63,16 @@ float alpha(mat3 mx) {
   return atan(mx[1][0], mx[0][0]);
 }
 
-float mexp(float f) {
-  return f < -10. ? 0.0000001 : exp(f);
-}
-
 float w_gauss(vec2 xy) {
   return exp(-dot(xy, xy));
 }
 
 float int_gauss(float q) {
-  return mexp(-q*q);
+  return exp(-q*q);
 }
 
 float psi_gauss(float q) {
-  return mexp(-q*q/2.);
+  return exp(-q*q/2.);
 }
 
 float w_fock(vec2 xy) {
@@ -84,11 +80,11 @@ float w_fock(vec2 xy) {
 }
 
 float int_fock(float q) {
-  return 2.*q*q * mexp(-q*q);
+  return 2.*q*q * exp(-q*q);
 }
 
 float psi_fock(float q) {
-  return sqrt(2.) * q * mexp(-q*q/2.);
+  return sqrt(2.) * q * exp(-q*q/2.);
 }
 
 float cosh(float x) {
@@ -96,11 +92,13 @@ float cosh(float x) {
 }
 
 float w_cat(vec2 xy, float s) {
-  return exp(-dot(xy, xy)) * (exp(-s*s)*cosh(2.*xy.x*s) + cos(2.*xy.y*s))/2.;
+  float xs1 = xy.x + s, xs2 = xy.s - s;
+  return exp(-xy.y*xy.y) * (exp(-xs1*xs1) + exp(-xs2*xs2) + exp(-xy.x*xy.x) * cos(2.*xy.y*s)) / 2.;
 }
 
 float int_cat(float q, float s, float alpha) {
-  return 1./(1.+exp(-s*s)) * mexp(-q*q - pow(s*cos(alpha), 2.)) * (cosh(2.*cos(alpha)*s*q) + cos(2.*sin(alpha)*s*q));
+  float qs1 = q + s*cos(alpha), qs2 = q - s*cos(alpha);
+  return 1./(1.+exp(-s*s)) * ((exp(-qs1*qs1) + exp(-qs2*qs2))/2. + exp(-(qs1*qs1 + qs2*qs2)/2.) * cos(2.*q*s*sin(alpha)));
 }
 
 vec2 cx_unit(float a) {
