@@ -99,6 +99,16 @@ function filesReady(files) {
     function() { return [-3*Math.sin(values.angle), -3*Math.cos(values.angle)]; },
     'vert', '#44F', moveWidth
   ));
+  over.addControl(new DirControl(
+    function() {
+      let c = Math.cos(values.angle),
+          s = Math.sin(values.angle);
+      return [-3*s + values.width * c, -3*c - values.width * s];
+    },
+    centerFun,
+    function() { return [-3*Math.sin(values.angle), -3*Math.cos(values.angle)]; },
+    'vert', '#44F', moveWidth
+  ));
 
   makeSwitch('polarization', changePolarization, 0);
   document.getElementById('ratio').addEventListener('change', ratioChanged);
