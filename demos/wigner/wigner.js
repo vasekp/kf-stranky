@@ -59,7 +59,7 @@ function filesReady(files) {
   );
   let centerFun = function() { return shift; };
   let coords = function(u, v) { return [shift[0] + u*scale[0] + v*scale[2],  shift[1] + u*scale[1] + v*scale[3]]; }
-  over.addControl(new CoordAxes(-4, 4, -4, 4, 'q', 'p'));
+  over.addControl(new CoordAxes(-4, 4, -4, 4, 'q', 'p'), {alwaysVisible: true});
   over.addControl(new DashedPath(
     function() { return [coords(-1, -1), coords(1, -1), coords(1, 1), coords(-1, 1), coords(-1, -1)] },
     '#C44'));
