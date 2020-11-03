@@ -1,0 +1,42 @@
+#content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#triangle {
+  width: 20rem;
+  height: 10rem;
+}
+
+#arena-container {
+  width: 26rem;
+  height: 8rem;
+  margin-bottom: 2rem;
+}
+
+#graph-container {
+  width: 24rem;
+  height: 10rem;
+}
+
+.container {
+  position: relative;
+}
+
+.container > * {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  box-sizing: border-box;
+}
+
+#graph {
+  padding: 0 .5rem .5rem 0;
+}
+
+#strengths {
+  margin-bottom: 1rem;
+}

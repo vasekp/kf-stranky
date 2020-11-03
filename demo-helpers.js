@@ -224,6 +224,12 @@ function findRotation(v1, v2) {
     return qnormalize([c[0], c[1], c[2], 1 + d]);
 }
 
+function m2mul(a, b) {
+  return [a[0]*b[0] + a[2]*b[1], a[1]*b[0] + a[3]*b[1],
+    a[0]*b[2] + a[2]*b[3], a[1]*b[2] + a[3]*b[3],
+    a[0]*b[4] + a[2]*b[5] + a[4], a[1]*b[4] + a[3]*b[5] + a[5]];
+}
+
 function m2inv(m) {
   let invd = 1/(m[0]*m[3] - m[1]*m[2]);
   return [invd*m[3], -invd*m[1], -invd*m[2], invd*m[0],
@@ -244,29 +250,33 @@ let svgNS = 'http://www.w3.org/2000/svg';
 let xlinkNS = 'http://www.w3.org/1999/xlink';
 let svgMime = 'image/svg+xml';
 
-function Overlay(container, baseCoords, activateCallback) {
+function Overlay(container, options, callback) {
   let svg = document.createElementNS(svgNS, 'svg');
   svg.classList.add('controls');
-  container.appendChild(svg);
+  if(options.underneath)
+    container.insertBefore(svg, container.firstChild);
+  else
+    container.appendChild(svg);
 
   let em = parseFloat(getComputedStyle(container).fontSize);
   let w = svg.clientWidth / em;
   let h = svg.clientHeight / em;
+  let p = options.padding || 0;
   svg.setAttributeNS(null, 'viewBox', '0 0 ' + w + ' ' + h);
-  this.w2c = [
-    (baseCoords.xMax - baseCoords.xMin) / w, 0,
-    0, (baseCoords.yMin - baseCoords.yMax) / h,
-    baseCoords.xMin, baseCoords.yMax
-  ];
-  this.c2w = m2inv(this.w2c);
+  this.c2w = m2mul([w - 2*p, 0, 0, h-2*p, p, h-p],
+    m2inv([options.xMax - options.xMin, 0, 0, options.yMin - options.yMax, options.xMin, options.yMin]));
+  this.w2c = m2inv(this.c2w);
 
   let controls = [];
   let parser = new DOMParser();
-  this.addControl = function(control) {
-    let elm = control.elm = document.adoptNode(parser.parseFromString(control.svg, svgMime).documentElement);
-    if(!(control.extra && control.extra.alwaysVisible))
-      elm.classList.add('control');
-    svg.appendChild(elm);
+  this.addControl = function(control, extra) {
+    if(control.svg) {
+      let elm = control.elm = document.adoptNode(parser.parseFromString(control.svg, svgMime).documentElement);
+      if(!(extra && extra.alwaysVisible))
+        elm.classList.add('control');
+      svg.appendChild(elm);
+    }
+    control.extra = extra;
     control.owner = this;
     controls.push(control);
     if(control.update)
@@ -291,16 +301,20 @@ function Overlay(container, baseCoords, activateCallback) {
   let activeControl;
   let delta;
   let pStart = function(elm, x, y) {
-    if(!this.active) {
-      if(activateCallback)
-        activateCallback();
-    }
     let pos = m2v(this.w2c, [x/em, y/em]);
     activeControl = findNearest2(pos, controls, 0.5);
     if(!activeControl)
       return;
+    if(callback)
+      callback('start', activeControl);
     let refPos = activeControl.coords();
     delta = [pos[0] - refPos[0], pos[1] - refPos[1]];
+    if(activeControl.extra && activeControl.extra.captureAll && Math.hypot(delta[0], delta[1]) > 0.25) {
+      // The tap was noticeably far from a "capture all" control: intended meaning was to move it there.
+      // Thus 1) we won't use the delta, 2) we fire a move event right away.
+      delta = [0, 0];
+      activeControl.callback(pos[0], pos[1]);
+    }
   }.bind(this);
   let pMove = function(elm, x, y) {
     if(!activeControl)
@@ -312,6 +326,8 @@ function Overlay(container, baseCoords, activateCallback) {
     activeControl.callback(pos[0] - ref[0], pos[1] - ref[1]);
   }.bind(this);
   let pEnd = function() {
+    if(callback)
+      callback('release', activeControl);
     activeControl = null;
   }.bind(this);
   addPointerListeners(svg, pStart, pMove, pEnd);
@@ -323,6 +339,10 @@ function findNearest2(point, controls, minDistance) {
   controls.forEach(function(control) {
     if(!control.coords)
       return;
+    if(control.extra && control.extra.captureAll) {
+      found = control;
+      return;
+    }
     let refPoint = control.coords();
     if(!refPoint)
       return;
@@ -375,14 +395,12 @@ function controlNodeSVG(color, shape) {
   return svg;
 }
 
-function BaseMarker(shape, color, extra) {
-  this.extra = extra;
+function BaseMarker(shape, color) {
   this.svg = controlNodeSVG(color, shape);
 }
 
 function CoordAxes(xMin, xMax, yMin, yMax, xMark, yMark) {
   BaseMarker.call(this, '', 'black');
-  this.extra = { alwaysVisible: true };
   this.update = function() {
     let parser = new DOMParser();
     let pxMin = m2v(this.owner.c2w, [xMin, 0]),
@@ -390,12 +408,12 @@ function CoordAxes(xMin, xMax, yMin, yMax, xMark, yMark) {
         pyMin = m2v(this.owner.c2w, [0, yMin]),
         pyMax = m2v(this.owner.c2w, [0, yMax]);
     let svg = '<g xmlns="' + svgNS + '">'
-      + '<path d="M ' + pxMin[0] + ' ' + pxMin[1] + ' L ' + pxMax[0] + ' ' + pxMax[1] + ' m 0 0 '
-        + 'l 0 -.25 .5 .25 -.5 .25 z"/>'
-      + '<text x="' + pxMax[0] + '" y="' + (pxMax[1] - .5) + '" font-size="1" stroke="none">' + xMark + '</text>'
-      + '<path d="M ' + pyMin[0] + ' ' + pyMin[1] + ' L ' + pyMax[0] + ' ' + pyMax[1] + ' m 0 0 '
-        + 'l -.25 0 .25 -.5 .25 .5 z"/>'
-      + '<text x="' + (pyMax[0] + .5) + '" y="' + pyMax[1] + '" font-size="1" stroke="none">' + yMark + '</text>'
+      + '<path d="M ' + pxMin[0] + ' ' + pxMin[1] + ' L ' + pxMax[0] + ' ' + pxMax[1] + '"/>'
+      + '<path d="M ' + pxMax[0] + ' ' + pxMax[1] + 'l 0 -.25 .5 .25 -.5 .25 z" stroke="none"/>'
+      + '<text x="' + (pxMax[0] + .5) + '" y="' + (pxMax[1] - .5) + '" text-anchor="end" font-size="1" stroke="none">' + xMark + '</text>'
+      + '<path d="M ' + pyMin[0] + ' ' + pyMin[1] + ' L ' + pyMax[0] + ' ' + pyMax[1] + '"/>'
+      + '<path d="M ' + pyMax[0] + ' ' + pyMax[1] + 'l -.25 0 .25 -.5 .25 .5 z" stroke="none"/>'
+      + '<text x="' + (pyMax[0] + .5) + '" y="' + (pyMax[1] - .5) + '" dominant-baseline="hanging" font-size="1" stroke="none">' + yMark + '</text>'
       + '</g>';
     let frag = parser.parseFromString(svg, svgMime).documentElement;
     this.elm.appendChild(document.adoptNode(frag));
@@ -403,8 +421,8 @@ function CoordAxes(xMin, xMax, yMin, yMax, xMark, yMark) {
   }
 }
 
-function DashedPath(arrayFun, color, extra) {
-  BaseMarker.call(this, 'dash', color, extra);
+function DashedPath(arrayFun, color) {
+  BaseMarker.call(this, 'dash', color);
   this.update = function() {
     let pts = arrayFun();
     this.elm.style.visibility = pts ? 'visible' : 'hidden';
@@ -419,12 +437,16 @@ function DashedPath(arrayFun, color, extra) {
   }
 }
 
-function Control(coordsFun, refFun, dirFun, shape, color, callback) {
-  BaseMarker.call(this, shape, color, callback);
+function BaseControl(coordsFun, refFun, callback) {
   this.coords = coordsFun;
   this.ref = refFun;
-  this.dir = dirFun;
   this.callback = callback;
+}
+
+function Control(coordsFun, refFun, dirFun, shape, color, callback) {
+  BaseMarker.call(this, shape, color);
+  BaseControl.call(this, coordsFun, refFun, callback);
+  this.dir = dirFun;
   this.update = function() {
     let pos = this.coords();
     this.elm.style.visibility = pos ? 'visible' : 'hidden';
