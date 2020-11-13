@@ -165,6 +165,52 @@ function findNearest(point, map, minDistance) {
   return found;
 }
 
+/***** Complex numbers *****/
+
+function cxpolar(r, phi) {
+  return [r*Math.cos(phi), r*Math.sin(phi)];
+}
+
+function cxarg(c) {
+  return Math.atan2(c[1], c[0]);
+}
+
+function cxabs(c) {
+  return Math.hypot(c[0], c[1]);
+}
+
+function cxadd(c1, c2) {
+  return [c1[0] + c2[0], c1[1] + c2[1]];
+}
+
+function cxmul(c1, c2) {
+  return [c1[0]*c2[0] - c1[1]*c2[1], c1[1]*c2[0] + c1[0]*c2[1]];
+}
+
+function cxmulc(c1, c2) {
+  return [c1[0]*c2[0] + c1[1]*c2[1], c1[1]*c2[0] - c1[0]*c2[1]];
+}
+
+function cxmulr(c1, r) {
+  return [r*c1[0], r*c1[1]];
+}
+
+function cxexp(c) {
+  return cxpolar(Math.exp(c[0]), c[1]);
+}
+
+function cxdiv(c1, c2) {
+  return cxmulr(cxmulc(c1, c2), 1/cxnorm2(c2));
+}
+
+function cxdivr(c, r) {
+  return cxmulr(c, 1/r);
+}
+
+function cxnorm2(c) {
+  return c[0]*c[0] + c[1]*c[1];
+}
+
 /***** Vector and quaternion algebra *****/
 
 function dot(v1, v2) {
@@ -234,6 +280,10 @@ function m2inv(m) {
   let invd = 1/(m[0]*m[3] - m[1]*m[2]);
   return [invd*m[3], -invd*m[1], -invd*m[2], invd*m[0],
     invd*(m[2]*m[5] - m[3]*m[4]), invd*(m[1]*m[4] - m[0]*m[5])];
+}
+
+function m2tr(m) {
+  return [m[0], m[2], m[1], m[3], m[4], m[5]];
 }
 
 function m2v(m, v) {
@@ -308,7 +358,7 @@ function Overlay(container, options, callback) {
     if(!activeControl)
       return;
     if(callback)
-      callback('start', activeControl);
+      callback('start', activeControl, this);
     let refPos = activeControl.coords();
     delta = [pos[0] - refPos[0], pos[1] - refPos[1]];
     if(activeControl.extra && activeControl.extra.captureAll && Math.hypot(delta[0], delta[1]) > 0.25) {
@@ -329,7 +379,7 @@ function Overlay(container, options, callback) {
   }.bind(this);
   let pEnd = function() {
     if(callback)
-      callback('release', activeControl);
+      callback('release', activeControl, this);
     activeControl = null;
   }.bind(this);
   addPointerListeners(svgElement, pStart, pMove, pEnd);
@@ -401,22 +451,115 @@ function BaseMarker(shape, color) {
     this.svgFun = function() { return controlNodeSVG(color, shape); };
 }
 
-function CoordAxes(xMin, xMax, yMin, yMax, xMark, yMark) {
+function Label(x, y, color, text) {
+  BaseMarker.call(this);
+  this.svgFun = function() {
+    let xyW = m2v(this.owner.c2w, [x, y]);
+    return '<text x="' + xyW[0] + '" y="' + xyW[1] + '" fill="' + color + '" '
+      + 'dominant-baseline="middle" font-size="1" stroke="none">' + text + '</text>';
+  };
+}
+
+function CoordAxes(xMin, xMax, yMin, yMax, xName, yName, xMarks, yMarks) {
   BaseMarker.call(this);
   this.svgFun = function() {
     let pxMin = m2v(this.owner.c2w, [xMin, 0]),
         pxMax = m2v(this.owner.c2w, [xMax, 0]),
         pyMin = m2v(this.owner.c2w, [0, yMin]),
         pyMax = m2v(this.owner.c2w, [0, yMax]);
-    return '<g fill="black" stroke="black" stroke-width=".06">'
+    let svg = '<g fill="black" stroke="black" stroke-width=".06" font-size="1">'
       + '<path d="M ' + pxMin[0] + ' ' + pxMin[1] + ' L ' + pxMax[0] + ' ' + pxMax[1] + '"/>'
       + '<path d="M ' + pxMax[0] + ' ' + pxMax[1] + ' l 0 -.25 .5 .25 -.5 .25 z" stroke="none"/>'
-      + '<text x="' + (pxMax[0] + .5) + '" y="' + (pxMax[1] - .5) + '" text-anchor="end" font-size="1" stroke="none">' + xMark + '</text>'
+      + '<text x="' + (pxMax[0] + .5) + '" y="' + (pxMax[1] - .5) + '" text-anchor="end" stroke="none">' + xName + '</text>'
       + '<path d="M ' + pyMin[0] + ' ' + pyMin[1] + ' L ' + pyMax[0] + ' ' + pyMax[1] + '"/>'
       + '<path d="M ' + pyMax[0] + ' ' + pyMax[1] + ' l -.25 0 .25 -.5 .25 .5 z" stroke="none"/>'
-      + '<text x="' + (pyMax[0] + .5) + '" y="' + (pyMax[1] - .5) + '" dominant-baseline="hanging" font-size="1" stroke="none">' + yMark + '</text>'
-      + '</g>';
+      + '<text x="' + (pyMax[0] + .5) + '" y="' + (pyMax[1] - .5) + '" dominant-baseline="hanging" stroke="none">' + yName + '</text>'
+    if(xMarks) {
+      let ticks = '';
+      xMarks.forEach(function(mark) {
+        let pos = (mark instanceof Array) ? mark[0] : mark;
+        let text = (mark instanceof Array) ? mark[1] : mark;
+        let xy1 = m2v(this.owner.c2w, [pos, 0]),
+            xy2 = m2v(this.owner.c2w, [pos, yMin]);
+        ticks += 'M ' + xy1.join(' ') + ' L ' + xy2.join(' ');
+        svg += '<text stroke="none" x="' + xy2[0] + '" y="' + xy2[1] + '" '
+          + 'text-anchor="middle" dominant-baseline="hanging">' + text + '</text>';
+      }.bind(this));
+      svg += '<path d="' + ticks + '"/>';
+    }
+    if(yMarks) {
+      let ticks = '';
+      yMarks.forEach(function(mark) {
+        let pos = (mark instanceof Array) ? mark[0] : mark;
+        let text = (mark instanceof Array) ? mark[1] : mark;
+        let xy1 = m2v(this.owner.c2w, [0, pos]),
+            xy2 = m2v(this.owner.c2w, [xMin, pos]);
+        ticks += 'M ' + xy1.join(' ') + ' L ' + xy2.join(' ');
+        svg += '<text stroke="none" x="' + xy2[0] + '" y="' + xy2[1] + '" '
+          + 'text-anchor="end" dominant-baseline="middle">' + text + '</text>';
+      }.bind(this));
+      svg += '<path d="' + ticks + '"/>';
+    }
+    svg += '</g>';
+    return svg;
   }
+}
+
+function CoordAxis(xMin, xMax, yMin, yMax, xName, xMarks) {
+  BaseMarker.call(this);
+  this.svgFun = function() {
+    let pxMin = m2v(this.owner.c2w, [xMin, 0]),
+        pxMax = m2v(this.owner.c2w, [xMax, 0]);
+    let svg = '<g fill="black" stroke="black" stroke-width=".06" font-size="1">'
+      + '<path d="M ' + pxMin[0] + ' ' + pxMin[1] + ' L ' + pxMax[0] + ' ' + pxMax[1] + '"/>'
+      + '<path d="M ' + pxMax[0] + ' ' + pxMax[1] + ' l 0 -.25 .5 .25 -.5 .25 z" stroke="none"/>'
+      + '<text x="' + (pxMax[0] + .5) + '" y="' + (pxMax[1] - .5) + '" text-anchor="end" stroke="none">' + xName + '</text>';
+    if(xMarks) {
+      let ticks = '';
+      xMarks.forEach(function(mark) {
+        let pos = (mark instanceof Array) ? mark[0] : mark;
+        let text = (mark instanceof Array) ? mark[1] : mark;
+        let xy1 = m2v(this.owner.c2w, [pos, yMax]),
+            xy2 = m2v(this.owner.c2w, [pos, yMin]);
+        ticks += 'M ' + xy1.join(' ') + ' L ' + xy2.join(' ');
+        svg += '<text stroke="none" x="' + xy2[0] + '" y="' + xy2[1] + '" '
+          + 'text-anchor="middle" dominant-baseline="hanging">' + text + '</text>';
+      }.bind(this));
+      svg += '<path d="' + ticks + '"/>';
+    }
+    svg += '</g>';
+    return svg;
+  }
+}
+
+function Arrow(fromFun, toFun, color) {
+  BaseMarker.call(this);
+  this.svgFun = function() {
+    return '<g fill="' + color + '" stroke="' + color + '" stroke-width=".06">'
+      + '<path/>'
+      + '<path d="M 0 0 l .5 .25 0 -.5 z" stroke="none"/>'
+      + '</g>';
+  };
+  this.update = function() {
+    let from = m2v(this.owner.c2w, fromFun());
+    let to = m2v(this.owner.c2w, toFun());
+    if(!from || !to) {
+      this.elm.style.visibility = 'hidden';
+      return;
+    }
+    let dx = to[0] - from[0],
+        dy = to[1] - from[1],
+        len = Math.hypot(dx, dy);
+    if(len == 0) {
+      this.elm.style.visibility = 'hidden';
+      return;
+    }
+    this.elm.querySelector('path').setAttribute('d', 'M 0 0 H ' + len);
+    let trf = 'translate(' + to[0] + ', ' + to[1] + ') '
+      + 'rotate(' + (Math.atan2(-dy, -dx) * 180 / Math.PI) + ')';
+    this.elm.setAttribute('transform', trf);
+    this.elm.style.visibility = 'visible';
+  };
 }
 
 function DashedPath(arrayFun, color) {
