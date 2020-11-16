@@ -212,17 +212,18 @@ function QGraphMarker() {
     let w = function(x, y) {
       return m2v(this.owner.c2w, [x, y]).join(' ');
     }.bind(this);
-    const div = Math.PI / 30;
-    //let d = 'M ' + w(-div, f(-div)) + ' Q ' + w(-div/2, f(-div/2)) + ' ' + w(0, f(0)) + ' T ';
-    let d = 'M ' + w(0, f(0)) + ' L ';
-    let min = 0.5;
-    for(let theta = div; theta < 2*Math.PI + 3*div/2; theta += div) {
+    const div = Math.PI / 10;
+    let vLast = f(0);
+    let d = 'M ' + w(0, vLast) + ' Q';
+    for(let theta = div; theta < 2*Math.PI + div/2; theta += div) {
       let val = f(theta);
-      if(val < min) min = val;
-      d += ' ' + w(theta, val);
+      let vHalf = f(theta - div/2);
+      d += ' ' + w(theta - div/2, 2*vHalf - (val + vLast) / 2)
+        + ' ' + w(theta, val);
+      vLast = val;
     }
     this.elm.querySelector('path').setAttribute('d', d);
-    let sq = min - 0.5;
+    let sq = f.min - 0.5;
     let sqText = Number.parseFloat(sq).toFixed(2);
     if(sqText === '-0.00')
       sqText = '0.00';
@@ -347,9 +348,12 @@ function State() {
 
   this.qdev2 = function() {
     let dc = this.decompose();
-    return function(theta) {
+    let f = function(theta) {
       return (Math.pow((dc.cosh + dc.sinh) * Math.sin(theta - dc.phi/2), 2)
         + Math.pow((dc.cosh - dc.sinh) * Math.cos(theta - dc.phi/2), 2)) / 2;
     };
+    f.min = Math.pow(dc.cosh - dc.sinh, 2) / 2;
+    f.max = Math.pow(dc.cosh + dc.sinh, 2) / 2;
+    return f;
   }.bind(this);
 }
