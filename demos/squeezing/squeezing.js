@@ -51,8 +51,8 @@ window.addEventListener('DOMContentLoaded', function() {
     let over = new Overlay(document.getElementById('pq'),
       { xMin: -5, yMin: -5, xMax: 5, yMax: 5 });
     over.addControl(new CoordAxes(-4, 4, -4, 4,
-      'X<tspan font-size="80%" dy=".3em">0</tspan>',
-      'X<tspan font-size="80%" dy=".3em">π/2</tspan>'));
+      '<tspan>X</tspan><tspan font-size="80%" dy=".3em">0</tspan>',
+      '<tspan>X</tspan><tspan font-size="80%" dy=".3em">π/2</tspan>'));
     over.addControl(new EllipseMarker());
     over.addControl(new AbsControl(state.center, 'cross', '#F88', function(x, y) {
       state.resetAlpha([x, y]);
@@ -80,7 +80,7 @@ window.addEventListener('DOMContentLoaded', function() {
   /***** Photon number distribution *****/
   {
     let over = new Overlay(document.getElementById('graph-n'),
-      { xMin: -.5, xMax: 20, yMin: -.1, yMax: 1.1, padding: .5 });
+      { xMin: -.5, xMax: 20, yMin: -.1, yMax: 1.1, padding: .6 });
     over.addControl(new NGraphMarker());
     let marks = [];
     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 13, 15, 17, 19].forEach(function(x) {
@@ -94,10 +94,10 @@ window.addEventListener('DOMContentLoaded', function() {
   /***** Quadrature distribution *****/
   {
     let over = new Overlay(document.getElementById('graph-sq'),
-      { xMin: -.5, xMax: 6.4, yMin: -.1, yMax: 1.1, padding: .5 });
+      { xMin: -.5, xMax: 6.4, yMin: -.1, yMax: 1.1, padding: .6 });
     over.addControl(new CoordAxes(-.15, 6.4, -.05, 1.1,
       'θ',
-      '<tspan>(Δx</tspan><tspan font-size=".8" dy=".4,-.4">θ&#x200B;</tspan><tspan>)^2</tspan>',
+      '<tspan>(Δx</tspan><tspan font-size=".8" dy=".4,-.4">θ&#x200B;</tspan><tspan>)</tspan><tspan>²</tspan>',
       [0, [Math.PI/2, 'π/2'], [Math.PI, 'π'], [Math.PI*3/2, '3π/2'], [2*Math.PI, '2π']], [.5]));
     over.addControl(new DashedPath(function() { return [[0,.5], [6.4,.5]]; }, 'red'));
     over.addControl(new QGraphMarker());
