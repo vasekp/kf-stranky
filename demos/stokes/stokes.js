@@ -40,8 +40,8 @@ window.addEventListener('DOMContentLoaded', function() {
   over = new Overlay(document.getElementById('container2D'),
     { xMin: -1.5, xMax: 1.5, yMin: -1.5, yMax: 1.5 });
   over.addControl(new CoordAxes(-1.3, 1.3, -1.3, 1.3,
-    'E<tspan class="sub" dy=".2em">x</tspan>',
-    'E<tspan class="sub" dy=".2em">y</tspan>'));
+    '<tspan>E</tspan><tspan font-size=".8" dy=".2">x</tspan>',
+    '<tspan>E</tspan><tspan font-size=".8" dy=".2">y</tspan>'));
   over.addControl(new DashedPath(
     function() {
       let A = model.state.A, B = model.state.B;
