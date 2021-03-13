@@ -53,8 +53,8 @@ function Program(ctx, vs, fs) {
     else
       ctx.attachShader(program, new Shader(ctx, type, s).shader);
   }
-  attach(vs, gl.VERTEX_SHADER);
-  attach(fs, gl.FRAGMENT_SHADER);
+  attach(vs, ctx.VERTEX_SHADER);
+  attach(fs, ctx.FRAGMENT_SHADER);
 
   ctx.linkProgram(program);
   if(!ctx.getProgramParameter(program, ctx.LINK_STATUS)) {
@@ -64,18 +64,18 @@ function Program(ctx, vs, fs) {
   }
 
   this.program = program;
-  const numUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+  const numUniforms = ctx.getProgramParameter(program, ctx.ACTIVE_UNIFORMS);
   for(let i = 0; i < numUniforms; i++) {
-    let name = gl.getActiveUniform(program, i).name;
+    let name = ctx.getActiveUniform(program, i).name;
     if(name.indexOf('[') > 0)
       name = name.substring(0, name.indexOf('['));
-    const loc = gl.getUniformLocation(program, name);
+    const loc = ctx.getUniformLocation(program, name);
     this[name] = loc;
   }
-  const numAttribs = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES);
+  const numAttribs = ctx.getProgramParameter(program, ctx.ACTIVE_ATTRIBUTES);
   for(let i = 0; i < numAttribs; i++) {
-    const name = gl.getActiveAttrib(program, i).name;
-    const loc = gl.getAttribLocation(program, name);
+    const name = ctx.getActiveAttrib(program, i).name;
+    const loc = ctx.getAttribLocation(program, name);
     this[name] = loc;
   }
 }
