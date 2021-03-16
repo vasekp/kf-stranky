@@ -99,17 +99,22 @@ window.addEventListener('DOMContentLoaded', function() {
 
   document.getElementById('family').addEventListener('click', function(e) {
     e.preventDefault();
-    let id = e.target.getAttribute('data-preset');
+    let tgt = e.target;
+    while(tgt && tgt.tagName !== 'A')
+      tgt = tgt.parentNode;
+    if(!tgt)
+      return;
+    let id = tgt.getAttribute('data-preset');
     if(!id)
       return;
     if(!model.targetMx)
       requestAnimationFrame(draw);
-    let target = presets[id];
-    let det = cxsub(cxmul(target[0], target[3]), cxmul(target[1], target[2]));
+    let tmx = presets[id];
+    let det = cxsub(cxmul(tmx[0], tmx[3]), cxmul(tmx[1], tmx[2]));
     let norm = cxinv(cxsqrt(det));
     for(let i = 0; i < 4; i++)
-      target[i] = cxmul(target[i], norm);
-    model.targetMx = [].concat(target[0], target[1], target[2], target[3]);
+      tmx[i] = cxmul(tmx[i], norm);
+    model.targetMx = [].concat(tmx[0], tmx[1], tmx[2], tmx[3]);
   });
 
   loadFiles(filesReady);
