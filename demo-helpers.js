@@ -183,6 +183,10 @@ function cxadd(c1, c2) {
   return [c1[0] + c2[0], c1[1] + c2[1]];
 }
 
+function cxsub(c1, c2) {
+  return [c1[0] - c2[0], c1[1] - c2[1]];
+}
+
 function cxmul(c1, c2) {
   return [c1[0]*c2[0] - c1[1]*c2[1], c1[1]*c2[0] + c1[0]*c2[1]];
 }
@@ -199,8 +203,16 @@ function cxexp(c) {
   return cxpolar(Math.exp(c[0]), c[1]);
 }
 
+function cxsqrt(c) {
+  return cxpolar(Math.sqrt(cxabs(c)), cxarg(c)/2);
+}
+
 function cxdiv(c1, c2) {
   return cxmulr(cxmulc(c1, c2), 1/cxnorm2(c2));
+}
+
+function cxinv(c) {
+  return cxdiv([1, 0], c);
 }
 
 function cxdivr(c, r) {
@@ -246,6 +258,15 @@ function qconj(q) {
 function qnormalize(q) {
   let qLen = Math.sqrt(q[0]*q[0] + q[1]*q[1] + q[2]*q[2] + q[3]*q[3]);
   return [q[0] / qLen, q[1] / qLen, q[2] / qLen, q[3] / qLen];
+}
+
+function qexp(q, t) {
+  let cos = Math.cos(t), sin = Math.sin(t);
+  if(q[3]) {
+    let exp = Math.exp(q[3]);
+    return [exp * sin * q[0], exp * sin * q[1], exp * sin * q[2], exp * cos];
+  } else
+    return [sin * q[0], sin * q[1], sin * q[2], cos];
 }
 
 function vrotq(v, q) {
@@ -457,6 +478,17 @@ function Label(x, y, color, text) {
     let xyW = m2v(this.owner.c2w, [x, y]);
     return '<text x="' + xyW[0] + '" y="' + xyW[1] + '" fill="' + color + '" '
       + 'dominant-baseline="middle" font-size="1" stroke="none">' + text + '</text>';
+  };
+}
+
+function CrossLabel(x, y, color, text) {
+  BaseMarker.call(this);
+  this.svgFun = function() {
+    let xyW = m2v(this.owner.c2w, [x, y]);
+    return '<path stroke="' + color + '" stroke-width=".06" d="M ' + xyW.join(' ')
+      + ' m -.25 -.25 l .5 .5 m -.5 0 l .5 -.5"/>'
+      + '<text x="' + (xyW[0] + .25) + '" y="' + (xyW[1] - .25) + '" fill="' + color + '" '
+      + 'font-size="1" stroke="none">' + text + '</text>';
   };
 }
 
