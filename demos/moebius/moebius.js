@@ -93,7 +93,8 @@ window.addEventListener('DOMContentLoaded', function() {
     sz: [[1, 0], [0, 0], [0, 0], [-1, 0]],
     h: [[1, 0], [1, 0], [1, 0], [-1, 0]],
     cayley: [[1, 0], [0, -1], [1, 0], [0, 1]],
-    icayley: [[0, 1], [1, 0], [1, 0], [0, 1]]
+    icayley: [[0, 1], [1, 0], [1, 0], [0, 1]],
+    test: [[1, 0], [1, 0], [0, 0], [1, 0]]
   };
 
   document.getElementById('family').addEventListener('click', function(e) {
@@ -104,7 +105,7 @@ window.addEventListener('DOMContentLoaded', function() {
     if(!model.targetMx)
       requestAnimationFrame(draw);
     let target = presets[id];
-    let det = cxsub(cxmul(target[0], target[3]), cxmul(target[1], target[2]))
+    let det = cxsub(cxmul(target[0], target[3]), cxmul(target[1], target[2]));
     let norm = cxinv(cxsqrt(det));
     for(let i = 0; i < 4; i++)
       target[i] = cxmul(target[i], norm);
@@ -169,33 +170,51 @@ function filesReady(files) {
 
 function draw(time) {
   if(model.targetMx) {
-    const dphi = 0.01;
+    const step = 0.01;
     const omx = model.mx;
-    const oquat = [omx[3], omx[2], omx[1], omx[0]];
     const tmx = model.targetMx;
-    const tquat = [tmx[3], tmx[2], tmx[1], tmx[0]];
-    let div = qmulq(qconj(oquat), tquat);
-    if(div[3] < 0) {
-      for(let i = 0; i < 4; i++)
-        div[i] = -div[i];
-    }
-    if(div[3] > Math.cos(dphi)) {
+    let dist = 0;
+    for(let i = 0; i < 8; i++)
+      dist += Math.pow(omx[i] - tmx[i], 2);
+    dist = Math.sqrt(dist);
+    if(dist < step) {
       model.mx = model.targetMx;
       model.targetMx = null;
     } else {
-      div[3] = 0;
-      div = qnormalize(div);
-      let exp = qexp(div, dphi);
-      let q = qmulq(oquat, exp);
-      model.mx = [q[3], q[2], q[1], q[0], -q[1], q[0], q[3], -q[2]];
+      for(let i = 0; i < 8; i++)
+        omx[i] += step / dist * (tmx[i] - omx[i]);
+      let prep = [[omx[0], omx[1]], [omx[2], omx[3]], [omx[4], omx[5]], [omx[6], omx[7]]];
+      let det = cxsub(cxmul(prep[0], prep[3]), cxmul(prep[1], prep[2]));
+      let norm = cxinv(cxsqrt(det));
+      for(let i = 0; i < 4; i++)
+        prep[i] = cxmul(prep[i], norm);
+      model.mx = [].concat(prep[0], prep[1], prep[2], prep[3]);
     }
   }
-  const mx = model.mx;
-  const cquat = qconj([mx[3], -mx[2], mx[1], mx[0]]);
+
+  /* n1, n2, n3, a for x=0, y=0, unit circle */
+  let m = model.mx;
+  let planes = [
+    /* Re(δ^*α + γ^*β), Im(δ^*α + γ^*β), Re(β^*α - δ^*γ), Re(β^*α + δ^*γ) */
+    m[0]*m[6] + m[1]*m[7] + m[2]*m[4] + m[3]*m[5],
+    m[1]*m[6] - m[0]*m[7] + m[4]*m[3] - m[2]*m[5],
+    m[0]*m[2] + m[1]*m[3] - m[4]*m[6] - m[5]*m[7],
+    m[0]*m[2] + m[1]*m[3] + m[4]*m[6] + m[5]*m[7],
+    /* Im(γ^*β - δ^*α), Re(δ^*α - γ^*β), Im(δ^*γ - β^*α), -Im(δ^*γ + β^*α) */
+    m[4]*m[3] - m[2]*m[5] - m[6]*m[1] + m[0]*m[7],
+    m[0]*m[6] + m[1]*m[7] - m[2]*m[4] - m[3]*m[5],
+    m[6]*m[5] - m[4]*m[7] - m[2]*m[1] + m[0]*m[3],
+    m[4]*m[7] - m[6]*m[5] + m[0]*m[3] - m[1]*m[2],
+    /* Re(γ^*α - δ^*β), Im(γ^*α - δ^*β), (|α|^2-|β|^2-|γ|^2+|δ|^2)/2, (|α|^2-|β|^2+|γ|^2-|δ|^2)/2 */
+    m[0]*m[4] + m[1]*m[5] - m[2]*m[6] - m[3]*m[7],
+    m[4]*m[1] - m[0]*m[5] - m[6]*m[3] + m[2]*m[7],
+    (m[0]*m[0] + m[1]*m[1] - m[2]*m[2] - m[3]*m[3] - m[4]*m[4] - m[5]*m[5] + m[6]*m[6] + m[7]*m[7])/2,
+    (m[0]*m[0] + m[1]*m[1] - m[2]*m[2] - m[3]*m[3] + m[4]*m[4] + m[5]*m[5] - m[6]*m[6] - m[7]*m[7])/2
+  ];
 
   gl2d.clear(gl2d.COLOR_BUFFER_BIT);
   gl2d.useProgram(progs.grid.program);
-  gl2d.uniform2fv(progs.grid.uMatrix, mx);
+  gl2d.uniform2fv(progs.grid.uMatrix, model.mx);
   gl2d.enableVertexAttribArray(progs.grid.aPos);
   gl2d.bindBuffer(gl2d.ARRAY_BUFFER, progs.grid.bPos);
   gl2d.vertexAttribPointer(progs.grid.aPos, 2, gl2d.FLOAT, false, 0, 0);
@@ -207,26 +226,26 @@ function draw(time) {
   gl3d.disable(gl3d.CULL_FACE);
   gl3d.disable(gl3d.BLEND);
   gl3d.useProgram(progs.plane.program);
-  gl3d.uniform2fv(progs.plane.uMatrix, mx);
-  gl3d.enableVertexAttribArray(progs.plane.aPos);
-  gl3d.bindBuffer(gl3d.ARRAY_BUFFER, progs.plane.bPos);
-  gl3d.vertexAttribPointer(progs.plane.aPos, 2, gl3d.FLOAT, false, 0, 0);
+  gl3d.uniform2fv(progs.plane.uMatrix, model.mx);
   gl3d.uniformMatrix4fv(progs.plane.uMProj, false, model.proj);
   gl3d.uniformMatrix4fv(progs.plane.uMInv, false, model.inv);
   gl3d.uniform1f(progs.plane.uDx, 2.0 / gl3d.canvas.width);
-  gl3d.uniform4fv(progs.plane.uQuat, cquat);
+  gl3d.enableVertexAttribArray(progs.plane.aPos);
+  gl3d.bindBuffer(gl3d.ARRAY_BUFFER, progs.plane.bPos);
+  gl3d.vertexAttribPointer(progs.plane.aPos, 2, gl3d.FLOAT, false, 0, 0);
   gl3d.drawArrays(gl3d.TRIANGLES, 0, 6);
   gl3d.disableVertexAttribArray(progs.plane.aPos);
 
   gl3d.enable(gl3d.CULL_FACE);
   gl3d.enable(gl3d.BLEND);
   gl3d.useProgram(progs.sphere.program);
+  gl3d.uniform2fv(progs.sphere.uMatrix, model.mx);
+  gl3d.uniform4fv(progs.sphere.uPlanes, planes);
+  gl3d.uniformMatrix4fv(progs.sphere.uMProj, false, model.proj);
   gl3d.enableVertexAttribArray(progs.sphere.aPos);
   gl3d.bindBuffer(gl3d.ARRAY_BUFFER, progs.sphere.bPos);
   gl3d.bindBuffer(gl3d.ELEMENT_ARRAY_BUFFER, progs.sphere.bIx);
   gl3d.vertexAttribPointer(progs.sphere.aPos, 3, gl3d.FLOAT, false, 0, 0);
-  gl3d.uniformMatrix4fv(progs.sphere.uMProj, false, model.proj);
-  gl3d.uniform4fv(progs.sphere.uQuat, cquat);
   gl3d.cullFace(gl3d.FRONT);
   gl3d.drawElements(gl3d.TRIANGLES, progs.sphere.length, gl3d.UNSIGNED_SHORT, 0);
   gl3d.cullFace(gl3d.BACK);

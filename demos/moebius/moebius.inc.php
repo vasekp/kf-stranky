@@ -22,7 +22,8 @@ if($en) {
      'sz' => 'σ<sub>z</sub>',
      'h' => 'Hadamard',
      'cayley' => 'Cayley',
-     'icayley' => 'i× Cayley'
+     'icayley' => 'i× Cayley',
+     'test' => 'Test'
   ];
   $expl = 'Explanation';
   $explItems = [
@@ -39,7 +40,8 @@ if($en) {
      'sz' => 'σ<sub>z</sub>',
      'h' => 'Hadamard',
      'cayley' => 'Cayley',
-     'icayley' => 'i× Cayley'
+     'icayley' => 'i× Cayley',
+     'test' => 'Test'
   ];
   $expl = 'Vysvětlivky';
   $explItems = [
