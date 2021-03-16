@@ -41,13 +41,19 @@ if($en) {
      'h' => 'Hadamard',
      'cayley' => 'Cayley',
      'icayley' => 'i× Cayley',
-     'test' => 'Test'
+     'rot' => 'rotace',
+     'phase' => 'relativní fáze',
+     'skewX' => 'zkosení X',
+     'skewX' => 'zkosení Y',
+     'sqAxes' => 'stlačení',
+     'sqDiag' => 'stlačení diag.',
   ];
   $expl = 'Vysvětlivky';
   $explItems = [
     'Pokud matice M je <em>unitární</em>, má transformace ve stereografické projekci význam rotace sféry.',
     'Pokud je <em>reálná s kladným determinantem</em>, transformace zachovává horní a spodní komplexní polorovinu.',
-    'Pokud je prvkem <em>zobecněné unitární grupy</em> U(1,1), transformace zachovává jednotkový kruh (Poincarého kruh) a ve stereografické projekci na vrchní plochu dvoudílného hyperboloidu má smysl SO(2,1) rotace.'
+    'Pokud je prvkem <em>zobecněné unitární grupy</em> U(1,1), transformace zachovává jednotkový kruh (Poincarého kruh) a ve stereografické projekci na vrchní plochu dvoudílného hyperboloidu má smysl SO(2,1) rotace.',
+    'Případný prefaktor matice nezmění jí indukovanou transformaci. Proto například σ<sub>y</sub> dává transformaci odpovídající SL(2,R) matici, i když taková není'
   ];
   $functions = ['Sféricky', 'Kartézsky'];
 }

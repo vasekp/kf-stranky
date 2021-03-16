@@ -86,6 +86,7 @@ window.addEventListener('DOMContentLoaded', function() {
   model.mx = [1, 0, 0, 0, 0, 0, 1, 0];
   model.targetMx = null;
 
+  const v2 = Math.sqrt(2);
   const presets = {
     i: [[1, 0], [0, 0], [0, 0], [1, 0]],
     sx: [[0, 0], [1, 0], [1, 0], [0, 0]],
@@ -94,7 +95,12 @@ window.addEventListener('DOMContentLoaded', function() {
     h: [[1, 0], [1, 0], [1, 0], [-1, 0]],
     cayley: [[1, 0], [0, -1], [1, 0], [0, 1]],
     icayley: [[0, 1], [1, 0], [1, 0], [0, 1]],
-    test: [[1, 0], [1, 0], [0, 0], [1, 0]]
+    rot: [[1/v2, 0], [-1/v2, 0], [1/v2, 0], [1/v2, 0]],
+    phase: [[1, 0], [0, 0], [0, 0], [0, 1]],
+    skewX: [[1, 0], [1, 0], [0, 0], [1, 0]],
+    skewY: [[1, 0], [0, 0], [1, 0], [1, 0]],
+    sqAxes: [[v2, 0], [0, 0], [0, 0], [1/v2, 0]],
+    sqDiag: [[v2, 0], [1, 0], [1, 0], [v2, 0]],
   };
 
   document.getElementById('presets').addEventListener('click', function(e) {
