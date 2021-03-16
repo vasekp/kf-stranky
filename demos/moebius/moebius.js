@@ -6,13 +6,13 @@ const numElements = SIZE * SIZE * SIZE * 2;
 
 window.addEventListener('DOMContentLoaded', function() {
   c2d = document.getElementById('grid');
-  c2d.width = c2d.clientWidth;
-  c2d.height = c2d.clientHeight;
+  c2d.width = c2d.clientWidth * window.devicePixelRatio;
+  c2d.height = c2d.clientHeight * window.devicePixelRatio;
   gl2d = c2d.getContext('webgl') || c2d.getContext('experimental-webgl');
 
   c3d = document.getElementById('sphere');
-  c3d.width = c3d.clientWidth;
-  c3d.height = c3d.clientHeight;
+  c3d.width = c3d.clientWidth * window.devicePixelRatio;
+  c3d.height = c3d.clientHeight * window.devicePixelRatio;
   gl3d = c3d.getContext('webgl') || c3d.getContext('experimental-webgl');
 
   if(!gl2d || !gl3d) {
@@ -240,7 +240,7 @@ function draw(time) {
   gl3d.uniform2fv(progs.plane.uMatrix, model.mx);
   gl3d.uniformMatrix4fv(progs.plane.uMProj, false, model.proj);
   gl3d.uniformMatrix4fv(progs.plane.uMInv, false, model.inv);
-  gl3d.uniform1f(progs.plane.uDx, 2.0 / gl3d.canvas.width);
+  gl3d.uniform1f(progs.plane.uDx, 1.5 * window.devicePixelRatio / gl3d.canvas.width);
   gl3d.enableVertexAttribArray(progs.plane.aPos);
   gl3d.bindBuffer(gl3d.ARRAY_BUFFER, progs.plane.bPos);
   gl3d.vertexAttribPointer(progs.plane.aPos, 2, gl3d.FLOAT, false, 0, 0);
