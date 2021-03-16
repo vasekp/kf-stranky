@@ -15,18 +15,18 @@
   height: 100%;
 }
 
-.settings {
-  display: inline-grid;
-  grid-template-columns: auto auto;
-  align-items: center;
-  grid-gap: .5rem;
-  margin-bottom: .5rem;
-}
-
 .controls {
   position: absolute;
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
+}
+
+#presets {
+  flex-wrap: wrap;
+}
+
+#presets > a {
+  margin-bottom: .5rem;
 }

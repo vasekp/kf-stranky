@@ -32,7 +32,7 @@ if($en) {
   $functions = ['Spherical', 'Cartesian'];
 } else {
   $desc = 'Möbiova transformace je na komplexní rovině předepsána vzorcem ζ ↦ (aζ + b)/(cζ + d) pro komplexní koeficienty a, b, c, d tvořící nějakou regulární matici. Zobrazuje kružnice na kružnice, případně na přímky, odpovídající limitě nekonečného poloměru. Je konformní, bijektivní, zachovává orientaci a tvoří grupu automorfismů komplexní projektivní roviny se skládáním operací daným součinem matic.';
-  $preset = 'Přejít na';
+  $preset = 'Volba matice';
   $presets = [
      'i' => 'Identita',
      'sx' => 'σ<sub>x</sub>',
@@ -60,17 +60,15 @@ $explanations = join(PHP_EOL, $list);
 
 $list = [];
 foreach($presets as $id => $name) {
-  $list[] = '<a href="#" data-preset="' . $id . '">' . $name . '</a>';
+  $list[] = '<a class="separate" href="#" data-preset="' . $id . '">' . $name . '</a>';
 }
 $preset_list = join(PHP_EOL, $list);
 
 print <<<HTML
 <p>$desc</p>
-<div class="settings">
-  <div>$preset:</div>
-  <div class="inline switch" id="family">
-    $preset_list
-  </div>
+<div>$preset:</div>
+<div class="switch" id="presets">
+  $preset_list
 </div>
 <div class="row">
   <div class="container"><canvas id="grid"></canvas></div>

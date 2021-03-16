@@ -97,7 +97,7 @@ window.addEventListener('DOMContentLoaded', function() {
     test: [[1, 0], [1, 0], [0, 0], [1, 0]]
   };
 
-  document.getElementById('family').addEventListener('click', function(e) {
+  document.getElementById('presets').addEventListener('click', function(e) {
     e.preventDefault();
     let tgt = e.target;
     while(tgt && tgt.tagName !== 'A')
