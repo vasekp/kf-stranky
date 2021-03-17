@@ -254,6 +254,10 @@ sub {
   top: .3rem;
 }
 
+svg {
+  overflow: hidden;
+}
+
 .inline-img {
   width: 1em;
   height: 1em;

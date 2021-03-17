@@ -494,8 +494,8 @@ function Label(x, y, color, text) {
   BaseMarker.call(this);
   this.svgFun = function() {
     let xyW = m2v(this.owner.c2w, [x, y]);
-    return '<text x="' + xyW[0] + '" y="' + xyW[1] + '" fill="' + color + '" '
-      + 'dominant-baseline="middle" font-size="1" stroke="none">' + text + '</text>';
+    return '<text x="' + xyW[0] + '" y="' + (xyW[1] + .4) + '" fill="' + color + '" '
+      + 'font-size="1" stroke="none">' + text + '</text>';
   };
 }
 
@@ -523,7 +523,7 @@ function CoordAxes(xMin, xMax, yMin, yMax, xName, yName, xMarks, yMarks) {
       + '<text x="' + (pxMax[0] + .5) + '" y="' + (pxMax[1] - .5) + '" text-anchor="end" stroke="none">' + xName + '</text>'
       + '<path d="M ' + pyMin[0] + ' ' + pyMin[1] + ' L ' + pyMax[0] + ' ' + pyMax[1] + '"/>'
       + '<path d="M ' + pyMax[0] + ' ' + pyMax[1] + ' l -.25 0 .25 -.5 .25 .5 z" stroke="none"/>'
-      + '<text x="' + (pyMax[0] + .5) + '" y="' + (pyMax[1] - .5) + '" dominant-baseline="hanging" stroke="none">' + yName + '</text>'
+      + '<text x="' + (pyMax[0] + .5) + '" y="' + (pyMax[1] + .5) + '" stroke="none">' + yName + '</text>'
     if(xMarks) {
       let ticks = '';
       xMarks.forEach(function(mark) {
@@ -532,8 +532,8 @@ function CoordAxes(xMin, xMax, yMin, yMax, xName, yName, xMarks, yMarks) {
         let xy1 = m2v(this.owner.c2w, [pos, 0]),
             xy2 = m2v(this.owner.c2w, [pos, yMin]);
         ticks += 'M ' + xy1.join(' ') + ' L ' + xy2.join(' ');
-        svg += '<text stroke="none" x="' + xy2[0] + '" y="' + xy2[1] + '" '
-          + 'text-anchor="middle" dominant-baseline="hanging">' + text + '</text>';
+        svg += '<text stroke="none" x="' + xy2[0] + '" y="' + (xy2[1] + .8) + '" '
+          + 'text-anchor="middle">' + text + '</text>';
       }.bind(this));
       svg += '<path d="' + ticks + '"/>';
     }
@@ -545,8 +545,8 @@ function CoordAxes(xMin, xMax, yMin, yMax, xName, yName, xMarks, yMarks) {
         let xy1 = m2v(this.owner.c2w, [0, pos]),
             xy2 = m2v(this.owner.c2w, [xMin, pos]);
         ticks += 'M ' + xy1.join(' ') + ' L ' + xy2.join(' ');
-        svg += '<text stroke="none" x="' + xy2[0] + '" y="' + xy2[1] + '" '
-          + 'text-anchor="end" dominant-baseline="middle">' + text + '</text>';
+        svg += '<text stroke="none" x="' + xy2[0] + '" y="' + (xy2[1] + .4) + '" '
+          + 'text-anchor="end">' + text + '</text>';
       }.bind(this));
       svg += '<path d="' + ticks + '"/>';
     }
@@ -572,8 +572,8 @@ function CoordAxis(xMin, xMax, yMin, yMax, xName, xMarks) {
         let xy1 = m2v(this.owner.c2w, [pos, yMax]),
             xy2 = m2v(this.owner.c2w, [pos, yMin]);
         ticks += 'M ' + xy1.join(' ') + ' L ' + xy2.join(' ');
-        svg += '<text stroke="none" x="' + xy2[0] + '" y="' + xy2[1] + '" '
-          + 'text-anchor="middle" dominant-baseline="hanging">' + text + '</text>';
+        svg += '<text stroke="none" x="' + xy2[0] + '" y="' + (xy2[1] + .8) + '" '
+          + 'text-anchor="middle">' + text + '</text>';
       }.bind(this));
       svg += '<path d="' + ticks + '"/>';
     }
