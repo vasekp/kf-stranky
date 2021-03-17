@@ -7,7 +7,7 @@ window.addEventListener('DOMContentLoaded', function() {
   var canvas = document.getElementById('sphere');
   canvas.width = canvas.clientWidth;
   canvas.height = canvas.clientHeight;
-  gl = canvas.getContext('webgl');
+  gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
 
   canvas = document.getElementById('vector');
   var ratio = window.devicePixelRatio || 1;
@@ -19,7 +19,7 @@ window.addEventListener('DOMContentLoaded', function() {
   c2d.lineCap = 'round';
 
   if(!gl) {
-    alert('Functionality necessary for this demo not supported. Please use a newer browser.');
+    alert('WebGL not supported');
     return;
   }
 
@@ -364,15 +364,15 @@ function draw(time) {
     model.changed = false;
   }
 
-  c2d.fillStyle = '#ffffff10';
-  c2d.globalCompositeOperation = 'lighter';
+  c2d.fillStyle = '#fff';
+  c2d.globalAlpha = 0.1;
   c2d.fillRect(-1.5, -1.5, 3, 3);
-  c2d.globalCompositeOperation = 'multiply';
+  c2d.globalAlpha = 1;
 
   let prev = model.lastPsi;
   let psi = model.state.psi();
   if(prev) {
-    c2d.strokeStyle = '#000000ff';
+    c2d.strokeStyle = '#000';
     c2d.beginPath();
     c2d.moveTo(prev[0][0], prev[1][0]);
     c2d.lineTo(psi[0][0], psi[1][0]);
@@ -381,7 +381,7 @@ function draw(time) {
   model.lastPsi = psi;
 
   if(prev) {
-    c2d.strokeStyle = '#ff0000ff';
+    c2d.strokeStyle = '#f00';
     c2d.beginPath();
     c2d.moveTo(model.state.A, prev[1][0], 0.05, 0, 2*Math.PI);
     c2d.lineTo(model.state.A, psi[1][0], 0.05, 0, 2*Math.PI);

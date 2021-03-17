@@ -117,18 +117,20 @@ function updateGraph(s1, s2) {
   var lt = Math.ceil(h / 50);
   const pi = Math.PI;
   var ctx = graph.getContext('2d');
-  const colors = ['#f00f', '#00ff', '#f008', '#00f8'];
+  const colors = [['#f00', 1], ['#00f', 1], ['#f00', .5], ['#00f', .5]];
   ctx.lineWidth = lt;
   ctx.putImageData(ctx.getImageData(dw, 0, w-dw, h), 0, 0);
   ctx.fillStyle = '#fff';
   ctx.fillRect(w-dw, 0, dw, h);
   for(let i = 0; i < 4; i++) {
-    ctx.strokeStyle = colors[i];
+    ctx.strokeStyle = colors[i][0];
+    ctx.globalAlpha = colors[i][1];
     ctx.beginPath();
     ctx.moveTo(w - dw - lt, lt + (h-2*lt)*(1+Math.sin(s1[i]))/2);
     ctx.lineTo(w - lt, lt + (h-2*lt)*(1+Math.sin(s2[i]))/2);
     ctx.stroke();
   }
+  ctx.globalAlpha = 1;
 }
 
 function rotStart(elm, x, y, rect) {
