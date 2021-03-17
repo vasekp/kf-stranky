@@ -84,6 +84,20 @@ print <<<HTML
 <div class="switch" id="presets">
   $preset_list
 </div>
+<div>
+  <svg id="matrix" xmlns="http://www.w3.org/2000/svg" viewBox="-5.7 -1.4 10.8 2.8">
+    <path stroke="black" fill="none" stroke-width=".05"
+      d="M -3.7 -1.3 Q -4 -1 -4 -.5 -4 0 -4 .5 -4 1 -3.7 1.3
+         M 4.7 -1.3 Q 5 -1 5 -.5 5 0 5 .5 5 1 4.7 1.3"/>
+    <g font-size="1">
+      <text x="-4" y="0.288" text-anchor="end">M =&nbsp;</text>
+      <text id="m11" text-anchor="middle" x="-1.6" y="-0.424"></text>
+      <text id="m12" text-anchor="middle" x="2.6" y="-0.424"></text>
+      <text id="m21" text-anchor="middle" x="-1.6" y="1"></text>
+      <text id="m22" text-anchor="middle" x="2.6" y="1"></text>
+    </g>
+  </svg>
+</div>
 <div class="row">
   <div class="container"><canvas id="grid"></canvas></div>
   <div class="container"><canvas id="sphere"></canvas></div>

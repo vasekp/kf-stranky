@@ -84,6 +84,7 @@ window.addEventListener('DOMContentLoaded', function() {
   }
 
   model.mx = [1, 0, 0, 0, 0, 0, 1, 0];
+  formatMatrix(model.mx);
   model.targetMx = null;
 
   const v2 = Math.sqrt(2);
@@ -92,7 +93,7 @@ window.addEventListener('DOMContentLoaded', function() {
     sx: [[0, 0], [1, 0], [1, 0], [0, 0]],
     sy: [[0, 0], [0, -1], [0, 1], [0, 0]],
     sz: [[1, 0], [0, 0], [0, 0], [-1, 0]],
-    h: [[1, 0], [1, 0], [1, 0], [-1, 0]],
+    h: [[1/v2, 0], [1/v2, 0], [1/v2, 0], [-1/v2, 0]],
     cayley: [[1, 0], [0, -1], [1, 0], [0, 1]],
     icayley: [[0, 1], [1, 0], [1, 0], [0, 1]],
     rot: [[1/v2, 0], [-1/v2, 0], [1/v2, 0], [1/v2, 0]],
@@ -116,10 +117,12 @@ window.addEventListener('DOMContentLoaded', function() {
     if(!model.targetMx)
       requestAnimationFrame(draw);
     let tmx = presets[id];
+    formatMatrix(Array.prototype.concat.apply([], tmx));
     let det = cxsub(cxmul(tmx[0], tmx[3]), cxmul(tmx[1], tmx[2]));
     let norm = cxinv(cxsqrt(det));
+    tmx = []; // Don't overwrite presets
     for(let i = 0; i < 4; i++)
-      tmx[i] = cxmul(tmx[i], norm);
+      tmx[i] = cxmul(presets[id][i], norm);
     model.targetMx = [].concat(tmx[0], tmx[1], tmx[2], tmx[3]);
   });
 
@@ -274,4 +277,27 @@ function draw(time) {
 
   if(model.targetMx)
     requestAnimationFrame(draw);
+}
+
+function formatMatrix(mx) {
+  function formatComplex(re, im) {
+    let rs = Math.abs(re).toFixed(1);
+    let is = Math.abs(im).toFixed(1);
+    if(rs == 0)
+      return is == 0 ? '0.0' : im > 0 ? is + 'i' : '–' + is + 'i';
+    else {
+      if(re < 0)
+        rs = '–' + rs;
+      if(is == 0)
+        return rs;
+      else
+        is = im > 0 ? ' + ' + is : ' – ' + is;
+      return rs + is + 'i';
+    }
+  }
+
+  document.getElementById('m11').textContent = formatComplex(mx[0], mx[1]);
+  document.getElementById('m12').textContent = formatComplex(mx[2], mx[3]);
+  document.getElementById('m21').textContent = formatComplex(mx[4], mx[5]);
+  document.getElementById('m22').textContent = formatComplex(mx[6], mx[7]);
 }

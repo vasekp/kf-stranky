@@ -30,3 +30,10 @@
 #presets > a {
   margin-bottom: .5rem;
 }
+
+#matrix {
+  display: block;
+  margin: 0 auto .5rem;
+  width: 10.8rem;
+  height: 2.8rem;
+}
