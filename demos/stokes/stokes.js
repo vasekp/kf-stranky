@@ -19,7 +19,7 @@ window.addEventListener('DOMContentLoaded', function() {
   c2d.lineCap = 'round';
 
   if(!gl) {
-    alert('WebGL not supported');
+    alert('Functionality necessary for this demo not supported. Please use a newer browser.');
     return;
   }
 
