@@ -236,8 +236,9 @@ function draw(time) {
     (m[0]*m[0] + m[1]*m[1] - m[2]*m[2] - m[3]*m[3] + m[4]*m[4] + m[5]*m[5] - m[6]*m[6] - m[7]*m[7])/2
   ];
   for(let i = 0; i < 3; i++) {
-    let norm = planes[4*i]*planes[4*i] + planes[4*i+1]*planes[4*i+1] + planes[4*i+2]*planes[4*i+2];
-    norm = 1/Math.sqrt(norm);
+    let norm = planes[4*i]*planes[4*i] + planes[4*i+1]*planes[4*i+1] + planes[4*i+2]*planes[4*i+2]
+      - planes[4*i+3]*planes[4*i+3];
+    norm = 1 / Math.sqrt(norm);
     for(let j = 0; j < 4; j++)
       planes[4*i+j] *= norm;
   }
