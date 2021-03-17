@@ -20,28 +20,18 @@
   line-height: 100%;
 }
 
-#svg1 {
-  --color-red: #f00;
-  --color-blue: #00f;
+#svg1 .red {
+  fill: #f00;
 }
 
-#svg2 {
-  --color-red: #f88;
-  --color-blue: #88f;
+#svg1 .blue {
+  fill: #00f;
 }
 
-.red {
-  --color: var(--color-red);
+#svg2 .red {
+  fill: #f88;
 }
 
-.blue {
-  --color: var(--color-blue);
-}
-
-.fill {
-  fill: var(--color);
-}
-
-.stroke {
-  stroke: var(--color);
+#svg2 .blue {
+  fill: #88f;
 }
