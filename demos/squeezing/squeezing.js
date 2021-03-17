@@ -59,7 +59,7 @@ window.addEventListener('DOMContentLoaded', function() {
       updateGraphs();
     }));
     let onZeta = function(dx, dy) {
-      let abs = Math.hypot(dx, dy), arg = Math.atan2(dy, dx);
+      let abs = hypot(dx, dy), arg = Math.atan2(dy, dx);
       state.resetZeta(cxpolar(-Math.log(abs), arg * 2));
       updateGraphs();
     };
@@ -116,6 +116,14 @@ window.addEventListener('DOMContentLoaded', function() {
 
 function GridMarker(trfFun) {
   BaseMarker.call(this);
+  let repeat = String.prototype.repeat
+    ? function(str, cnt) { return str.repeat(cnt); }
+    : function(str, cnt) {
+      let ret = '';
+      for(let i = 0; i < cnt; i++)
+        ret += str;
+      return ret;
+    };
   this.svgFun = function() {
     let xy1 = m2v(this.owner.c2w, [-4, -4]),
         xy2 = m2v(this.owner.c2w, [4, 4]),
@@ -124,7 +132,7 @@ function GridMarker(trfFun) {
         twoVert = ' V ' + xy2[1] + ' m ' + dxy[0] + ' 0 V ' + xy1[1] + ' m ' + dxy[0] + ' 0 ',
         twoHorz = ' H ' + xy2[0] + ' m 0 ' + dxy[1] + ' H ' + xy1[0] + ' m 0 ' + dxy[1];
     return '<path stroke="black" stroke-width="0.03" stroke-opacity="0.3" '
-      + 'd="' + start + twoVert.repeat(10) + start + twoHorz.repeat(10) + '"/>';
+      + 'd="' + start + repeat(twoVert, 10) + start + repeat(twoHorz, 10) + '"/>';
   };
   this.update = function() {
     let mx = m2mul(this.owner.c2w, m2mul(trfFun(), this.owner.w2c));
@@ -195,7 +203,7 @@ function NGraphMarker() {
     this.elm.querySelector('#n-exp').setAttribute('transform', 'translate(' + scaleX * stat.exp + ', 0)');
     this.elm.querySelector('#n-var').setAttribute('transform', 'translate(' + scaleX * stat.dev2 + ', 0)');
     let qm = (stat.dev2 - stat.exp)/stat.exp;
-    let qmText = Number.parseFloat(qm).toFixed(2);
+    let qmText = qm.toFixed(2);
     if(qmText === '-0.00' || qmText === "NaN")
       qmText = '0.00';
     document.getElementById('val-qm').setAttribute('data-value', qmText);
@@ -224,7 +232,7 @@ function QGraphMarker() {
     }
     this.elm.querySelector('path').setAttribute('d', d);
     let sq = f.min - 0.5;
-    let sqText = Number.parseFloat(sq).toFixed(2);
+    let sqText = sq.toFixed(2);
     if(sqText === '-0.00')
       sqText = '0.00';
     document.getElementById('val-sq').setAttribute('data-value', sqText);
@@ -255,7 +263,7 @@ function State() {
   this.resetZeta = function(zeta) {
     if(zeta) {
       let r = cxabs(zeta), phi = cxarg(zeta),
-          cosh = Math.cosh(r), sinh = Math.sinh(r);
+          cosh = cosh(r), sinh = sinh(r);
       this._mx[0] = cosh - Math.cos(phi) * sinh;
       this._mx[1] = this._mx[2] = -Math.sin(phi) * sinh;
       this._mx[3] = cosh + Math.cos(phi) * sinh;
@@ -271,7 +279,7 @@ function State() {
       let zx = this.tempZ[0], zy = this.tempZ[1],
           r = (zx*zx + zy*zy) / 10,
           phi = Math.atan2(zy, zx) * 2,
-          chr = Math.cosh(r), shr = Math.sinh(r),
+          chr = cosh(r), shr = sinh(r),
           cphi = Math.cos(phi), sphi = Math.sin(phi);
       return [chr - cphi*shr, -sphi*shr, -sphi*shr, chr + cphi*shr, 0, 0];
     } else if(this.tempT !== 0) {
@@ -306,7 +314,7 @@ function State() {
     let mx2 = m2mul(mx, m2tr(mx));
     let cosh2 = (mx2[0] + mx2[3])/2, cosh = Math.sqrt((cosh2 + 1)/2), sinh = Math.sqrt(Math.max((cosh2 - 1)/2, 0));
     let phi = Math.atan2(-mx2[1], -(mx2[0] - cosh2));
-    return {alpha, cosh, sinh, phi};
+    return {alpha: alpha, cosh: cosh, sinh: sinh, phi: phi};
   }
 
   this.distribution = function() {

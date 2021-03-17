@@ -156,13 +156,31 @@ function findNearest(point, map, minDistance) {
   var found = null;
   for(let id in map) {
     let refPoint = map[id];
-    let dist = Math.hypot(point[0] - refPoint[0], point[1] - refPoint[1]);
+    let dist = hypot(point[0] - refPoint[0], point[1] - refPoint[1]);
     if(dist < currentMin) {
       found = id;
       currentMin = dist;
     }
   }
   return found;
+}
+
+/***** We still support IE11 *****/
+
+var hypot = Math.hypot ? Math.hypot : function(dx, dy) {
+  return Math.sqrt(dx*dx + dy*dy);
+}
+
+var cosh = Math.cosh ? Math.cosh : function(x) {
+  return (Math.exp(x) + Math.exp(-x)) / 2;
+}
+
+var sinh = Math.sinh ? Math.sinh : function(x) {
+  return (Math.exp(x) - Math.exp(-x)) / 2;
+}
+
+var sign = Math.sign ? Math.sign : function(x) {
+  return x > 0 ? 1 : x < 0 ? -1 : 0; // insignificant difference to spec
 }
 
 /***** Complex numbers *****/
@@ -176,7 +194,7 @@ function cxarg(c) {
 }
 
 function cxabs(c) {
-  return Math.hypot(c[0], c[1]);
+  return hypot(c[0], c[1]);
 }
 
 function cxadd(c1, c2) {
@@ -323,7 +341,7 @@ let svgMime = 'image/svg+xml';
 
 function Overlay(container, options, callback) {
   let svgElement = document.createElementNS(svgNS, 'svg');
-  svgElement.classList.add('controls');
+  svgElement.setAttribute('class', 'controls');
   if(options.underneath)
     container.insertBefore(svgElement, container.firstChild);
   else
@@ -348,7 +366,7 @@ function Overlay(container, options, callback) {
         + control.svgFun() + '</g>';
       let elm = control.elm = document.adoptNode(parser.parseFromString(svg, svgMime).documentElement);
       if(!(extra && extra.alwaysVisible))
-        elm.classList.add('control');
+        elm.setAttribute('class', 'control');
       svgElement.appendChild(elm);
     }
     controls.push(control);
@@ -364,9 +382,9 @@ function Overlay(container, options, callback) {
   this.refresh();
 
   Object.defineProperty(this, 'active', {
-    get: function() { return svgElement.classList.contains('active'); },
+    get: function() { return +svgElement.getAttribute('data-active'); },
     set: function(a) {
-      svgElement.classList.toggle('active', a);
+      svgElement.setAttribute('data-active', +a);
       requestAnimationFrame(this.refresh);
     }
   });
@@ -382,7 +400,7 @@ function Overlay(container, options, callback) {
       callback('start', activeControl, this);
     let refPos = activeControl.coords();
     delta = [pos[0] - refPos[0], pos[1] - refPos[1]];
-    if(activeControl.extra && activeControl.extra.captureAll && Math.hypot(delta[0], delta[1]) > 0.25) {
+    if(activeControl.extra && activeControl.extra.captureAll && hypot(delta[0], delta[1]) > 0.25) {
       // The tap was noticeably far from a "capture all" control: intended meaning was to move it there.
       // Thus 1) we won't use the delta, 2) we fire a move event right away.
       delta = [0, 0];
@@ -419,7 +437,7 @@ function findNearest2(point, controls, minDistance) {
     let refPoint = control.coords();
     if(!refPoint)
       return;
-    let dist = Math.hypot(point[0] - refPoint[0], point[1] - refPoint[1]);
+    let dist = hypot(point[0] - refPoint[0], point[1] - refPoint[1]);
     if(dist < currentMin) {
       found = control;
       currentMin = dist;
@@ -581,7 +599,7 @@ function Arrow(fromFun, toFun, color) {
     }
     let dx = to[0] - from[0],
         dy = to[1] - from[1],
-        len = Math.hypot(dx, dy);
+        len = hypot(dx, dy);
     if(len == 0) {
       this.elm.style.visibility = 'hidden';
       return;

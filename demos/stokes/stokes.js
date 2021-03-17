@@ -419,7 +419,7 @@ function glPMove(elm, x, y) {
   else if(interaction.pick < 0) {
     let glX = ((x / gl.canvas.width) * 2 - 1) * 1.5;
     let glY = ((1 - y / gl.canvas.height) * 2 - 1) * 1.5;
-    let len = Math.hypot(glX, glY);
+    let len = hypot(glX, glY);
     let dir;
     if(len > 1)
       dir = [glX / len, glY / len, 0];
@@ -450,11 +450,11 @@ function glPEnd() {
 function moveSemiaxis(x, y) {
   var angle = Math.atan2(y, x);
   var oldCoords = model.state.coords;
-  let a = Math.hypot(x, y);
+  let a = hypot(x, y);
   let v = 2*a*a - 1;
   let sx = v * Math.cos(2*angle);
   let sy = v * Math.sin(2*angle);
-  let sz = Math.sqrt(Math.max(1 - sx*sx - sy*sy, 0.01)) * Math.sign(oldCoords[2]);
+  let sz = Math.sqrt(Math.max(1 - sx*sx - sy*sy, 0.01)) * sign(oldCoords[2]);
   model.state.rotateTowards([sx, sy, sz]);
   model.changed = true;
 }
@@ -478,7 +478,7 @@ function State(x, y, z) {
     let th = Math.acos(s[0]) / 2;
     this.A = Math.cos(th);
     this.B = Math.sin(th);
-    let v = Math.hypot(s[0], s[1]);
+    let v = hypot(s[0], s[1]);
     this.ellipse = {
       a: Math.sqrt((1+v)/2),
       b: Math.sqrt((1-v)/2),
