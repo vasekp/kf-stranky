@@ -13,7 +13,7 @@ window.addEventListener('DOMContentLoaded', function() {
   gl = canvas.getContext('webgl');
 
   if(!gl) {
-    alert('WebGL not supported');
+    alert('Functionality necessary for this demo not supported. Please use a newer browser.');
     return;
   }
 

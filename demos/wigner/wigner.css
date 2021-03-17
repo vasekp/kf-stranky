@@ -34,7 +34,7 @@
   transition: opacity .5s;
 }
 
-.controls:not(.active) .control {
+.controls:not([data-active="1"]) .control {
   opacity: 0;
 }
 

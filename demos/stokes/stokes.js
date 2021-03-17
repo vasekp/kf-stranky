@@ -7,7 +7,7 @@ window.addEventListener('DOMContentLoaded', function() {
   var canvas = document.getElementById('sphere');
   canvas.width = canvas.clientWidth;
   canvas.height = canvas.clientHeight;
-  gl = canvas.getContext('webgl');
+  gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
 
   canvas = document.getElementById('vector');
   var ratio = window.devicePixelRatio || 1;
@@ -364,15 +364,15 @@ function draw(time) {
     model.changed = false;
   }
 
-  c2d.fillStyle = '#ffffff10';
-  c2d.globalCompositeOperation = 'lighter';
+  c2d.fillStyle = '#fff';
+  c2d.globalAlpha = 0.1;
   c2d.fillRect(-1.5, -1.5, 3, 3);
-  c2d.globalCompositeOperation = 'multiply';
+  c2d.globalAlpha = 1;
 
   let prev = model.lastPsi;
   let psi = model.state.psi();
   if(prev) {
-    c2d.strokeStyle = '#000000ff';
+    c2d.strokeStyle = '#000';
     c2d.beginPath();
     c2d.moveTo(prev[0][0], prev[1][0]);
     c2d.lineTo(psi[0][0], psi[1][0]);
@@ -381,7 +381,7 @@ function draw(time) {
   model.lastPsi = psi;
 
   if(prev) {
-    c2d.strokeStyle = '#ff0000ff';
+    c2d.strokeStyle = '#f00';
     c2d.beginPath();
     c2d.moveTo(model.state.A, prev[1][0], 0.05, 0, 2*Math.PI);
     c2d.lineTo(model.state.A, psi[1][0], 0.05, 0, 2*Math.PI);
@@ -419,7 +419,7 @@ function glPMove(elm, x, y) {
   else if(interaction.pick < 0) {
     let glX = ((x / gl.canvas.width) * 2 - 1) * 1.5;
     let glY = ((1 - y / gl.canvas.height) * 2 - 1) * 1.5;
-    let len = Math.hypot(glX, glY);
+    let len = hypot(glX, glY);
     let dir;
     if(len > 1)
       dir = [glX / len, glY / len, 0];
@@ -450,11 +450,11 @@ function glPEnd() {
 function moveSemiaxis(x, y) {
   var angle = Math.atan2(y, x);
   var oldCoords = model.state.coords;
-  let a = Math.hypot(x, y);
+  let a = hypot(x, y);
   let v = 2*a*a - 1;
   let sx = v * Math.cos(2*angle);
   let sy = v * Math.sin(2*angle);
-  let sz = Math.sqrt(Math.max(1 - sx*sx - sy*sy, 0.01)) * Math.sign(oldCoords[2]);
+  let sz = Math.sqrt(Math.max(1 - sx*sx - sy*sy, 0.01)) * sign(oldCoords[2]);
   model.state.rotateTowards([sx, sy, sz]);
   model.changed = true;
 }
@@ -478,7 +478,7 @@ function State(x, y, z) {
     let th = Math.acos(s[0]) / 2;
     this.A = Math.cos(th);
     this.B = Math.sin(th);
-    let v = Math.hypot(s[0], s[1]);
+    let v = hypot(s[0], s[1]);
     this.ellipse = {
       a: Math.sqrt((1+v)/2),
       b: Math.sqrt((1-v)/2),

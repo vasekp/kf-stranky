@@ -53,8 +53,8 @@ function Program(ctx, vs, fs) {
     else
       ctx.attachShader(program, new Shader(ctx, type, s).shader);
   }
-  attach(vs, gl.VERTEX_SHADER);
-  attach(fs, gl.FRAGMENT_SHADER);
+  attach(vs, ctx.VERTEX_SHADER);
+  attach(fs, ctx.FRAGMENT_SHADER);
 
   ctx.linkProgram(program);
   if(!ctx.getProgramParameter(program, ctx.LINK_STATUS)) {
@@ -64,18 +64,18 @@ function Program(ctx, vs, fs) {
   }
 
   this.program = program;
-  const numUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+  const numUniforms = ctx.getProgramParameter(program, ctx.ACTIVE_UNIFORMS);
   for(let i = 0; i < numUniforms; i++) {
-    let name = gl.getActiveUniform(program, i).name;
+    let name = ctx.getActiveUniform(program, i).name;
     if(name.indexOf('[') > 0)
       name = name.substring(0, name.indexOf('['));
-    const loc = gl.getUniformLocation(program, name);
+    const loc = ctx.getUniformLocation(program, name);
     this[name] = loc;
   }
-  const numAttribs = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES);
+  const numAttribs = ctx.getProgramParameter(program, ctx.ACTIVE_ATTRIBUTES);
   for(let i = 0; i < numAttribs; i++) {
-    const name = gl.getActiveAttrib(program, i).name;
-    const loc = gl.getAttribLocation(program, name);
+    const name = ctx.getActiveAttrib(program, i).name;
+    const loc = ctx.getAttribLocation(program, name);
     this[name] = loc;
   }
 }
@@ -156,13 +156,31 @@ function findNearest(point, map, minDistance) {
   var found = null;
   for(let id in map) {
     let refPoint = map[id];
-    let dist = Math.hypot(point[0] - refPoint[0], point[1] - refPoint[1]);
+    let dist = hypot(point[0] - refPoint[0], point[1] - refPoint[1]);
     if(dist < currentMin) {
       found = id;
       currentMin = dist;
     }
   }
   return found;
+}
+
+/***** We still support IE11 *****/
+
+var hypot = Math.hypot ? Math.hypot : function(dx, dy) {
+  return Math.sqrt(dx*dx + dy*dy);
+}
+
+var cosh = Math.cosh ? Math.cosh : function(x) {
+  return (Math.exp(x) + Math.exp(-x)) / 2;
+}
+
+var sinh = Math.sinh ? Math.sinh : function(x) {
+  return (Math.exp(x) - Math.exp(-x)) / 2;
+}
+
+var sign = Math.sign ? Math.sign : function(x) {
+  return x > 0 ? 1 : x < 0 ? -1 : 0; // insignificant difference to spec
 }
 
 /***** Complex numbers *****/
@@ -176,11 +194,15 @@ function cxarg(c) {
 }
 
 function cxabs(c) {
-  return Math.hypot(c[0], c[1]);
+  return hypot(c[0], c[1]);
 }
 
 function cxadd(c1, c2) {
   return [c1[0] + c2[0], c1[1] + c2[1]];
+}
+
+function cxsub(c1, c2) {
+  return [c1[0] - c2[0], c1[1] - c2[1]];
 }
 
 function cxmul(c1, c2) {
@@ -199,8 +221,16 @@ function cxexp(c) {
   return cxpolar(Math.exp(c[0]), c[1]);
 }
 
+function cxsqrt(c) {
+  return cxpolar(Math.sqrt(cxabs(c)), cxarg(c)/2);
+}
+
 function cxdiv(c1, c2) {
   return cxmulr(cxmulc(c1, c2), 1/cxnorm2(c2));
+}
+
+function cxinv(c) {
+  return cxdiv([1, 0], c);
 }
 
 function cxdivr(c, r) {
@@ -246,6 +276,15 @@ function qconj(q) {
 function qnormalize(q) {
   let qLen = Math.sqrt(q[0]*q[0] + q[1]*q[1] + q[2]*q[2] + q[3]*q[3]);
   return [q[0] / qLen, q[1] / qLen, q[2] / qLen, q[3] / qLen];
+}
+
+function qexp(q, t) {
+  let cos = Math.cos(t), sin = Math.sin(t);
+  if(q[3]) {
+    let exp = Math.exp(q[3]);
+    return [exp * sin * q[0], exp * sin * q[1], exp * sin * q[2], exp * cos];
+  } else
+    return [sin * q[0], sin * q[1], sin * q[2], cos];
 }
 
 function vrotq(v, q) {
@@ -302,7 +341,7 @@ let svgMime = 'image/svg+xml';
 
 function Overlay(container, options, callback) {
   let svgElement = document.createElementNS(svgNS, 'svg');
-  svgElement.classList.add('controls');
+  svgElement.setAttribute('class', 'controls');
   if(options.underneath)
     container.insertBefore(svgElement, container.firstChild);
   else
@@ -327,7 +366,7 @@ function Overlay(container, options, callback) {
         + control.svgFun() + '</g>';
       let elm = control.elm = document.adoptNode(parser.parseFromString(svg, svgMime).documentElement);
       if(!(extra && extra.alwaysVisible))
-        elm.classList.add('control');
+        elm.setAttribute('class', 'control');
       svgElement.appendChild(elm);
     }
     controls.push(control);
@@ -343,9 +382,9 @@ function Overlay(container, options, callback) {
   this.refresh();
 
   Object.defineProperty(this, 'active', {
-    get: function() { return svgElement.classList.contains('active'); },
+    get: function() { return +svgElement.getAttribute('data-active'); },
     set: function(a) {
-      svgElement.classList.toggle('active', a);
+      svgElement.setAttribute('data-active', +a);
       requestAnimationFrame(this.refresh);
     }
   });
@@ -361,7 +400,7 @@ function Overlay(container, options, callback) {
       callback('start', activeControl, this);
     let refPos = activeControl.coords();
     delta = [pos[0] - refPos[0], pos[1] - refPos[1]];
-    if(activeControl.extra && activeControl.extra.captureAll && Math.hypot(delta[0], delta[1]) > 0.25) {
+    if(activeControl.extra && activeControl.extra.captureAll && hypot(delta[0], delta[1]) > 0.25) {
       // The tap was noticeably far from a "capture all" control: intended meaning was to move it there.
       // Thus 1) we won't use the delta, 2) we fire a move event right away.
       delta = [0, 0];
@@ -398,7 +437,7 @@ function findNearest2(point, controls, minDistance) {
     let refPoint = control.coords();
     if(!refPoint)
       return;
-    let dist = Math.hypot(point[0] - refPoint[0], point[1] - refPoint[1]);
+    let dist = hypot(point[0] - refPoint[0], point[1] - refPoint[1]);
     if(dist < currentMin) {
       found = control;
       currentMin = dist;
@@ -455,8 +494,19 @@ function Label(x, y, color, text) {
   BaseMarker.call(this);
   this.svgFun = function() {
     let xyW = m2v(this.owner.c2w, [x, y]);
-    return '<text x="' + xyW[0] + '" y="' + xyW[1] + '" fill="' + color + '" '
-      + 'dominant-baseline="middle" font-size="1" stroke="none">' + text + '</text>';
+    return '<text x="' + xyW[0] + '" y="' + (xyW[1] + .4) + '" fill="' + color + '" '
+      + 'font-size="1" stroke="none">' + text + '</text>';
+  };
+}
+
+function CrossLabel(x, y, color, text) {
+  BaseMarker.call(this);
+  this.svgFun = function() {
+    let xyW = m2v(this.owner.c2w, [x, y]);
+    return '<path stroke="' + color + '" stroke-width=".06" d="M ' + xyW.join(' ')
+      + ' m -.25 -.25 l .5 .5 m -.5 0 l .5 -.5"/>'
+      + '<text x="' + (xyW[0] + .25) + '" y="' + (xyW[1] - .25) + '" fill="' + color + '" '
+      + 'font-size="1" stroke="none">' + text + '</text>';
   };
 }
 
@@ -473,7 +523,7 @@ function CoordAxes(xMin, xMax, yMin, yMax, xName, yName, xMarks, yMarks) {
       + '<text x="' + (pxMax[0] + .5) + '" y="' + (pxMax[1] - .5) + '" text-anchor="end" stroke="none">' + xName + '</text>'
       + '<path d="M ' + pyMin[0] + ' ' + pyMin[1] + ' L ' + pyMax[0] + ' ' + pyMax[1] + '"/>'
       + '<path d="M ' + pyMax[0] + ' ' + pyMax[1] + ' l -.25 0 .25 -.5 .25 .5 z" stroke="none"/>'
-      + '<text x="' + (pyMax[0] + .5) + '" y="' + (pyMax[1] - .5) + '" dominant-baseline="hanging" stroke="none">' + yName + '</text>'
+      + '<text x="' + (pyMax[0] + .5) + '" y="' + (pyMax[1] + .5) + '" stroke="none">' + yName + '</text>'
     if(xMarks) {
       let ticks = '';
       xMarks.forEach(function(mark) {
@@ -482,8 +532,8 @@ function CoordAxes(xMin, xMax, yMin, yMax, xName, yName, xMarks, yMarks) {
         let xy1 = m2v(this.owner.c2w, [pos, 0]),
             xy2 = m2v(this.owner.c2w, [pos, yMin]);
         ticks += 'M ' + xy1.join(' ') + ' L ' + xy2.join(' ');
-        svg += '<text stroke="none" x="' + xy2[0] + '" y="' + xy2[1] + '" '
-          + 'text-anchor="middle" dominant-baseline="hanging">' + text + '</text>';
+        svg += '<text stroke="none" x="' + xy2[0] + '" y="' + (xy2[1] + .8) + '" '
+          + 'text-anchor="middle">' + text + '</text>';
       }.bind(this));
       svg += '<path d="' + ticks + '"/>';
     }
@@ -495,8 +545,8 @@ function CoordAxes(xMin, xMax, yMin, yMax, xName, yName, xMarks, yMarks) {
         let xy1 = m2v(this.owner.c2w, [0, pos]),
             xy2 = m2v(this.owner.c2w, [xMin, pos]);
         ticks += 'M ' + xy1.join(' ') + ' L ' + xy2.join(' ');
-        svg += '<text stroke="none" x="' + xy2[0] + '" y="' + xy2[1] + '" '
-          + 'text-anchor="end" dominant-baseline="middle">' + text + '</text>';
+        svg += '<text stroke="none" x="' + xy2[0] + '" y="' + (xy2[1] + .4) + '" '
+          + 'text-anchor="end">' + text + '</text>';
       }.bind(this));
       svg += '<path d="' + ticks + '"/>';
     }
@@ -522,8 +572,8 @@ function CoordAxis(xMin, xMax, yMin, yMax, xName, xMarks) {
         let xy1 = m2v(this.owner.c2w, [pos, yMax]),
             xy2 = m2v(this.owner.c2w, [pos, yMin]);
         ticks += 'M ' + xy1.join(' ') + ' L ' + xy2.join(' ');
-        svg += '<text stroke="none" x="' + xy2[0] + '" y="' + xy2[1] + '" '
-          + 'text-anchor="middle" dominant-baseline="hanging">' + text + '</text>';
+        svg += '<text stroke="none" x="' + xy2[0] + '" y="' + (xy2[1] + .8) + '" '
+          + 'text-anchor="middle">' + text + '</text>';
       }.bind(this));
       svg += '<path d="' + ticks + '"/>';
     }
@@ -549,7 +599,7 @@ function Arrow(fromFun, toFun, color) {
     }
     let dx = to[0] - from[0],
         dy = to[1] - from[1],
-        len = Math.hypot(dx, dy);
+        len = hypot(dx, dy);
     if(len == 0) {
       this.elm.style.visibility = 'hidden';
       return;

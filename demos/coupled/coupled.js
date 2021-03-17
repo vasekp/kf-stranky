@@ -36,7 +36,7 @@ window.addEventListener('DOMContentLoaded', function() {
     { xMin: -.8, xMax: .8, yMin: 0, yMax: 1, padding: .5 });
   over3.addControl(new AbsControl(function() { return [conf.m2 - 1, conf.j]; }, 'cross', '#88F', function(dx, dy) {
     if(Math.abs(dx) > 0.7)
-      dx = Math.sign(dx) * 0.7;
+      dx = sign(dx) * 0.7;
     if(dy < 0) dy = 0;
     if(dy > .9) dy = .9;
     conf.m1 = 1 - dx;
@@ -62,8 +62,8 @@ function draw(time) {
 function State(a, b, pa, pb) {
   // ***** Hamiltonian *****
   function h(a, b, pa, pb) {
-    let [e1, e2, e3] = h3(a, b, pa, pb);
-    return e1 + e2 + e3;
+    let energies = h3(a, b, pa, pb);
+    return energies[0] + energies[1] + energies[2];
   }
 
   function h3(a, b, pa, pb) {
@@ -74,7 +74,7 @@ function State(a, b, pa, pb) {
     return [
       (pa*pa/2/conf.m1 + (1 - Math.cos(a))*conf.m1)*tScale,
       (pb*pb/2/conf.m2 + (1 - Math.cos(b))*conf.m2)*tScale,
-      Math.pow(Math.hypot(x2-x1, y2-y1) - 2, 2)/2*conf.j*tScale
+      Math.pow(hypot(x2-x1, y2-y1) - 2, 2)/2*conf.j*tScale
     ];
   }
 
@@ -124,11 +124,11 @@ function State(a, b, pa, pb) {
       this.pb = 0;
 
     if(Math.abs(this.alpha) > 1.45) {
-      this.alpha = Math.sign(this.alpha) * 1.45;
+      this.alpha = sign(this.alpha) * 1.45;
       this.pa = -0.9*this.pa;
     }
     if(Math.abs(this.beta) > 1.45) {
-      this.beta = Math.sign(this.beta) * 1.45;
+      this.beta = sign(this.beta) * 1.45;
       this.pb = -0.9*this.pb;
     }
   }
@@ -143,7 +143,7 @@ function displayState(svg, state) {
     y1 = -Math.cos(state.alpha),
     x2 = Math.sin(state.beta) + 1,
     y2 = -Math.cos(state.beta),
-    len = Math.hypot(x2-x1, y2-y1);
+    len = hypot(x2-x1, y2-y1);
   svg.getElementById('mass1').setAttribute('transform', 'rotate(' + radToDeg(state.alpha) + ')');
   svg.getElementById('mass2').setAttribute('transform', 'rotate(' + radToDeg(state.beta) + ')');
   svg.getElementById('spring').setAttribute('transform', 'matrix(' + (x2-x1) + ' ' + (y2-y1) + ' '

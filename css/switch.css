@@ -45,6 +45,12 @@
   border-radius: 1rem;
 }
 
+.switch a.separate {
+  border-radius: 1rem;
+  padding: .2rem .6rem;
+  border-right: 1px solid #888;
+}
+
 @media (hover: hover) {
   .switch a:hover {
     background: #eee;
