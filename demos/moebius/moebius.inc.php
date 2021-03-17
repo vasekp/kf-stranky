@@ -16,19 +16,24 @@ if($en) {
   $desc = 'Möbious transformation is a rational map on the complex plane prescribed by ζ ↦ (aζ + b)/(cζ + d) for complex coefficients a, b, c, d forming some regular matrix M. It maps circles to circles again or to lines (corresponding to the limit of infinite radius). It is conformal, bijective, orientation-preserving and different transforms form a group in which composition corresponds to matrix multiplication.';
   $preset = 'Presets';
   $presets = [
-     'i' => 'Identity<sup>1,2,3</sup>',
-     'sx' => 'σ<sub>x</sub><sup>1</sup>',
-     'sy' => 'σ<sub>y</sub><sup>1</sup>',
-     'sz' => 'σ<sub>z</sub><sup>1,3</sup>',
-     'h' => 'Hadamard<sup>1</sup>',
-     'cayley' => 'Cayley<sup>1</sup>',
-     'icayley' => 'i× Cayley<sup>1</sup>',
-     'rot' => 'rotation<sup>1,2</sup>',
-     'phase' => 'relative phase<sup>1,3</sup>',
-     'skewX' => 'X-skew<sup>2</sup>',
-     'skewY' => 'Y-skew<sup>2</sup>',
-     'sqAxes' => 'axial squeeze<sup>2</sup>',
-     'sqDiag' => 'diag. squeeze<sup>2,3</sup>',
+    'i' => 'Identity<sup>1,2,3</sup>',
+    'sx' => 'σ<sub>x</sub><sup>1</sup>',
+    'sy' => 'σ<sub>y</sub><sup>1</sup>',
+    'sz' => 'σ<sub>z</sub><sup>1,3</sup>',
+    'h' => 'Hadamard<sup>1</sup>',
+    'cayley' => 'Cayley<sup>1</sup>',
+    'icayley' => 'i× Cayley<sup>1</sup>',
+    'rot' => 'rotation<sup>1,2</sup>',
+    'phase' => 'relative phase<sup>1,3</sup>',
+    'skewX' => 'X-skew<sup>2</sup>',
+    'skewY' => 'Y-skew<sup>2</sup>',
+    'sqAxes' => 'axial squeeze<sup>2</sup>',
+    'sqDiag' => 'diag. squeeze<sup>2,3</sup>',
+  ];
+  $random = [
+    'rndU' => 'random<sup>1</sup>',
+    'rndR' => 'random<sup>2</sup>',
+    'rndU2' => 'random<sup>3</sup>',
   ];
   $expl = 'Explanation';
   $explItems = [
@@ -42,19 +47,24 @@ if($en) {
   $desc = 'Möbiova transformace je na komplexní rovině předepsána vzorcem ζ ↦ (aζ + b)/(cζ + d) pro komplexní koeficienty a, b, c, d tvořící nějakou regulární matici M. Zobrazuje kružnice na kružnice, případně na přímky, odpovídající limitě nekonečného poloměru. Je konformní, bijektivní, zachovává orientaci a tvoří grupu automorfismů komplexní projektivní roviny se skládáním operací daným součinem matic.';
   $preset = 'Volba matice';
   $presets = [
-     'i' => 'Identita<sup>1,2,3</sup>',
-     'sx' => 'σ<sub>x</sub><sup>1</sup>',
-     'sy' => 'σ<sub>y</sub><sup>1</sup>',
-     'sz' => 'σ<sub>z</sub><sup>1,3</sup>',
-     'h' => 'Hadamard<sup>1</sup>',
-     'cayley' => 'Cayley<sup>1</sup>',
-     'icayley' => 'i× Cayley<sup>1</sup>',
-     'rot' => 'rotace<sup>1,2</sup>',
-     'phase' => 'relativní fáze<sup>1,3</sup>',
-     'skewX' => 'zkosení X<sup>2</sup>',
-     'skewY' => 'zkosení Y<sup>2</sup>',
-     'sqAxes' => 'stlačení<sup>2</sup>',
-     'sqDiag' => 'stlačení diag.<sup>2,3</sup>',
+    'i' => 'Identita<sup>1,2,3</sup>',
+    'sx' => 'σ<sub>x</sub><sup>1</sup>',
+    'sy' => 'σ<sub>y</sub><sup>1</sup>',
+    'sz' => 'σ<sub>z</sub><sup>1,3</sup>',
+    'h' => 'Hadamard<sup>1</sup>',
+    'cayley' => 'Cayley<sup>1</sup>',
+    'icayley' => 'i× Cayley<sup>1</sup>',
+    'rot' => 'rotace<sup>1,2</sup>',
+    'phase' => 'relativní fáze<sup>1,3</sup>',
+    'skewX' => 'zkosení X<sup>2</sup>',
+    'skewY' => 'zkosení Y<sup>2</sup>',
+    'sqAxes' => 'stlačení<sup>2</sup>',
+    'sqDiag' => 'stlačení diag.<sup>2,3</sup>',
+  ];
+  $random = [
+    'rndU' => 'náhodná<sup>1</sup>',
+    'rndR' => 'náhodná<sup>2</sup>',
+    'rndU2' => 'náhodná<sup>3</sup>',
   ];
   $expl = 'Vysvětlivky';
   $explItems = [
@@ -78,11 +88,22 @@ foreach($presets as $id => $name) {
 }
 $preset_list = join(PHP_EOL, $list);
 
+$list = [];
+foreach($random as $id => $name) {
+  $list[] = '<a class="separate" href="#" data-preset="' . $id . '">' . $name . '</a>';
+}
+$random_list = join(PHP_EOL, $list);
+
 print <<<HTML
 <p>$desc</p>
 <div>$preset:</div>
-<div class="switch" id="presets">
-  $preset_list
+<div id="presets">
+  <div class="switch">
+    $preset_list
+  </div>
+  <div class="switch">
+    $random_list
+  </div>
 </div>
 <div>
   <svg id="matrix" xmlns="http://www.w3.org/2000/svg" viewBox="-5.7 -1.4 10.8 2.8">

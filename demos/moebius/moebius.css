@@ -23,12 +23,13 @@
   height: 100%;
 }
 
-#presets {
+#presets .switch {
   flex-wrap: wrap;
+  margin: 0;
 }
 
-#presets > a {
-  margin-bottom: .5rem;
+#presets a {
+  margin: .25rem;
 }
 
 #matrix {

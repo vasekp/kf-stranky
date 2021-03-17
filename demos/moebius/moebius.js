@@ -116,13 +116,27 @@ window.addEventListener('DOMContentLoaded', function() {
       return;
     if(!model.targetMx)
       requestAnimationFrame(draw);
-    let tmx = presets[id];
-    formatMatrix(Array.prototype.concat.apply([], tmx));
-    let det = cxsub(cxmul(tmx[0], tmx[3]), cxmul(tmx[1], tmx[2]));
+    let orig;
+    switch(id) {
+      case 'rndU':
+        orig = rndUnitary();
+        break;
+      case 'rndR':
+        orig = rndReal();
+        break;
+      case 'rndU2':
+        orig = rndU11();
+        break;
+      default:
+        orig = presets[id];
+        break;
+    }
+    formatMatrix(Array.prototype.concat.apply([], orig));
+    let det = cxsub(cxmul(orig[0], orig[3]), cxmul(orig[1], orig[2]));
     let norm = cxinv(cxsqrt(det));
-    tmx = []; // Don't overwrite presets
+    let tmx = []; // Don't overwrite presets
     for(let i = 0; i < 4; i++)
-      tmx[i] = cxmul(presets[id][i], norm);
+      tmx[i] = cxmul(orig[i], norm);
     model.targetMx = [].concat(tmx[0], tmx[1], tmx[2], tmx[3]);
   });
 
@@ -198,10 +212,6 @@ function draw(time) {
       for(let i = 0; i < 8; i++)
         omx[i] += step / dist * (tmx[i] - omx[i]);
       let prep = [[omx[0], omx[1]], [omx[2], omx[3]], [omx[4], omx[5]], [omx[6], omx[7]]];
-      let det = cxsub(cxmul(prep[0], prep[3]), cxmul(prep[1], prep[2]));
-      let norm = cxinv(cxsqrt(det));
-      for(let i = 0; i < 4; i++)
-        prep[i] = cxmul(prep[i], norm);
       model.mx = [].concat(prep[0], prep[1], prep[2], prep[3]);
     }
   }
@@ -225,6 +235,12 @@ function draw(time) {
     (m[0]*m[0] + m[1]*m[1] - m[2]*m[2] - m[3]*m[3] - m[4]*m[4] - m[5]*m[5] + m[6]*m[6] + m[7]*m[7])/2,
     (m[0]*m[0] + m[1]*m[1] - m[2]*m[2] - m[3]*m[3] + m[4]*m[4] + m[5]*m[5] - m[6]*m[6] - m[7]*m[7])/2
   ];
+  for(let i = 0; i < 3; i++) {
+    let norm = planes[4*i]*planes[4*i] + planes[4*i+1]*planes[4*i+1] + planes[4*i+2]*planes[4*i+2];
+    norm = 1/Math.sqrt(norm);
+    for(let j = 0; j < 4; j++)
+      planes[4*i+j] *= norm;
+  }
 
   gl2d.clear(gl2d.COLOR_BUFFER_BIT);
   gl2d.useProgram(progs.grid.program);
@@ -300,4 +316,44 @@ function formatMatrix(mx) {
   document.getElementById('m12').textContent = formatComplex(mx[2], mx[3]);
   document.getElementById('m21').textContent = formatComplex(mx[4], mx[5]);
   document.getElementById('m22').textContent = formatComplex(mx[6], mx[7]);
+}
+
+function rndUnitary() {
+  let a = 2*Math.random() - 1;
+  let b = 2*Math.random() - 1;
+  let c = 2*Math.random() - 1;
+  let d = 2*Math.random() - 1;
+  let norm = 1 / Math.sqrt(a*a + b*b + c*c + d*d);
+  a *= norm;
+  b *= norm;
+  c *= norm;
+  d *= norm;
+  return [[a, b], [c, d], [-c, d], [a, -b]];
+}
+
+function rndReal() {
+  let a, b, c, d;
+  do {
+    a = 2*Math.random() - 1;
+    b = 2*Math.random() - 1;
+    c = 2*Math.random() - 1;
+    d = 2*Math.random() - 1;
+  } while(a*d - b*c < 0.25);
+  return [[a, 0], [b, 0], [c, 0], [d, 0]];
+}
+
+function rndU11() {
+  let a, b, c, d;
+  do {
+    a = 2*Math.random() - 1;
+    b = 2*Math.random() - 1;
+    c = 2*Math.random() - 1;
+    d = 2*Math.random() - 1;
+  } while(a*a + b*b - c*c - d*d < 0.5);
+  let norm = 1 / Math.sqrt(a*a + b*b - c*c - d*d);
+  a *= norm;
+  b *= norm;
+  c *= norm;
+  d *= norm;
+  return [[a, b], [c, d], [c, -d], [a, -b]];
 }
