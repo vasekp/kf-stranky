@@ -15,20 +15,28 @@ $title = $en ? 'Project supervision' : 'Školení';
 $curr_header = $en ? 'Current projects' : 'Současní studenti';
 $past_header = $en ? 'Past projects' : 'Obhájené práce';
 
-$open_intro = $en
-  ? 'At present I am offering two topics, suitable for a Bachelor\'s project:'
-  : 'V současnosti jsou otevřena dvě témata, vhodná pro bakalářskou práci:';
-
-$open_outro = $en
-  ? 'Further topics for students of Mathematical Physics can be found at <a href="https://physics.fjfi.cvut.cz/en/q3" target="_blank">the Q³ group website</a>.'
-  : 'Studenti Matematické fyziky se mohou dále inspirovat na stránce <a href="https://physics.fjfi.cvut.cz/q3" target="_blank">naší skupiny</a>.';
-
 $open_list = [];
 $sql = "select url, title_$prilang as title from theses where state='open'";
 $result = $db->query($sql);
 while($row = $result->fetch_assoc())
   $open_list[] = '<li><a href="' . $row['url'] . '" target="_blank">' . $row['title'] . '</a></li>';
 $open_list = join(PHP_EOL, $open_list);
+
+$open_intro = $result->num_rows > 0
+  ? ($en
+    ? 'At present I am offering these topics, suitable for a Bachelor\'s project:'
+    : 'V současnosti jsou otevřena témata, vhodná pro bakalářskou práci:')
+  : ($en
+    ? 'At present I am deciding about new topics to offer.'
+    : 'V současnosti aktualizuji dřívější vypsaná témata.');
+
+$open_outro = $result->num_rows > 0
+  ? ($en
+    ? 'Further topics for students of Mathematical Physics can be found at <a href="https://physics.fjfi.cvut.cz/en/q3" target="_blank">the Q³ group website</a>.'
+    : 'Studenti Matematické fyziky se mohou dále inspirovat na stránce <a href="https://physics.fjfi.cvut.cz/q3" target="_blank">naší skupiny</a>.')
+  : ($en
+    ? 'Topics for students of Mathematical Physics can be found at <a href="https://physics.fjfi.cvut.cz/en/q3" target="_blank">the Q³ group website</a>.'
+    : 'Studenti Matematické fyziky se mohou inspirovat na stránce <a href="https://physics.fjfi.cvut.cz/q3" target="_blank">naší skupiny</a>.');
 
 $curr_list = [];
 $sql = "select student_name, title_$prilang as title, type, year from theses where state='current'";
@@ -57,7 +65,7 @@ $past_list = join(PHP_EOL, $past_list);
 
 print <<<HTML
 <h1>$title</h1>
-$open_intro
+  $open_intro
 <ul>
   $open_list
 </ul>
