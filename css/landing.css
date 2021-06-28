@@ -8,3 +8,7 @@
   margin-right: 1rem;
   width: 8rem;
 }
+
+#email > span::after {
+  content: '@fjfi.cvut.cz';
+}

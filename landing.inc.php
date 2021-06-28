@@ -27,7 +27,7 @@ Jsem odborným asistentem ve výzkumné skupině <a href="https://physics.fjfi.c
 <ul>
   <li><s>Místnost <b>B509</b> (vstup na zvonek označený Q³)</s></li>
   <li>Katedra fyziky, Břehová 7, 115 19 Praha 1</li>
-  <li id="email">[jmeno].[prijmeni]@fjfi.cvut.cz</li>
+  <li id="email"><span>vaclav.potocek</span></li>
 </ul>
 
 <h2>Odkazy</h2>

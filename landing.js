@@ -1,6 +1,7 @@
 'use strict';
 
 window.addEventListener('DOMContentLoaded', function(event) {
-  var email = 'vaclav.potocek' + String.fromCharCode(64) + 'fjfi.cvut.cz';
-  document.getElementById('email').innerHTML = '<a href="mailto:' + email + '">' + email + '</a>';
+  var elm = document.getElementById('email');
+  var email = elm.textContent + getComputedStyle(elm.firstElementChild, '::after').content.slice(1, -1);
+  elm.innerHTML = '<a href="mailto:' + email + '">' + email + '</a>';
 });
