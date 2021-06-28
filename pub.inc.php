@@ -1,8 +1,5 @@
 <?php
-$css[] = 'css/switch.css';
-$scripts[] = 'shared.js';
-$scripts[] = 'switch.js';
-$scripts[] = 'pub.js';
+$css[] = 'css/pub.css';
 
 $title = $en ? 'Publication list' : 'Seznam publikací';
 $filters = [
@@ -11,17 +8,19 @@ $filters = [
   'all' => $en ? 'All' : 'Všechny'
 ];
 
-$filter = array_key_exists('filter', $_GET) && in_array($_GET['filter'], array_keys($filters)) ? $_GET['filter'] : 'selected';
-
-$list = [];
+$list1 = [];
+$list2 = [];
 foreach($filters as $key => $name) {
-  $href = modifyQuery(['filter' => $key]);
-  $selected = $key == $filter ? ' class="selected"' : '';
-  $list[] = <<<HTML
-<a id="$key" href="$href"$selected>$name</a>
+  $selected = $key == 'selected' ? ' checked' : '';
+  $list1[] = <<<HTML
+<input type="radio" name="category" id="$key"$selected/>
+HTML;
+  $list2[] = <<<HTML
+<label for="$key">$name</label>
 HTML;
 }
-$filters = join(PHP_EOL, $list);
+$filters_cb = join(PHP_EOL, $list1);
+$filters_label = join(PHP_EOL, $list2);
 
 $sql = 'select * from publications order by id desc';
 $result = $db->query($sql);
@@ -34,11 +33,7 @@ while($row = $result->fetch_assoc()) {
     $sets[] = 'recent';
   if($row['selected'])
     $sets[] = 'selected';
-  if($filter != 'all' && !in_array($filter, $sets))
-    $hide = ' class="hide"';
-  else
-    $hide = '';
-  $lines[] = '<li data-sets="' . join(' ', $sets) . '"' . $hide . '>';
+  $lines[] = '<li data-sets="' . join(' ', $sets) . '">';
 
   $lines[] = str_replace('V. Potoček', '<b>V. Potoček</b>', $row['authors']) . '.';
 
@@ -70,8 +65,9 @@ $list = join(PHP_EOL, $lines);
 
 print <<<HTML
 <h1>$title</h1>
+$filters_cb
 <div class="switch" id="pub-filter">
-  $filters
+  $filters_label
 </div>
 <ol id="list">
   $list

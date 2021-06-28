@@ -11,41 +11,45 @@
   margin: 0;
 }
 
-.switch a, .switch span {
+.switch > * {
   flex: 0 0 content;
   padding: .2rem .5rem;
   border: 1px solid #888;
   border-right: none;
 }
 
-.switch a[href] {
+.switch > input {
+  display: none;
+}
+
+.switch > a[href], .switch > label {
   background-image: linear-gradient(#eee, #999);
 }
 
-.switch a.selected {
+.switch > a.selected, .switch > input:checked + label {
   background-image: linear-gradient(#999, #eee);
 }
 
-.switch span, .switch a:not([href]), .switch a[href].disabled {
+.switch > span, .switch > a:not([href]), .switch > a[href].disabled, .switch > input:disabled + label {
   background: #ddd;
 }
 
-.switch a:first-of-type {
+.switch > :first-of-type {
   border-radius: 1rem 0 0 1rem;
   padding-left: .6rem;
 }
 
-.switch a:last-of-type {
+.switch > :last-of-type {
   border-radius: 0 1rem 1rem 0;
   padding-right: .6rem;
   border-right: 1px solid #888;
 }
 
-.switch a:only-of-type {
+.switch > :only-of-type {
   border-radius: 1rem;
 }
 
-.switch a.separate {
+.switch > .separate {
   border-radius: 1rem;
   padding: .2rem .6rem;
   border-right: 1px solid #888;

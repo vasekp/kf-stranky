@@ -1,0 +1,16 @@
+@import "switch.css";
+
+input[type=radio] {
+  display: none;
+}
+
+#selected:checked ~ .switch > label[for="selected"],
+#recent:checked ~ .switch > label[for="recent"],
+#all:checked ~ .switch > label[for="all"] {
+  background-image: linear-gradient(#999, #eee);
+}
+
+#selected:checked ~ ol > li:not([data-sets ~= "selected"]),
+#recent:checked ~ ol > li:not([data-sets ~= "recent"]) {
+  display: none;
+}
