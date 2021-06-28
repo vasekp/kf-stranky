@@ -35,8 +35,7 @@ function filesReady(files) {
 
   addPointerListeners(svg1, rotStart, rotMove);
   addPointerListeners(svg2, rotStart, rotMove);
-
-  makeSwitch('controls', playControl, 0);
+  document.getElementById('controls').addEventListener('change', playControl);
 
   requestAnimationFrame(draw);
 }
@@ -169,8 +168,8 @@ function rotMove(elm, x, y, rect) {
   displayState(elm, state);
 }
 
-function playControl(elm) {
-  if(elm.id == 'play')
+function playControl(e) {
+  if(e.target.id == 'play')
     play();
   else
     pause();

@@ -3,7 +3,6 @@ $css[] = 'css/switch.css';
 $css[] = $demodir . '/wigner.css';
 $scripts[] = 'shared.js';
 $scripts[] = 'demo-helpers.js';
-$scripts[] = 'switch.js';
 $scripts[] = $demodir . '/wigner.js';
 $files[] = $demodir . '/functions.glsl';
 $files[] = $demodir . '/wigner.vert';
@@ -53,13 +52,19 @@ $tips = join(PHP_EOL, $list);
 
 $list = [];
 $count = 0;
-foreach($types as $id => $name)
-  $list[] = '<a href="#" id="' . $id . '" data-func="' . $count++ . '">' . $name . '</a>';
+foreach($types as $id => $name) {
+  $checked = $id == 'vacuum' ? ' checked' : '';
+  $list[] = '<input type="radio" name="type" id="' . $id . '" data-func="' . $count++ . '"' . $checked . '/>';
+  $list[] = '<label for="' . $id . '">' . $name . '</label>';
+}
 $types = join(PHP_EOL, $list);
 
 $list = [];
-foreach($plotTypes as $id => $name)
-  $list[] = '<a href="#" id="' . $id . '">' . $name . '</a>';
+foreach($plotTypes as $id => $name) {
+  $checked = $id == 'prob' ? ' checked' : '';
+  $list[] = '<input type="radio" name="plottype" id="' . $id . '"' . $checked . '/>';
+  $list[] = '<label for="' . $id . '">' . $name . '</label>';
+}
 $plotTypes = join(PHP_EOL, $list);
 
 print <<<HTML
@@ -70,7 +75,7 @@ print <<<HTML
     $types
   </div>
   <div class="inline switch">
-    <a href="#" id="reset">$reset</a>
+    <button id="reset">$reset</button>
   </div>
   <div>$plotType:</div>
   <div class="inline switch" id="plotType">
@@ -78,8 +83,10 @@ print <<<HTML
   </div>
 </div>
 <div class="switch" id="play-controls">
-  <a href="#" id="play"><img class="inline-img" src="$demodir/play.svg" alt="Play"/></a>
-  <a href="#" id="pause"><img class="inline-img" src="$demodir/pause.svg" alt="Pause"/></a>
+  <input type="radio" name="controls" id="play" checked/>
+  <label for="play"><img class="inline-img" src="$demodir/play.svg" alt="Play"/></label>
+  <input type="radio" name="controls" id="pause"/>
+  <label for="pause"><img class="inline-img" src="$demodir/pause.svg" alt="Pause"/></label>
 </div>
 <div id="container">
   <canvas id="canvas"></canvas>

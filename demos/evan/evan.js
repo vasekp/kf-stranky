@@ -110,9 +110,10 @@ function filesReady(files) {
     'vert', '#44F', moveWidth
   ));
 
-  makeSwitch('polarization', changePolarization, 0);
+  document.getElementById('polarization').addEventListener('change', function(e) { changePolarization(e.target.id); });
   document.getElementById('ratio').addEventListener('change', ratioChanged);
   document.getElementById('ratio').addEventListener('input', ratioChanged);
+  changePolarization('s');
   requestAnimationFrame(draw);
 }
 
@@ -216,8 +217,8 @@ function moveWidth(x, y) {
   prepare();
 }
 
-function changePolarization(elm) {
-  values.polarization = elm.id;
+function changePolarization(id) {
+  values.polarization = id;
   updateValues();
   prepare();
 }

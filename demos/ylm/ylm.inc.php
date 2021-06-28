@@ -2,7 +2,6 @@
 $css[] = $demodir . '/ylm.css';
 $css[] = 'css/switch.css';
 $scripts[] = 'shared.js';
-$scripts[] = 'switch.js';
 $scripts[] = 'demo-helpers.js';
 $scripts[] = $demodir . '/ylm.js';
 $files[] = $demodir . '/background.vert';
@@ -71,23 +70,23 @@ print <<<HTML
 <div class="settings">
   <div>$type:</div>
   <div class="inline switch" id="family">
-    <a href="#" data-family="ylm">$types[ylm]</a>
-    <a href="#" data-family="ri">$types[ri]</a>
-    <a href="#" data-family="cart">$types[cart]</a>
-    <a href="#" data-family="random">$types[random]</a>
+    <input type="radio" name="family" id="ylm" checked/><label for="ylm">$types[ylm]</label>
+    <input type="radio" name="family" id="ri"/><label for="ri">$types[ri]</label>
+    <input type="radio" name="family" id="cart"/><label for="cart">$types[cart]</label>
+    <input type="radio" name="family" id="random"/><label for="random">$types[random]</label>
   </div>
   <div>$proj:</div>
   <div class="inline switch" id="model">
-    <a href="#" data-model="1">$models[0]</a>
-    <a href="#" data-model="2">$models[1]</a>
+    <input type="radio" name="model" id="sph" data-model="1" checked/><label for="sph">$models[0]</label>
+    <input type="radio" name="model" id="trad" data-model="2"/><label for="trad">$models[1]</label>
   </div>
 </div>
 <div class="switch" id="controls">
-  <a href="#" id="l-">«l</a>
-  <a href="#" id="m-">«m</a>
-  <a href="#" id="random">$new</a>
-  <a href="#" id="m+">m»</a>
-  <a href="#" id="l+">l»</a>
+  <button id="l-">«l</button>
+  <button id="m-">«m</button>
+  <button id="random">$new</button>
+  <button id="m+">m»</button>
+  <button id="l+">l»</button>
 </div>
 <div id="container">
   <canvas id="canvas"></canvas>

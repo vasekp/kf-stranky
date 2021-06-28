@@ -83,10 +83,13 @@ function filesReady(files) {
     centerFun,
     'bent', '#C44', moveSepar));
 
-  makeSwitch('play-controls', playControl, 0);
-  makeSwitch('func', changeFuncType, 0);
-  makeSwitch('plotType', changePlotType, 0);
+  document.getElementById('func').addEventListener('change', function(e) { changeFuncType(e.target.id, e.target.getAttribute('data-func')); });
+  document.getElementById('plotType').addEventListener('change', function(e) { changePlotType(e.target.id); });
   document.getElementById('reset').addEventListener('click', reset);
+  document.getElementById('play-controls').addEventListener('change', playControl);
+  changeFuncType('vacuum', 0);
+  changePlotType('prob');
+  play();
 }
 
 function draw(time) {
@@ -141,8 +144,8 @@ function draw(time) {
     lastTime = null;
 }
 
-function playControl(elm) {
-  if(elm.id == 'play')
+function playControl(e) {
+  if(e.target.id == 'play')
     play();
   else
     pause();
@@ -188,19 +191,18 @@ function reset(e) {
   e.preventDefault();
 }
 
-function changeFuncType(elm) {
-  fun = elm.id;
-  var id = elm.getAttribute('data-func');
+function changeFuncType(id, index) {
+  fun = id;
   for(let p in progs) {
     gl.useProgram(progs[p].program);
-    gl.uniform1i(progs[p].uFunc, id);
+    gl.uniform1i(progs[p].uFunc, index);
   }
   resetAngle();
   requestAnimationFrame(draw);
 }
 
-function changePlotType(elm) {
-  plotType = elm.id;
+function changePlotType(id) {
+  plotType = id;
   requestAnimationFrame(draw);
 }
 

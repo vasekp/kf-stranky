@@ -2,7 +2,6 @@
 $css[] = $demodir . '/moebius.css';
 $css[] = 'css/switch.css';
 $scripts[] = 'shared.js';
-$scripts[] = 'switch.js';
 $scripts[] = 'demo-helpers.js';
 $scripts[] = $demodir . '/moebius.js';
 $files[] = $demodir . '/grid.vert';
@@ -84,13 +83,13 @@ $explanations = join(PHP_EOL, $list);
 
 $list = [];
 foreach($presets as $id => $name) {
-  $list[] = '<a class="separate" href="#" data-preset="' . $id . '">' . $name . '</a>';
+  $list[] = '<button data-preset="' . $id . '">' . $name . '</button>';
 }
 $preset_list = join(PHP_EOL, $list);
 
 $list = [];
 foreach($random as $id => $name) {
-  $list[] = '<a class="separate" href="#" data-preset="' . $id . '">' . $name . '</a>';
+  $list[] = '<button data-preset="' . $id . '">' . $name . '</button>';
 }
 $random_list = join(PHP_EOL, $list);
 
@@ -98,10 +97,10 @@ print <<<HTML
 <p>$desc</p>
 <div>$preset:</div>
 <div id="presets">
-  <div class="switch">
+  <div class="switch separate">
     $preset_list
   </div>
-  <div class="switch">
+  <div class="switch separate">
     $random_list
   </div>
 </div>

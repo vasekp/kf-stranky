@@ -18,45 +18,47 @@
   border-right: none;
 }
 
+.switch.separate > * {
+  border-radius: 1rem;
+  margin: .25rem;
+  border-right: 1px solid #888;
+}
+
 .switch > input {
   display: none;
 }
 
-.switch > a[href], .switch > label {
+.switch > label, .switch > button, .switch > a {
   background-image: linear-gradient(#eee, #999);
+  appearance: none;
+  font: inherit;
 }
 
-.switch > a.selected, .switch > input:checked + label {
+.switch > input:checked + label {
   background-image: linear-gradient(#999, #eee);
 }
 
-.switch > span, .switch > a:not([href]), .switch > a[href].disabled, .switch > input:disabled + label {
+.switch > span, .switch > input:disabled + label, .switch > :disabled, .switch > a:not([href]) {
   background: #ddd;
 }
 
-.switch > :first-of-type {
+.switch:not(.separate) > :first-of-type {
   border-radius: 1rem 0 0 1rem;
   padding-left: .6rem;
 }
 
-.switch > :last-of-type {
+.switch:not(.separate) > :last-of-type {
   border-radius: 0 1rem 1rem 0;
   padding-right: .6rem;
   border-right: 1px solid #888;
 }
 
-.switch > :only-of-type {
+.switch:not(.separate) > :only-of-type {
   border-radius: 1rem;
-}
-
-.switch > .separate {
-  border-radius: 1rem;
-  padding: .2rem .6rem;
-  border-right: 1px solid #888;
 }
 
 @media (hover: hover) {
-  .switch a:hover {
+  .switch > *:not(:disabled):not(span):not(a:not([href])):hover {
     background: #eee;
   }
 }

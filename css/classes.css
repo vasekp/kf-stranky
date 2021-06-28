@@ -4,6 +4,8 @@
 #date {
   min-width: 6rem;
   text-align: center;
+  border-radius: 0;
+  border-right: none;
 }
 
 .litref {

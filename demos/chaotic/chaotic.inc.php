@@ -2,7 +2,6 @@
 $css[] = 'css/switch.css';
 $css[] = $demodir . '/chaotic.css';
 $scripts[] = 'shared.js';
-$scripts[] = 'switch.js';
 $scripts[] = 'demo-helpers.js';
 $scripts[] = $demodir . '/chaotic.js';
 $files[] = $demodir . '/pendulum.svg';
@@ -34,8 +33,10 @@ $tips = join(PHP_EOL, $list);
 print <<<HTML
 <p>$desc</p>
 <div class="switch" id="controls">
-  <a href="#" id="play"><img class="inline-img" src="$demodir/play.svg" alt="Play"/></a>
-  <a href="#" id="pause"><img class="inline-img" src="$demodir/pause.svg" alt="Pause"/></a>
+  <input type="radio" name="controls" id="play" checked/>
+  <label for="play"><img class="inline-img" src="$demodir/play.svg" alt="Play"/></label>
+  <input type="radio" name="controls" id="pause"/>
+  <label for="pause"><img class="inline-img" src="$demodir/pause.svg" alt="Pause"/></label>
 </div>
 <div class="row" id="c">
   <!-- SVG elements dynamically created here -->

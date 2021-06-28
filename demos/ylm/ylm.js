@@ -113,20 +113,18 @@ function filesReady(files) {
   progs.arrow.colors[1] = new Float32Array([c1, c2, c1]);
   progs.arrow.colors[2] = new Float32Array([c2, c1, c1]);
 
-  makeSwitch('model', setModel, 0);
-  makeSwitch('family', setFamily, 0);
+  document.getElementById('family').addEventListener('change', function(e) { setFamily(e.target.id); });
+  document.getElementById('model').addEventListener('change', function(e) { setModel(+e.target.getAttribute('data-model')); });
+  setFamily('ylm');
+  setModel(1);
 
   let funcListener = function(e) {
-    newFunc(e.currentTarget.id);
+    newFunc(e.target.id);
     e.preventDefault();
   };
 
   addPointerListeners(canvas, rotStart, rotMove);
-  document.getElementById('random').addEventListener('click', funcListener);
-  document.getElementById('l+').addEventListener('click', funcListener);
-  document.getElementById('l-').addEventListener('click', funcListener);
-  document.getElementById('m+').addEventListener('click', funcListener);
-  document.getElementById('m-').addEventListener('click', funcListener);
+  document.getElementById('controls').addEventListener('click', funcListener);
 
   requestAnimationFrame(draw);
 }
@@ -664,35 +662,23 @@ function getPoly_delta(dl, dm) {
   }
 }
 
-function disable(id) {
-  document.getElementById(id).classList.add('disabled');
-}
-
-function enable(id) {
-  document.getElementById(id).classList.remove('disabled');
-}
-
-function setEnabled(id, b) {
-  (b ? enable : disable)(id);
-}
-
 function updateControls() {
   let l = model.l, m = model.m;
-  setEnabled('l-', l > 0);
-  setEnabled('l+', l < SIZE - 1);
+  document.getElementById('l-').disabled = l == 0;
+  document.getElementById('l+').disabled = l >= SIZE - 1;
   switch(model.family) {
     case 'ylm':
     case 'ri':
-      setEnabled('m-', m > -l);
-      setEnabled('m+', m < l);
+      document.getElementById('m-').disabled = m == -l;
+      document.getElementById('m+').disabled = m == l;
       break;
     case 'cart':
-      setEnabled('m-', m > 0);
-      setEnabled('m+', m < (l+1)*(l+2)-1);
+      document.getElementById('m-').disabled = m == 0;
+      document.getElementById('m+').disabled = m >= (l+1)*(l+2)-1;
       break;
     default:
-      enable('m+');
-      enable('m-');
+      document.getElementById('m+').disabled = false;
+      document.getElementById('m-').disabled = false;
   }
 }
 
@@ -719,13 +705,13 @@ function newFunc(type) {
   updateControls();
 }
 
-function setModel(elm) {
+function setModel(id) {
   gl.useProgram(progs.sphere.program);
-  gl.uniform1i(progs.sphere.uModel, elm.getAttribute('data-model'));
+  gl.uniform1i(progs.sphere.uModel, id);
 }
 
-function setFamily(elm) {
-  model.family = elm.getAttribute('data-family');
+function setFamily(id) {
+  model.family = id;
   newFunc();
 }
 

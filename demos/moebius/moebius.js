@@ -107,10 +107,6 @@ window.addEventListener('DOMContentLoaded', function() {
   document.getElementById('presets').addEventListener('click', function(e) {
     e.preventDefault();
     let tgt = e.target;
-    while(tgt && tgt.tagName !== 'A')
-      tgt = tgt.parentNode;
-    if(!tgt)
-      return;
     let id = tgt.getAttribute('data-preset');
     if(!id)
       return;

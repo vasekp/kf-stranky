@@ -28,10 +28,6 @@
   margin: 0;
 }
 
-#presets a {
-  margin: .25rem;
-}
-
 #matrix {
   display: block;
   margin: 0 auto .5rem;

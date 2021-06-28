@@ -3,7 +3,6 @@ $css[] = 'css/switch.css';
 $css[] = $demodir . '/evan.css';
 $scripts[] = 'shared.js';
 $scripts[] = 'demo-helpers.js';
-$scripts[] = 'switch.js';
 $scripts[] = $demodir . '/evan.js';
 $files[] = $demodir . '/prepare.vert';
 $files[] = $demodir . '/prep-above.frag';
@@ -61,8 +60,10 @@ print <<<HTML
 <div class="settings">
   <div>$polar:</div>
   <div class="inline switch" id="polarization">
-    <a href="#" id="s">$polars[s] (<em>s</em>)</a>
-    <a href="#" id="p">$polars[p] (<em>p</em>)</a>
+    <input type="radio" name="pol" id="s" checked/>
+    <label for="s">$polars[s] (<em>s</em>)</label>
+    <input type="radio" name="pol" id="p"/>
+    <label for="p">$polars[p] (<em>p</em>)</label>
   </div>
   <div>$ratio:</div>
   <div>
