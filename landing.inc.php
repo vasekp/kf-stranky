@@ -25,7 +25,7 @@ Jsem odborným asistentem ve výzkumné skupině <a href="https://physics.fjfi.c
 
 <h2>Kontakt</h2>
 <ul>
-  <li><s>Místnost <b>B509</b> (vstup na zvonek označený Q³)</s></li>
+  <li>Místnost <b>B509</b> (vstup na zvonek označený Q³)</li>
   <li>Katedra fyziky, Břehová 7, 115 19 Praha 1</li>
   <li id="email"><span>vaclav.potocek</span></li>
 </ul>
@@ -34,5 +34,5 @@ Jsem odborným asistentem ve výzkumné skupině <a href="https://physics.fjfi.c
 <ul>
   <li><a href="https://orcid.org/0000-0002-6415-598X" target="_blank">ORCiD</a></li>
   <li><a href="https://github.com/vasekp" target="_blank">GitHub</a></li>
-  <li><a href="https://physics.fjfi.cvut.cz/" target="_blank">Stránky Katedry fyziky</a></li>
+  <li><a href="https://physics.fjfi.cvut.cz/" target="_blank">Stránky katedry fyziky</a></li>
 </ul>

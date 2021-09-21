@@ -20,7 +20,7 @@ I am a Lecturer in the <a href="https://physics.fjfi.cvut.cz/en/q3" target="_bla
 
 <h2>Contact</h2>
 <ul>
-  <li><s>Břehová building, room <b>B509</b> (use doorbell marked “Q³”)</s></li>
+  <li>Břehová building, room <b>B509</b> (use doorbell marked “Q³”)</li>
   <li>Department of Physics, ČVUT FJFI, Břehová 7, 115 19 Prague 1, Czech Republic</li>
   <li id="email">[firstname].[surname]@fjfi.cvut.cz</li>
 </ul>
