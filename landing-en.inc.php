@@ -1,7 +1,3 @@
-<?php
-$css[] = 'css/landing.css';
-$scripts[] = 'landing.js';
-?>
 <h1>
   <span class="smaller">Ing.</span>
   Václav Potoček,
@@ -22,7 +18,7 @@ I am a Lecturer in the <a href="https://physics.fjfi.cvut.cz/en/q3" target="_bla
 <ul>
   <li>Břehová building, room <b>B509</b> (use doorbell marked “Q³”)</li>
   <li>Department of Physics, ČVUT FJFI, Břehová 7, 115 19 Prague 1, Czech Republic</li>
-  <li id="email">[firstname].[surname]@fjfi.cvut.cz</li>
+  <li id="email"><span>vaclav.potocek</span></li>
 </ul>
 
 <h2>Links</h2>
