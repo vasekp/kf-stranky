@@ -6,7 +6,9 @@
   border: 1px solid #888;
   border-radius: .25rem;
   margin-right: 1rem;
+  margin-bottom: 1rem;
   width: 8rem;
+  box-shadow: 1px 1px 5px #ccc;
 }
 
 #email > span::after {
