@@ -18,6 +18,8 @@ function open_db() {
 function buildQuery($baseURL, $array) {
   $url = parse_url($baseURL);
   $basename = basename($url['path']);
+  if(strpos($basename, '.php') === false)
+    $basename = '.';
   parse_str(@$url['query'], $search);
   $get = array_filter(array_merge($search, $array), 'strlen');
   if(!empty($get))
