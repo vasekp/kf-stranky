@@ -70,12 +70,18 @@ print <<<HTML
   $open_list
 </ul>
 $open_outro
+HTML;
 
+if(strlen($curr_list) > 0) {
+print <<<HTML
 <h2>$curr_header</h2>
 <ul>
   $curr_list
 </ul>
+HTML;
+}
 
+print <<<HTML
 <h2>$past_header</h2>
 <ul>
   $past_list
