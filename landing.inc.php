@@ -19,9 +19,9 @@ Jsem odborným asistentem ve výzkumné skupině <a href="https://physics.fjfi.c
   <li>Kvantová optika</li>
   <li>Měření a informace v kvantové mechanice</li>
 </ul>
-<div class="buttons">
+<!--div class="buttons">
   <a class="button" href="classes.php">Výuka FJFI</a>
-</div>
+</div-->
 
 <h2>Kontakt</h2>
 <ul>

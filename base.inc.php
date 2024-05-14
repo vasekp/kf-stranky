@@ -12,10 +12,10 @@ $seclang = $en ? 'cz' : 'en';
 
 $stranky = [
   'landing' => $en ? 'Intro' : 'Úvod',
-  'classes' => $en ? 'Classes' : 'Výuka',
-  'demos' => $en ? 'Demonstrations' : 'Ukázky',
+  #'classes' => $en ? 'Classes' : 'Výuka',
   'theses' => $en ? 'Theses' : 'Školení',
   'pub' => $en ? 'Publications' : 'Publikace',
+  'demos' => $en ? 'Demonstrations' : 'Ukázky',
   'personal' => $en ? 'Personal' : 'Osobní'
 ];
 
