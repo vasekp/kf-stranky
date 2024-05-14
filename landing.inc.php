@@ -13,7 +13,7 @@ if($en) {
   <span class="smaller">Ph.D.</span>
 </h1>
 <img id="photo" src="images/photo.jpg" alt="Fotografie"/>
-Jsem odborným asistentem ve výzkumné skupině <a href="https://physics.fjfi.cvut.cz/q3" target="_blank">Kvantová dynamika, optika a informace (Q³)</a> na <a href="https://fjfi.cvut.cz" target="_blank">Fakultě jaderné a fyzikálně inženýrské FJFI ČVUT v Praze</a>. Mé současné výzkumné zájmy zahrnují:
+Jsem odborným asistentem ve výzkumné skupině <a href="https://physics.fjfi.cvut.cz/index.php/cs/veda-vyzkum/smery-vyzkumu/kvantova-dynamika-optika-a-informatika" target="_blank">Kvantová dynamika, optika a informace (Q³)</a> na <a href="https://fjfi.cvut.cz" target="_blank">Fakultě jaderné a fyzikálně inženýrské FJFI ČVUT v Praze</a>. Mé současné výzkumné zájmy zahrnují:
 <ul>
   <li>Kvantové procházky</li>
   <li>Kvantová optika</li>

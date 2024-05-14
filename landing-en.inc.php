@@ -4,7 +4,7 @@
   <span class="smaller">Ph.D.</span>
 </h1>
 <img id="photo" src="images/photo.jpg" alt="Profile photograph"/>
-I am a Lecturer in the <a href="https://physics.fjfi.cvut.cz/en/q3" target="_blank">Quantum dynamics, optics and information (Q³)</a> group at the <a href="https://www.fjfi.cvut.cz/en/" target="_blank">FNSPE, Czech Technical University in Prague</a>. My current research interests include:
+I am a Lecturer in the <a href="https://physics.fjfi.cvut.cz/index.php/cs/veda-vyzkum/smery-vyzkumu/kvantova-dynamika-optika-a-informatika" target="_blank">Quantum dynamics, optics and information (Q³)</a> group at the <a href="https://www.fjfi.cvut.cz/en/" target="_blank">FNSPE, Czech Technical University in Prague</a>. My current research interests include:
 <ul>
   <li>Quantum walks</li>
   <li>Quantum optics</li>

@@ -32,11 +32,11 @@ $open_intro = $result->num_rows > 0
 
 $open_outro = $result->num_rows > 0
   ? ($en
-    ? 'Further topics for students of Mathematical Physics can be found at <a href="https://physics.fjfi.cvut.cz/en/q3" target="_blank">the Q³ group website</a>.'
-    : 'Studenti Matematické fyziky se mohou dále inspirovat na stránce <a href="https://physics.fjfi.cvut.cz/q3" target="_blank">naší skupiny</a>.')
+    ? 'Further topics for students of Mathematical Physics can be found at <a href="https://physics.fjfi.cvut.cz/index.php/cs/veda-vyzkum/smery-vyzkumu/kvantova-dynamika-optika-a-informatika" target="_blank">the Q³ group website</a>.'
+    : 'Studenti Matematické fyziky se mohou dále inspirovat na stránce <a href="https://physics.fjfi.cvut.cz/index.php/cs/veda-vyzkum/smery-vyzkumu/kvantova-dynamika-optika-a-informatika" target="_blank">naší skupiny</a>.')
   : ($en
-    ? 'Topics for students of Mathematical Physics can be found at <a href="https://physics.fjfi.cvut.cz/en/q3" target="_blank">the Q³ group website</a>.'
-    : 'Studenti Matematické fyziky se mohou inspirovat na stránce <a href="https://physics.fjfi.cvut.cz/q3" target="_blank">naší skupiny</a>.');
+    ? 'Topics for students of Mathematical Physics can be found at <a href="https://physics.fjfi.cvut.cz/index.php/cs/veda-vyzkum/smery-vyzkumu/kvantova-dynamika-optika-a-informatika" target="_blank">the Q³ group website</a>.'
+    : 'Studenti Matematické fyziky se mohou inspirovat na stránce <a href="https://physics.fjfi.cvut.cz/index.php/cs/veda-vyzkum/smery-vyzkumu/kvantova-dynamika-optika-a-informatika" target="_blank">naší skupiny</a>.');
 
 $curr_list = [];
 $sql = "select student_name, title_$prilang as title, type, year from theses where state='current'";
