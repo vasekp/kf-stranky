@@ -352,9 +352,16 @@ function Overlay(container, options, callback) {
   let h = svgElement.clientHeight / em;
   let p = options.padding || 0;
   svgElement.setAttributeNS(null, 'viewBox', '0 0 ' + w + ' ' + h);
-  this.c2w = m2mul([w - 2*p, 0, 0, h-2*p, p, h-p],
-    m2inv([options.xMax - options.xMin, 0, 0, options.yMin - options.yMax, options.xMin, options.yMin]));
-  this.w2c = m2inv(this.c2w);
+  this.svg = svgElement;
+
+  this.updateScale = function(options) {
+    this.c2w = m2mul([w - 2*p, 0, 0, h-2*p, p, h-p],
+      m2inv([options.xMax - options.xMin, 0, 0, options.yMin - options.yMax, options.xMin, options.yMin]));
+    this.w2c = m2inv(this.c2w);
+    if(this.refresh)
+      this.refresh();
+  };
+  this.updateScale(options);
 
   let controls = [];
   let parser = new DOMParser();
@@ -393,7 +400,7 @@ function Overlay(container, options, callback) {
   let delta;
   let pStart = function(elm, x, y) {
     let pos = m2v(this.w2c, [x/em, y/em]);
-    activeControl = findNearest2(pos, controls, 0.5);
+    activeControl = findNearest2(pos, controls, 1.0 * this.w2c[0]);
     if(!activeControl)
       return;
     if(callback)
