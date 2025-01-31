@@ -20,8 +20,8 @@ function buildQuery($baseURL, $array) {
   $basename = basename($url['path']);
   if(strpos($basename, '.php') === false)
     $basename = '.';
-  parse_str(@$url['query'], $search);
-  $get = array_filter(array_merge($search, $array), 'strlen');
+  parse_str(@$url['query'] ?? '', $search);
+  $get = array_filter(array_merge($search, $array), function($s) { return strlen($s ?? ''); });
   if(!empty($get))
     return $basename . '?' . http_build_query($get, '', '&amp;');
   else
